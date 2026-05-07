@@ -1,0 +1,397 @@
+
+<style>
+*{box-sizing:border-box}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.w{font-size:14px;padding:4px 0 12px}
+.stack-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-primary)}
+.chip.hi{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+.phase-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.pn{padding:5px 13px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;font-size:12px;color:var(--color-text-secondary);transition:all .15s;font-weight:500}
+.pn.on{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+.phase-block{display:none}
+.phase-block.on{display:block}
+.phase-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.phase-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.meta-right{display:flex;gap:8px;align-items:center}
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.task{display:flex;gap:10px;padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);margin-bottom:7px;background:var(--color-background-primary)}
+.task:hover{border-color:var(--color-border-secondary)}
+.tinfo{flex:1;min-width:0}
+.tname{font-weight:500;font-size:13px;color:var(--color-text-primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tdesc{font-size:12px;color:var(--color-text-secondary);line-height:1.55}
+.tcode{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-top:4px;background:var(--color-background-secondary);padding:2px 6px;border-radius:4px;display:inline-block}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-setup{background:#378ADD}
+.dot-page{background:#1D9E75}
+.dot-feat{background:#D85A30}
+.dot-polish{background:#7F77DD}
+.tag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:11px;font-weight:500}
+.tr{background:var(--color-background-danger);color:var(--color-text-danger)}
+.ty{background:var(--color-background-warning);color:var(--color-text-warning)}
+.tg{background:var(--color-background-success);color:var(--color-text-success)}
+.tb{background:var(--color-background-info);color:var(--color-text-info)}
+.ai-tip{font-size:11px;color:var(--color-text-success);margin-top:4px;display:flex;align-items:flex-start;gap:4px}
+.section-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.prog-label{font-size:12px;color:var(--color-text-secondary);width:100px;flex-shrink:0}
+.prog-track{flex:1;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px}
+.prog-pct{font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary);width:30px;text-align:right}
+.warn-box{padding:10px 14px;background:var(--color-background-warning);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-warning);line-height:1.6;margin-top:12px}
+.info-box{padding:10px 14px;background:var(--color-background-info);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-info);line-height:1.6;margin-top:12px}
+</style>
+
+<h2 class="sr-only">Детальный план фронтенд-разработки туристической платформы на Next.js</h2>
+<div class="w">
+
+<div class="stack-row">
+  <span class="chip hi">Next.js 14</span>
+  <span class="chip hi">TypeScript</span>
+  <span class="chip hi">Tailwind CSS</span>
+  <span class="chip hi">shadcn/ui</span>
+  <span class="chip">TanStack Query</span>
+  <span class="chip">React Hook Form + Zod</span>
+  <span class="chip">next-i18next</span>
+  <span class="chip">Zustand</span>
+  <span class="chip">Recharts</span>
+  <span class="chip">Playwright</span>
+</div>
+
+<div class="phase-nav">
+  <button class="pn on" onclick="sp(0)">1 · Настройка</button>
+  <button class="pn" onclick="sp(1)">2 · Публичная часть</button>
+  <button class="pn" onclick="sp(2)">3 · Кабинет клиента</button>
+  <button class="pn" onclick="sp(3)">4 · Кабинет партнёра</button>
+  <button class="pn" onclick="sp(4)">5 · Админ-панель</button>
+  <button class="pn" onclick="sp(5)">6 · i18n + полировка</button>
+</div>
+
+<div class="phase-block on" id="p0">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 1 — Настройка проекта</span>
+    <div class="meta-right"><span class="badge">Недели 1–2</span><span class="badge">~40 ч</span></div>
+  </div>
+
+  <div class="section-label">Инициализация</div>
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">Монорепо + Next.js</div>
+    <div class="tdesc">Turborepo с двумя apps: web (Next.js 14 App Router) и api (NestJS). Shared пакет packages/types для общих TypeScript интерфейсов.</div>
+    <div class="tcode">npx create-turbo@latest</div>
+    <div class="ai-tip">↗ AI: попроси Claude сгенерировать полную структуру папок и базовый turbo.json</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">TypeScript + ESLint + Prettier</div>
+    <div class="tdesc">strict mode в tsconfig, единый .eslintrc для всего монорепо, автоформатирование при сохранении (VSCode settings.json).</div>
+    <div class="ai-tip">↗ AI: генерация конфигов — рутина, полностью делегируй Claude</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">Tailwind CSS + shadcn/ui</div>
+    <div class="tdesc">Установка shadcn/ui, настройка CSS-переменных (цвета бренда, радиусы). Добавление только нужных компонентов по мере разработки, не всего сразу.</div>
+    <div class="tcode">npx shadcn@latest init</div>
+  </div></div>
+
+  <div class="section-label">Базовая архитектура</div>
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">Структура папок App Router <span class="tag tr">важно</span></div>
+    <div class="tdesc">app/(public)/ — публичные страницы. app/(auth)/ — кабинеты за логином. app/admin/ — панель админа. Каждая группа имеет свой layout.tsx.</div>
+    <div class="tcode">app/(public)/layout.tsx · app/(auth)/layout.tsx · app/admin/layout.tsx</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">API-клиент (Axios + TanStack Query)</div>
+    <div class="tdesc">Базовый axios instance с baseURL из env, interceptor для JWT токена, обёртка для обработки ошибок. QueryClient провайдер в корневом layout.</div>
+    <div class="ai-tip">↗ AI: попроси написать базовый apiClient.ts с refresh token логикой</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">Auth стор (Zustand)</div>
+    <div class="tdesc">useAuthStore: user, token, роль, isLoading. Персистентность через zustand/middleware persist (localStorage). Хук useRequireAuth для защиты страниц.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">i18n фундамент (next-i18next)</div>
+    <div class="tdesc">Настройка next-i18next.config.js, структура переводов locales/ru, locales/en, locales/tj. Middleware для определения языка из URL (/ru/, /en/). Пока заполняешь только русский.</div>
+    <div class="tcode">locales/ru/common.json · tours.json · auth.json · dashboard.json</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-setup"></div><div class="tinfo">
+    <div class="tname">Базовые компоненты Layout</div>
+    <div class="tdesc">Navbar (логотип, навигация, языковой switcher, кнопки входа), Footer (ссылки, контакты, соцсети), PageWrapper с max-width контейнером.</div>
+  </div></div>
+
+  <div class="info-box">После фазы 1: проект запускается локально, Auth API подключён, базовая навигация работает. Это фундамент — не торопись, здесь закладываются паттерны на весь проект.</div>
+</div>
+
+<div class="phase-block" id="p1">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 2 — Публичная часть</span>
+    <div class="meta-right"><span class="badge">Недели 3–6</span><span class="badge">~80 ч</span></div>
+  </div>
+
+  <div class="section-label">Главная страница</div>
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Hero + поисковый блок</div>
+    <div class="tdesc">Форма поиска: куда (select с городами), когда (DateRangePicker из shadcn), количество человек. При сабмите — редирект на /tours с query-параметрами.</div>
+    <div class="ai-tip">↗ AI: попроси сгенерировать SearchForm компонент с Zod-схемой валидации</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Блок горящих туров</div>
+    <div class="tdesc">Горизонтальный скролл на мобиле, grid на десктопе. TourCard компонент: фото (next/image), название, цена в выбранной валюте, кнопка. Данные через SSR (fetch на сервере).</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Блок "Как поехать бесплатно"</div>
+    <div class="tdesc">3 шага с иконками (shadcn Icon или Lucide). Статичный блок, никакого API.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Блок последних отзывов</div>
+    <div class="tdesc">Карточки с аватаром (из профиля), именем, текстом и фото из поездки. SSR данные. Ссылка на профиль пользователя.</div>
+  </div></div>
+
+  <div class="section-label">Каталог туров</div>
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Страница каталога с фильтрами <span class="tag tr">SEO важен</span></div>
+    <div class="tdesc">URL-based фильтры (?stars=4&food=all-inclusive&price_max=500) для SEO. Sidebar с фильтрами на десктопе, drawer на мобиле. Сортировка: дешевле, популярнее, новее.</div>
+    <div class="tcode">app/(public)/tours/page.tsx — серверный компонент с searchParams</div>
+    <div class="ai-tip">↗ AI: попроси написать хук useFilters для синхронизации фильтров с URL</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">TourCard компонент</div>
+    <div class="tdesc">Переиспользуемый: фото (Cloudinary + next/image), название, звёзды отеля, питание, цена с конвертацией валюты, кнопка "Подробнее". Skeleton лоадер для loading state.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Пагинация</div>
+    <div class="tdesc">URL-based (?page=2), shadcn Pagination компонент. Infinite scroll — только если явно нужен заказчику, иначе классическая пагинация проще.</div>
+  </div></div>
+
+  <div class="section-label">Страница тура</div>
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Фотогалерея <span class="tag ty">средняя сложность</span></div>
+    <div class="tdesc">Главное фото + thumbnails. Lightbox при клике (react-photo-view или embla-carousel). Все изображения через next/image с Cloudinary URL-трансформациями (автоматический webp, ресайз).</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Детальное описание тура</div>
+    <div class="tdesc">Программа (accordion по дням), что включено / не включено (списки с иконками ✓ и ✗), характеристики (звёзды, питание, длительность). Всё из JSONB поля нужного языка.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Форма заявки <span class="tag tr">важно</span></div>
+    <div class="tdesc">Sticky кнопка на мобиле. Modal или sidebar с формой: имя, телефон, email, комментарий. React Hook Form + Zod. После submit — toast "Менеджер свяжется с вами".</div>
+    <div class="ai-tip">↗ AI: генерация Zod-схемы и формы — 5 минут с Claude</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Блок отзывов на странице тура</div>
+    <div class="tdesc">Только апрувнутые отзывы этого тура. Карточка: аватар, имя (ссылка на профиль), рейтинг (звёзды), текст, фото (grid миниатюр). Если отзывов нет — пустой стейт.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">SEO мета-теги</div>
+    <div class="tdesc">generateMetadata() для каждого тура: title, description, Open Graph (og:image из первого фото тура). Structured data (JSON-LD) для туристического продукта.</div>
+  </div></div>
+
+  <div class="section-label">Auth страницы</div>
+  <div class="task"><div class="dot dot-page"></div><div class="tinfo">
+    <div class="tname">Логин / Регистрация / Сброс пароля</div>
+    <div class="tdesc">Три страницы с формами React Hook Form + Zod. После логина — редирект по роли: клиент → /dashboard, партнёр → /partner, админ → /admin.</div>
+  </div></div>
+
+  <div class="warn-box">Реферальная ссылка (?ref=xxx) должна сохраняться при переходе на форму заявки. Не теряй ref параметр при навигации — прокидывай его через весь flow до момента submit.</div>
+</div>
+
+<div class="phase-block" id="p2">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 3 — Кабинет клиента</span>
+    <div class="meta-right"><span class="badge">Недели 7–9</span><span class="badge">~60 ч</span></div>
+  </div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Layout кабинета</div>
+    <div class="tdesc">Sidebar навигация (Профиль, Мои туры, Реферальная программа, Мои отзывы). На мобиле — bottom tab bar или hamburger. Protected route — редирект на /login если нет токена.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Страница профиля</div>
+    <div class="tdesc">Аватар с загрузкой (Cloudinary upload, превью до отправки), редактирование имени, телефона, email. Форма с optimistic update.</div>
+    <div class="ai-tip">↗ AI: попроси написать хук useUpdateProfile с optimistic UI через TanStack Query</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Мои туры</div>
+    <div class="tdesc">Список купленных туров. Каждый элемент: фото тура, название, даты, статус бронирования (бейдж: В работе / Оплачен / Завершён). Пустой стейт с CTA "Найти тур".</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Реферальный блок <span class="tag tr">ключевая фича</span></div>
+    <div class="tdesc">Уникальная ссылка + кнопка копирования (clipboard API + toast). Кнопки шеринга: Telegram, WhatsApp (window.open с готовыми URL). Счётчик прогресса.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Progress bar "до бесплатного тура" <span class="tag ty">UX важен</span></div>
+    <div class="tdesc">Анимированный прогресс: referred_count / referral_threshold × 100%. Текст "Вы привели N человек. Осталось X". При 100% — поздравительный баннер. Данные из API.</div>
+    <div class="tcode">framer-motion или CSS transition для анимации заполнения</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Форма загрузки отзыва и фото</div>
+    <div class="tdesc">Доступна только для завершённых туров. Multi-upload: drag-and-drop зона, превью фото, удаление. Textarea для текста. После submit — статус "На модерации" вместо формы.</div>
+    <div class="ai-tip">↗ AI: попроси сгенерировать DropzoneUploader компонент с react-dropzone</div>
+  </div></div>
+</div>
+
+<div class="phase-block" id="p3">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 4 — Кабинет партнёра</span>
+    <div class="meta-right"><span class="badge">Недели 10–12</span><span class="badge">~60 ч</span></div>
+  </div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Layout кабинета партнёра</div>
+    <div class="tdesc">Отдельный layout от клиентского. Sidebar: Дашборд, Финансы, Мои ссылки, Настройки. Отдельный Protected route с проверкой роли partner.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Дашборд с графиками <span class="tag ty">средняя сложность</span></div>
+    <div class="tdesc">Recharts: LineChart переходов по дням, BarChart продаж по месяцам. Метрики вверху: всего переходов, регистраций, покупок, заработано. Фильтр периода (7д / 30д / 90д / всё время).</div>
+    <div class="ai-tip">↗ AI: попроси написать компоненты графиков с правильными типами и адаптивным ResponsiveContainer</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Страница финансов</div>
+    <div class="tdesc">Баланс (большой текст сверху), таблица транзакций (дата, тур, сумма покупки, 5% комиссия, статус). Сортировка по дате. Экспорт в CSV (простой: blob download).</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Форма вывода средств</div>
+    <div class="tdesc">Поля реквизитов (карта/счёт), сумма к выводу (не больше баланса — валидация Zod), кнопка "Запросить вывод". После отправки — статус "Запрос на рассмотрении".</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Управление реферальными ссылками</div>
+    <div class="tdesc">Список ссылок партнёра (можно создавать под разные туры / кампании). Статистика по каждой ссылке: переходы, регистрации, продажи.</div>
+  </div></div>
+</div>
+
+<div class="phase-block" id="p4">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 5 — Админ-панель</span>
+    <div class="meta-right"><span class="badge">Недели 13–15</span><span class="badge">~70 ч</span></div>
+  </div>
+
+  <div class="info-box">Используй react-admin или напиши кастомно на shadcn/ui DataTable. React-admin сэкономит ~30ч на типовых таблицах, но потребует время на изучение его паттернов. Если хорошо знаешь React — кастомно на shadcn/ui быстрее и гибче.</div>
+
+  <div class="section-label">Управление турами</div>
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Таблица туров с поиском</div>
+    <div class="tdesc">shadcn DataTable с колонками: фото, название, цена, статус (активен/нет), referral_threshold, действия. Поиск по названию, фильтр по статусу.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Форма создания/редактирования тура <span class="tag tr">сложная</span></div>
+    <div class="tdesc">Табы RU / EN / TJ для каждого текстового поля. Multi-upload фото (порядок drag-and-drop). Поля: название, описание, программа, включено/не включено, цена (в TJS), звёзды, питание, referral_threshold.</div>
+    <div class="ai-tip">↗ AI: это самая сложная форма — попроси Claude написать схему Zod и структуру полей с JSONB</div>
+  </div></div>
+
+  <div class="section-label">Обработка заявок</div>
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Таблица заявок <span class="tag tr">триггерная точка</span></div>
+    <div class="tdesc">Фильтры по статусу, туру, дате. Колонки: клиент, тур, дата, сумма, статус, реферер. При смене статуса на "Оплачена" — модальное подтверждение ("Это запустит начисление бонусов").</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Смена статуса заявки</div>
+    <div class="tdesc">Select со статусами только в правильном направлении (нельзя вернуть назад). Confirm modal перед "Оплачена". После смены — optimistic update таблицы.</div>
+  </div></div>
+
+  <div class="section-label">Модерация UGC</div>
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Очередь модерации</div>
+    <div class="tdesc">Бейдж-счётчик непроверенного контента в navbar. Карточки с фото и текстом отзыва. Кнопки: Одобрить / Отклонить (с причиной). Фильтр: все / ожидают / одобрено / отклонено.</div>
+  </div></div>
+
+  <div class="section-label">Пользователи и финансы</div>
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Управление партнёрами</div>
+    <div class="tdesc">Список заявок на партнёрство (статус pending), кнопка апрув/отклонить. Список активных партнёров с их балансом и статистикой.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Выплаты партнёрам</div>
+    <div class="tdesc">Таблица запросов на вывод: партнёр, сумма, реквизиты, дата. Кнопка "Подтвердить выплату" → статус меняется, на баланс партнёра начисляется минус.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-feat"></div><div class="tinfo">
+    <div class="tname">Курсы валют</div>
+    <div class="tdesc">Простая страница: три поля TJS→USD, TJS→RUB с текущими значениями, кнопка сохранить. Обновляешь вручную когда нужно.</div>
+  </div></div>
+</div>
+
+<div class="phase-block" id="p5">
+  <div class="phase-meta">
+    <span class="phase-title">Фаза 6 — i18n, полировка, QA</span>
+    <div class="meta-right"><span class="badge">Недели 16–18</span><span class="badge">~60 ч</span></div>
+  </div>
+
+  <div class="section-label">Переводы</div>
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Заполнение EN переводов</div>
+    <div class="tdesc">Все JSON-файлы локали EN. Большую часть можно сгенерировать через AI — переводы UI-строк это идеальная задача для Claude.</div>
+    <div class="ai-tip">↗ AI: скидывай JSON с русскими строками, Claude переведёт весь файл за секунды</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Таджикский язык</div>
+    <div class="tdesc">Структура уже готова. Нейтивный переводчик заполняет locales/tj/*.json файлы. Проверь RTL — таджикский пишется слева-направо (латиница или кириллица), не нужен RTL layout.</div>
+  </div></div>
+
+  <div class="section-label">Полировка</div>
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Loading states везде</div>
+    <div class="tdesc">Skeleton компоненты для TourCard, таблиц, графиков. Suspense boundaries на всех динамических страницах. Пустые стейты с понятными сообщениями.</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Error handling</div>
+    <div class="tdesc">error.tsx на уровне каждого route group. Toast уведомления для всех мутаций (успех/ошибка). Страница 404 и 500 с кнопкой "На главную".</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Мобильная адаптация — финальный проход</div>
+    <div class="tdesc">Проверка каждого экрана на 375px (iPhone SE). Частые проблемы: таблицы (горизонтальный скролл), формы (поля слишком маленькие), галереи, графики (ResponsiveContainer).</div>
+  </div></div>
+
+  <div class="section-label">QA и производительность</div>
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Playwright E2E тесты <span class="tag tr">обязательно</span></div>
+    <div class="tdesc">Минимум 3 сценария: 1) пользователь находит тур и оставляет заявку, 2) реферальная ссылка корректно проставляет cookie и привязывается к заявке, 3) клиент загружает отзыв и видит статус "на модерации".</div>
+    <div class="ai-tip">↗ AI: попроси Claude написать Playwright тесты по описанию сценария — экономит ~70% времени</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Lighthouse аудит</div>
+    <div class="tdesc">Цель: Performance ≥ 85, SEO = 100. Типичные проблемы: неоптимизированные изображения (решает next/image), неиспользуемый JS (проверяй bundle analyzer), отсутствие meta description.</div>
+    <div class="tcode">ANALYZE=true next build — для анализа бандла</div>
+  </div></div>
+
+  <div class="task"><div class="dot dot-polish"></div><div class="tinfo">
+    <div class="tname">Деплой на Vercel</div>
+    <div class="tdesc">Подключение GitHub репо, настройка env переменных (NEXT_PUBLIC_API_URL, NEXTAUTH_SECRET и др.), проверка preview deployments для каждого PR.</div>
+  </div></div>
+</div>
+
+</div>
+
+<script>
+function sp(i){
+  document.querySelectorAll('.phase-block').forEach((b,j)=>{b.classList.toggle('on',j===i)});
+  document.querySelectorAll('.pn').forEach((b,j)=>{b.classList.toggle('on',j===i)});
+}
+</script>

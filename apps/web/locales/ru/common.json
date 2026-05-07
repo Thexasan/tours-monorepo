@@ -1,0 +1,8 @@
+{
+  "appName": "Traveling Tours",
+  "nav": {
+    "home": "Главная",
+    "tours": "Туры",
+    "login": "Войти"
+  }
+}
