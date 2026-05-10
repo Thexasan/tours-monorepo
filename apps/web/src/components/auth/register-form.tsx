@@ -7,6 +7,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useAuth } from "@/src/shared/hooks/use-auth";
+import { getRoleHome } from "@/src/shared/hooks/role-routes";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -34,10 +35,7 @@ export function RegisterForm() {
   const [refFromCookie, setRefFromCookie] = useState<string | undefined>();
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
+    register, handleSubmit, setValue, formState: { errors },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { email: "", password: "", fullName: "", phone: "", referralCode: "" },
@@ -54,14 +52,14 @@ export function RegisterForm() {
   const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
     try {
-      await registerUser({
+      const u = await registerUser({
         email: values.email,
         password: values.password,
         fullName: values.fullName,
         phone: values.phone || undefined,
         referralCode: values.referralCode || undefined,
       });
-      router.push(`/${locale}/dashboard`);
+      router.push(getRoleHome(u.role, locale));
       router.refresh();
     } catch (e) {
       setServerError(e instanceof Error ? e.message : "Ошибка регистрации");

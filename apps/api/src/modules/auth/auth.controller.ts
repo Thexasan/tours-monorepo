@@ -1,3 +1,4 @@
+import { ApiTags } from "@nestjs/swagger";
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import type { Response, Request } from "express";
 import { ConfigService } from "@nestjs/config";
@@ -12,6 +13,7 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 const ACCESS_COOKIE = "tours_access";
 const REFRESH_COOKIE = "tours_refresh";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(

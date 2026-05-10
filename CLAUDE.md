@@ -8,7 +8,7 @@
 
 ## 1. Что это за проект
 
-**Tours** — туристическая реферальная веб-платформа для бронирования туров с двумя реферальными движками:
+**Tours** — туристическая реферальная веб-платформа для бронирования туров с двумя реферальными движками. **Документация API: см. Swagger UI на http://localhost:4000/api/v1/docs (live OpenAPI).** Деплой: см. `DEPLOY.md`.
 
 - **B2C-движок (клиент):** клиент приглашает 50 друзей по реф-ссылке → получает бесплатный тур.
 - **B2B-движок (партнёр):** партнёр (блогер/агент) получает 5% с каждой оплаченной по его ссылке продажи.
@@ -76,8 +76,9 @@ Tours/
 │   │   │   │   ├── tours/             # tour-card, tours-catalog
 │   │   │   │   ├── reviews/           # review-card
 │   │   │   │   ├── bookings/          # booking-modal, book-button (Day 3)
-│   │   │   │   ├── dashboard/         # dashboard-shell, profile-form, trips-list (Day 3)
-│   │   │   │   ├── admin/             # admin-shell, admin-tours-list, tour-form-modal (Day 3)
+│   │   │   │   ├── dashboard/         # dashboard-shell, profile-form, trips-list, referrals-panel (Day 3-4)
+│   │   │   │   ├── admin/             # admin-shell, admin-tours-list, tour-form-modal, admin-partner-applications (Day 3-4)
+│   │   │   │   ├── partners/          # become-partner-form, partner-shell, partner-dashboard, partner-finance, payout-request-modal (Day 4-5)
 │   │   │   │   ├── search/            # search-form
 │   │   │   │   └── shared/            # currency-selector
 │   │   │   ├── shared/
@@ -99,7 +100,12 @@ Tours/
 │               ├── users/             # PATCH /users/me
 │               ├── tours/             # GET /tours (с фильтрами), GET /tours/:slug
 │               ├── bookings/          # POST /bookings (с auto-ref), GET /bookings/my, ADMIN: list+update status
-│               └── admin/             # CRUD туров (только ADMIN)
+│               ├── admin/             # CRUD туров (только ADMIN)
+│               ├── referrals/         # POST /click, GET /stats, GET /partner/stats (timeline за 30 дней + transactions)
+│               ├── partners/          # PartnerApplications: submit/getMy + ADMIN list/review (approve→role PARTNER)
+│               ├── payouts/           # POST /payouts (PARTNER), GET /payouts/my, ADMIN: list+process (approve/reject)
+│               ├── reviews/           # POST /reviews (auth с PAID-проверкой), public list, ADMIN moderate (с пересчётом avgRating)
+│               └── email/             # EmailService с Resend (если RESEND_API_KEY) или console-fallback. Шаблоны: welcome/booking/status/reward
 └── packages/
     ├── db/                            # Prisma schema + миграции + seed
     │   ├── prisma/schema.prisma       # 10 моделей, 7 enums
@@ -130,6 +136,22 @@ Tours/
 | POST | `/api/v1/admin/tours` | ADMIN | Создать тур |
 | PATCH | `/api/v1/admin/tours/:id` | ADMIN | Обновить тур |
 | DELETE | `/api/v1/admin/tours/:id` | ADMIN | Архивировать тур (soft delete: `isActive=false`) |
+| POST | `/api/v1/referrals/click` | Public | Запись клика по реф-ссылке (вызывается из Next middleware) |
+| GET | `/api/v1/referrals/stats` | Auth | Статистика клиента: clicks, регистрации, оплаты, прогресс к бесплатному туру |
+| GET | `/api/v1/partner/stats` | PARTNER+ADMIN | Расширенная статистика партнёра: timeline за 30 дней, totals, transactions |
+| POST | `/api/v1/partner-applications` | Auth | Подать заявку на партнёрство |
+| GET | `/api/v1/partner-applications/me` | Auth | Моя заявка |
+| GET | `/api/v1/admin/partner-applications` | ADMIN | Список заявок (фильтр по status) |
+| PATCH | `/api/v1/admin/partner-applications/:id` | ADMIN | Approve/Reject. При APPROVE: `User.role=PARTNER`, `isPartnerApproved=true` |
+| POST | `/api/v1/payouts` | PARTNER+ADMIN | Запрос вывода. Атомарно списывает balance + создаёт Payout REQUESTED + Transaction. Минимум $50 |
+| GET | `/api/v1/payouts/my` | Auth | Мои запросы на вывод |
+| GET | `/api/v1/admin/payouts` | ADMIN | Все запросы (фильтр по status) |
+| PATCH | `/api/v1/admin/payouts/:id` | ADMIN | Approve (выплата сделана) или Reject (вернуть на баланс) |
+| GET | `/api/v1/reviews` | Public | Список APPROVED отзывов (фильтр по `tourId`, `pageSize`) |
+| POST | `/api/v1/reviews` | Auth | Создать отзыв (только если есть PAID/COMPLETED заявка на этот тур). Статус PENDING |
+| GET | `/api/v1/reviews/my` | Auth | Мои отзывы со статусами модерации |
+| GET | `/api/v1/admin/reviews` | ADMIN | Список отзывов (фильтр по status) |
+| PATCH | `/api/v1/admin/reviews/:id` | ADMIN | Approve/Reject. При APPROVE атомарно пересчитывается `tour.avgRating` и `tour.reviewsCount` |
 
 **Глобальный guard:** `JwtAuthGuard` стоит глобально в `app.module.ts` через `APP_GUARD`. Эндпоинты с `@Public()` декоратором его пропускают.
 
@@ -278,8 +300,9 @@ JWT_EXPIRES_IN=15m
 JWT_REFRESH_SECRET=<другая длинная случайная строка>
 JWT_REFRESH_EXPIRES_IN=7d
 APP_URL=http://localhost:3000
-RESEND_API_KEY=                # Day 6
-BLOB_READ_WRITE_TOKEN=         # Day 3+
+RESEND_API_KEY=                # если пустой — emails логируются в консоль (dev mode)
+EMAIL_FROM="Tours <onboarding@resend.dev>"
+BLOB_READ_WRITE_TOKEN=         # Day 7 — для загрузки фото с компьютера
 ```
 
 ### `apps/web/.env.local`
@@ -299,10 +322,10 @@ DATABASE_URL=postgresql://tours:tours_dev_password@localhost:5432/tours?schema=p
 - ✅ День 1 — фундамент (БД, Prisma, схема, типы, seed)
 - ✅ День 2 — Auth + публичные страницы (login/register/tours/[slug])
 - ✅ День 3 — BookingsModule + AdminModule, форма заявки, /dashboard (profile + trips), /admin/tours (CRUD)
-- ⏳ День 4 — Реферальная программа + кабинет партнёра
-- ⏳ День 5 — Триггер вознаграждений + админка заявок + выплаты
-- ⏳ День 6 — UGC, модерация, email
-- ⏳ День 7 — i18n, полировка, деплой
+- ✅ День 4 — ReferralsModule + PartnersModule, /dashboard/referrals с прогрессом, /become-partner, /admin/partner-applications, /partner кабинет с Recharts
+- ✅ День 5 — **Триггер начисления вознаграждений** (атомарная транзакция при → PAID), PayoutsModule, /admin/bookings (главная админка), /admin/payouts, форма вывода у партнёра. Антифрод: один email = один реферер
+- ✅ День 6 — ReviewsModule (UGC + модерация с пересчётом avgRating), EmailService (Resend + dev-fallback), email-триггеры (welcome/booking/status/reward), /dashboard/reviews(/new), /admin/moderation
+- ✅ День 7 — Swagger UI на /api/v1/docs (все 27 эндпоинтов задокументированы), LanguageSwitcher RU/EN в навбаре, полный DEPLOY.md с тремя сценариями (свой VPS / Vercel+Render+Neon / Railway)
 
 ## 16. Известные «грабли» / решения
 

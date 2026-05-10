@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
 import { CurrencySelector } from "@/src/components/shared/currency-selector";
-
-const navLinks = [
-  { href: "/ru", label: "Главная" },
-  { href: "/ru/tours", label: "Туры" },
-  { href: "/ru/login", label: "Войти" },
-];
+import { UserMenu } from "@/src/widgets/layout/user-menu";
+import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 
 export function Navbar() {
   return (
@@ -17,14 +13,19 @@ export function Navbar() {
         </Link>
 
         <nav className="flex items-center gap-4">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm text-zinc-700 hover:text-zinc-900">
-              {link.label}
-            </Link>
-          ))}
-          <div className="ml-4 flex items-center border-l border-zinc-200 pl-4">
+          <Link href="/ru" className="text-sm text-zinc-700 hover:text-zinc-900 hidden sm:inline">
+            Главная
+          </Link>
+          <Link href="/ru/tours" className="text-sm text-zinc-700 hover:text-zinc-900 hidden sm:inline">
+            Туры
+          </Link>
+
+          <div className="ml-2 hidden md:flex items-center gap-2 border-l border-zinc-200 pl-4">
+            <LanguageSwitcher />
             <CurrencySelector />
           </div>
+
+          <UserMenu />
         </nav>
       </PageWrapper>
     </header>

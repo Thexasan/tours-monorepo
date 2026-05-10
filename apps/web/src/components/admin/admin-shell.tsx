@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Briefcase, Mail, Users, ShieldCheck, LogOut } from "lucide-react";
+import { Briefcase, Mail, Users, ShieldCheck, LogOut, Wallet, MessageSquare } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
@@ -20,7 +20,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const nav = [
     { href: `/${locale}/admin/tours`, label: "Туры", icon: Briefcase },
-    { href: `/${locale}/admin/bookings`, label: "Заявки (Day 5)", icon: Mail },
+    { href: `/${locale}/admin/bookings`, label: "Заявки", icon: Mail },
     { href: `/${locale}/admin/users`, label: "Пользователи (Day 5)", icon: Users },
   ];
 

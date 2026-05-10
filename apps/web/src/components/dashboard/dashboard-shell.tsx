@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
-import { User, Plane, Share2, LogOut } from "lucide-react";
+import { User, Plane, Share2, MessageSquare, LogOut } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
@@ -24,6 +24,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     { href: `/${locale}/dashboard/profile`, label: "Профиль", icon: User },
     { href: `/${locale}/dashboard/trips`, label: "Мои поездки", icon: Plane },
     { href: `/${locale}/dashboard/referrals`, label: "Реферальная программа", icon: Share2 },
+    { href: `/${locale}/dashboard/reviews`, label: "Мои отзывы", icon: MessageSquare },
   ];
 
   return (

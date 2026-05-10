@@ -4,6 +4,8 @@ export type Locale = "ru" | "en" | "tj";
 
 export type LocalizedText = Partial<Record<Locale, string>> & { ru: string };
 
+export type LocalizedList = Partial<Record<Locale, string[]>> & { ru: string[] };
+
 export interface PaginatedResult<T> {
   items: T[];
   total: number;

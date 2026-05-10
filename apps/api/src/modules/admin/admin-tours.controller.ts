@@ -1,3 +1,4 @@
+import { ApiTags } from "@nestjs/swagger";
 import {
   Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards,
 } from "@nestjs/common";
@@ -8,6 +9,7 @@ import { Roles } from "../auth/decorators/roles.decorator";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { UserRole } from "@tours/db";
 
+@ApiTags("Admin")
 @Controller("admin/tours")
 @UseGuards(RolesGuard)
 @Roles(UserRole.ADMIN)

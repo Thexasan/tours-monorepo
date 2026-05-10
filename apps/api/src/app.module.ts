@@ -10,6 +10,11 @@ import { UsersModule } from "./modules/users/users.module";
 import { ToursModule } from "./modules/tours/tours.module";
 import { BookingsModule } from "./modules/bookings/bookings.module";
 import { AdminModule } from "./modules/admin/admin.module";
+import { ReferralsModule } from "./modules/referrals/referrals.module";
+import { PartnersModule } from "./modules/partners/partners.module";
+import { PayoutsModule } from "./modules/payouts/payouts.module";
+import { ReviewsModule } from "./modules/reviews/reviews.module";
+import { EmailModule } from "./modules/email/email.module";
 import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
 
 @Module({
@@ -18,16 +23,18 @@ import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
       isGlobal: true,
       envFilePath: [".env.local", ".env"],
     }),
-    ThrottlerModule.forRoot([
-      { ttl: 60_000, limit: 100 },
-    ]),
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     PrismaModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     ToursModule,
     BookingsModule,
     AdminModule,
-    // Day 4+: ReferralsModule, PartnersModule, ReviewsModule
+    ReferralsModule,
+    PartnersModule,
+    PayoutsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [

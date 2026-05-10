@@ -1,3 +1,4 @@
+import { ApiTags } from "@nestjs/swagger";
 import {
   Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards,
 } from "@nestjs/common";
@@ -15,6 +16,7 @@ import { UserRole } from "@tours/db";
 
 const REF_COOKIE = "tours_ref";
 
+@ApiTags("Bookings")
 @Controller("bookings")
 export class BookingsController {
   constructor(private readonly bookings: BookingsService) {}

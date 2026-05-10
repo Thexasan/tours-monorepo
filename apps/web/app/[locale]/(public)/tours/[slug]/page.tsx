@@ -34,9 +34,8 @@ export default async function TourDetailPage({
   const lang = (locale as "ru" | "en" | "tj") ?? "ru";
   const title = tour.title[lang] ?? tour.title.ru;
   const description = tour.description[lang] ?? tour.description.ru;
-  type LocalizedJson = Record<string, string[]>;
-  const includedList: string[] = ((tour.programIncluded as LocalizedJson)[lang] ?? (tour.programIncluded as LocalizedJson).ru ?? []);
-  const excludedList: string[] = ((tour.programExcluded as LocalizedJson)[lang] ?? (tour.programExcluded as LocalizedJson).ru ?? []);
+  const includedList: string[] = tour.programIncluded[lang] ?? tour.programIncluded.ru ?? [];
+  const excludedList: string[] = tour.programExcluded[lang] ?? tour.programExcluded.ru ?? [];
 
   return (
     <PageWrapper className="py-8">

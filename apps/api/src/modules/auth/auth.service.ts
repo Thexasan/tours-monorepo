@@ -8,6 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcryptjs";
 import { randomBytes, createHash } from "node:crypto";
 import { PrismaService } from "../../prisma/prisma.service";
+import { EmailService } from "../email/email.service";
 import { UserRole } from "@tours/db";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -15,16 +16,8 @@ import { LoginDto } from "./dto/login.dto";
 const REFERRAL_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const REFERRAL_CODE_LENGTH = 8;
 
-interface JwtPayloadShape {
-  sub: string;
-  email: string;
-  role: UserRole;
-}
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+interface JwtPayloadShape { sub: string; email: string; role: UserRole; jti: string; }
+export interface AuthTokens { accessToken: string; refreshToken: string; }
 
 @Injectable()
 export class AuthService {
@@ -34,17 +27,21 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly email: EmailService,
   ) {}
 
+  private normalizeEmail(email: string): string { return email.trim().toLowerCase(); }
+
   async register(dto: RegisterDto): Promise<{ userId: string; tokens: AuthTokens }> {
-    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const email = this.normalizeEmail(dto.email);
+    const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException("Email already registered");
 
     let referrerId: string | undefined;
     if (dto.referralCode) {
+      const code = dto.referralCode.trim().toUpperCase();
       const referrer = await this.prisma.user.findUnique({
-        where: { referralCode: dto.referralCode },
-        select: { id: true, isActive: true },
+        where: { referralCode: code }, select: { id: true, isActive: true },
       });
       if (referrer && referrer.isActive) referrerId = referrer.id;
     }
@@ -54,36 +51,49 @@ export class AuthService {
 
     const user = await this.prisma.user.create({
       data: {
-        email: dto.email,
+        email,
         passwordHash,
-        fullName: dto.fullName,
-        phone: dto.phone,
+        fullName: dto.fullName.trim(),
+        phone: dto.phone?.trim(),
         role: UserRole.CLIENT,
         referralCode,
         referrerId,
       },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, fullName: true, referralCode: true },
     });
 
     const tokens = await this.issueTokens(user.id, user.email, user.role);
     this.logger.log(`User registered: ${user.email}${referrerId ? ` (ref: ${referrerId})` : ""}`);
+
+    // Welcome email (fire-and-forget — не блокируем регистрацию если email упал)
+    void this.email.sendWelcome(user.email, user.fullName, user.referralCode).catch(() => undefined);
+
     return { userId: user.id, tokens };
   }
 
   async login(dto: LoginDto): Promise<{ userId: string; tokens: AuthTokens }> {
-    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (!user || !user.isActive) throw new UnauthorizedException("Invalid credentials");
-
+    const email = this.normalizeEmail(dto.email);
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      this.logger.warn(`Login attempt: user not found for email=${email}`);
+      throw new UnauthorizedException("Invalid credentials");
+    }
+    if (!user.isActive) {
+      this.logger.warn(`Login attempt: deactivated account email=${email}`);
+      throw new UnauthorizedException("Account deactivated");
+    }
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!ok) throw new UnauthorizedException("Invalid credentials");
-
+    if (!ok) {
+      this.logger.warn(`Login attempt: bad password email=${email}`);
+      throw new UnauthorizedException("Invalid credentials");
+    }
     const tokens = await this.issueTokens(user.id, user.email, user.role);
+    this.logger.log(`Login OK: ${user.email} (${user.role})`);
     return { userId: user.id, tokens };
   }
 
   async refresh(refreshToken: string): Promise<AuthTokens> {
     if (!refreshToken) throw new UnauthorizedException("No refresh token");
-
     let payload: JwtPayloadShape;
     try {
       payload = await this.jwt.verifyAsync<JwtPayloadShape>(refreshToken, {
@@ -92,23 +102,16 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException("Invalid refresh token");
     }
-
     const tokenHash = this.hashToken(refreshToken);
     const stored = await this.prisma.refreshToken.findUnique({
-      where: { tokenHash },
-      include: { user: true },
+      where: { tokenHash }, include: { user: true },
     });
     if (!stored || stored.revokedAt || stored.expiresAt < new Date()) {
       throw new UnauthorizedException("Refresh token expired or revoked");
     }
     if (!stored.user.isActive) throw new UnauthorizedException("User deactivated");
     if (stored.userId !== payload.sub) throw new UnauthorizedException("Token mismatch");
-
-    await this.prisma.refreshToken.update({
-      where: { id: stored.id },
-      data: { revokedAt: new Date() },
-    });
-
+    await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: new Date() } });
     return this.issueTokens(stored.user.id, stored.user.email, stored.user.role);
   }
 
@@ -133,11 +136,8 @@ export class AuthService {
     return { ...user, balance: Number(user.balance) };
   }
 
-  // ---------- Internal ----------
-
   private async issueTokens(userId: string, email: string, role: UserRole): Promise<AuthTokens> {
-    const payload: JwtPayloadShape = { sub: userId, email, role };
-
+    const payload: JwtPayloadShape = { sub: userId, email, role, jti: randomBytes(16).toString("hex") };
     const accessOpts: JwtSignOptions = {
       secret: this.config.getOrThrow<string>("JWT_SECRET"),
       expiresIn: (this.config.get<string>("JWT_EXPIRES_IN") ?? "15m") as JwtSignOptions["expiresIn"],
@@ -146,16 +146,13 @@ export class AuthService {
       secret: this.config.getOrThrow<string>("JWT_REFRESH_SECRET"),
       expiresIn: (this.config.get<string>("JWT_REFRESH_EXPIRES_IN") ?? "7d") as JwtSignOptions["expiresIn"],
     };
-
     const accessToken = await this.jwt.signAsync(payload, accessOpts);
     const refreshToken = await this.jwt.signAsync(payload, refreshOpts);
-
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     await this.prisma.refreshToken.create({
       data: { userId, tokenHash: this.hashToken(refreshToken), expiresAt },
     });
-
     return { accessToken, refreshToken };
   }
 
@@ -167,8 +164,7 @@ export class AuthService {
     for (let i = 0; i < maxAttempts; i++) {
       const code = this.randomReferralCode();
       const exists = await this.prisma.user.findUnique({
-        where: { referralCode: code },
-        select: { id: true },
+        where: { referralCode: code }, select: { id: true },
       });
       if (!exists) return code;
     }

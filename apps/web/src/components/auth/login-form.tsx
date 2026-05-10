@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useAuth } from "@/src/shared/hooks/use-auth";
+import { getRoleHome } from "@/src/shared/hooks/role-routes";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -20,13 +21,12 @@ type LoginValues = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const { login, isLoading } = useAuth();
   const router = useRouter();
+  const search = useSearchParams();
   const locale = useLocale();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
+    register, handleSubmit, formState: { errors },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -35,8 +35,13 @@ export function LoginForm() {
   const onSubmit = async (values: LoginValues) => {
     setServerError(null);
     try {
-      await login(values);
-      router.push(`/${locale}/dashboard`);
+      const u = await login(values);
+      // Если пришли с ?redirectTo — туда; иначе — в кабинет по роли
+      const redirectTo = search?.get("redirectTo");
+      const dest = redirectTo && redirectTo.startsWith(`/${locale}`)
+        ? redirectTo
+        : getRoleHome(u.role, locale);
+      router.push(dest);
       router.refresh();
     } catch (e) {
       setServerError(e instanceof Error ? e.message : "Ошибка входа");

@@ -1,4 +1,4 @@
-import type { LocalizedText } from "./common";
+import type { LocalizedText, LocalizedList } from "./common";
 
 export type MealPlan = "ALL_INCLUSIVE" | "HALF_BOARD" | "BREAKFAST" | "NO_MEALS";
 
@@ -7,8 +7,8 @@ export interface Tour {
   slug: string;
   title: LocalizedText;
   description: LocalizedText;
-  programIncluded: LocalizedText[];
-  programExcluded: LocalizedText[];
+  programIncluded: LocalizedList;
+  programExcluded: LocalizedList;
   country: string;
   city: string | null;
   hotelName: string | null;
@@ -44,8 +44,8 @@ export interface TourCreateInput {
   slug: string;
   title: LocalizedText;
   description: LocalizedText;
-  programIncluded?: LocalizedText[];
-  programExcluded?: LocalizedText[];
+  programIncluded?: LocalizedList;
+  programExcluded?: LocalizedList;
   country: string;
   city?: string;
   hotelName?: string;
