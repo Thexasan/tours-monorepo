@@ -1,0 +1,285 @@
+
+<style>
+*{box-sizing:border-box}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.wrap{font-size:14px;padding:4px 0 16px}
+.phase-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.ptab{padding:6px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);transition:all .15s}
+.ptab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+.track-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ttab{padding:8px 18px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.ttab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.track-content{display:none;padding:16px 0 0}
+.track-content.active{display:block}
+.task-group{margin-bottom:20px}
+.tg-title{font-weight:500;font-size:13px;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em;font-size:11px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);margin-bottom:6px;background:var(--color-background-primary)}
+.task-name{font-weight:500;font-size:13px;color:var(--color-text-primary);margin-bottom:2px}
+.task-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-d{background:#7F77DD}
+.dot-f{background:#1D9E75}
+.dot-b{background:#D85A30}
+.tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:500;margin-left:6px;vertical-align:middle}
+.tag-r{background:var(--color-background-danger);color:var(--color-text-danger)}
+.tag-y{background:var(--color-background-warning);color:var(--color-text-warning)}
+.tag-g{background:var(--color-background-success);color:var(--color-text-success)}
+.tag-b{background:var(--color-background-info);color:var(--color-text-info)}
+.gantt{margin:0 0 20px}
+.g-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.g-label{font-size:12px;color:var(--color-text-secondary);width:72px;flex-shrink:0;text-align:right}
+.g-track{flex:1;height:20px;background:var(--color-background-secondary);border-radius:4px;position:relative;overflow:hidden}
+.g-bar{position:absolute;height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:500;overflow:hidden;white-space:nowrap}
+.g-d{background:#EEEDFE;color:#3C3489}
+.g-f{background:#E1F5EE;color:#085041}
+.g-b{background:#FAECE7;color:#712B13}
+.g-weeks{display:flex;gap:0;margin-left:80px;margin-bottom:4px}
+.g-week{flex:1;text-align:center;font-size:10px;color:var(--color-text-tertiary)}
+.phase-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.phase-badge{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:3px 10px;border-radius:20px}
+.phase-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.dep-note{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;margin-top:12px;border-left:2px solid var(--color-border-secondary)}
+</style>
+<h2 class="sr-only">Полный план разработки туристической платформы по трём трекам: дизайн, фронтенд, бэкенд</h2>
+<div class="wrap">
+
+<div class="phase-tabs" id="phaseTabs">
+  <button class="ptab active" onclick="setPhase(0)">Фаза 1 · Фундамент</button>
+  <button class="ptab" onclick="setPhase(1)">Фаза 2 · Ядро</button>
+  <button class="ptab" onclick="setPhase(2)">Фаза 3 · Фичи</button>
+  <button class="ptab" onclick="setPhase(3)">Фаза 4 · Контент и i18n</button>
+  <button class="ptab" onclick="setPhase(4)">Фаза 5 · QA и запуск</button>
+</div>
+
+<div id="phases">
+
+<div class="phase active">
+  <div class="phase-header">
+    <span class="phase-title">Фаза 1 — Фундамент</span>
+    <span class="phase-badge">Недели 1–3 · ~120 ч</span>
+  </div>
+  <div class="gantt">
+    <div class="g-weeks">
+      <div class="g-week">1</div><div class="g-week">2</div><div class="g-week">3</div>
+    </div>
+    <div class="g-row"><div class="g-label">Дизайн</div><div class="g-track"><div class="g-bar g-d" style="left:0%;width:100%">Дизайн-система + wireframes</div></div></div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:0%;width:67%">Monorepo + DB + Auth API</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:33%;width:67%">Setup + layout + i18n base</div></div></div>
+  </div>
+  <div class="track-tabs">
+    <button class="ttab active" onclick="setTrack(this,0)">Дизайн</button>
+    <button class="ttab" onclick="setTrack(this,1)">Frontend</button>
+    <button class="ttab" onclick="setTrack(this,2)">Backend</button>
+  </div>
+  <div class="track-content active">
+    <div class="task-group">
+      <div class="tg-title">Неделя 1–2</div>
+      <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Бренд и дизайн-токены</div><div class="task-desc">Палитра, типографика (шрифт, размеры, веса), отступы, радиусы, тени. Результат — Figma Variables.</div></div></div>
+      <div class="task"><div class="dot dot-d"></div><div><div class="task-name">UI Kit / компонент-библиотека</div><div class="task-desc">Кнопки, инпуты, карточки туров, бейджи, модалки, навбар, футер. Минимум 30 компонентов в Figma.</div></div></div>
+      <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Wireframes всех экранов</div><div class="task-desc">Главная, каталог, страница тура, 3 кабинета, админ-панель — черновые макеты без цвета.</div></div></div>
+    </div>
+    <div class="task-group">
+      <div class="tg-title">Неделя 3</div>
+      <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Hi-fi макеты приоритетных экранов<span class="tag tag-r">крит.</span></div><div class="task-desc">Главная, страница тура, кабинет клиента — финальный дизайн. Frontend не начинает вёрстку без них.</div></div></div>
+      <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Адаптив: 3 брейкпоинта</div><div class="task-desc">Desktop (1280+), tablet (768–1279), mobile (до 767). Каждый экран в трёх версиях.</div></div></div>
+    </div>
+    <div class="dep-note">Дизайн идёт параллельно с бэкендом, но Frontend не стартует до получения hi-fi макетов минимум главной и каталога.</div>
+  </div>
+  <div class="track-content">
+    <div class="task-group">
+      <div class="tg-title">Неделя 2 (старт параллельно с дизайном)</div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Монорепо + Next.js setup</div><div class="task-desc">Turborepo, Next.js 14 App Router, TailwindCSS, TypeScript strict mode, ESLint + Prettier.</div></div></div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">i18n фундамент</div><div class="task-desc">next-i18next, структура файлов переводов (ru/en/tj), middleware для определения языка, языковой switcher.</div></div></div>
+    </div>
+    <div class="task-group">
+      <div class="tg-title">Неделя 3</div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Layout система</div><div class="task-desc">Navbar (с языковым переключателем), Footer с www.softclub.tj, базовые layout-компоненты, responsive grid.</div></div></div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Дизайн-система в коде</div><div class="task-desc">Tailwind config с токенами из Figma Variables. Базовые UI-компоненты: Button, Input, Card, Badge, Modal.</div></div></div>
+    </div>
+  </div>
+  <div class="track-content">
+    <div class="task-group">
+      <div class="tg-title">Неделя 1</div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Монорепо + NestJS setup</div><div class="task-desc">Turborepo, NestJS с модульной структурой, TypeScript, Docker Compose для локальной разработки (Postgres + Redis).</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Схема базы данных<span class="tag tag-r">крит.</span></div><div class="task-desc">Prisma schema: users, tours (JSONB для мультиязычных полей), bookings, referrals, transactions, reviews, media, currencies.</div></div></div>
+    </div>
+    <div class="task-group">
+      <div class="tg-title">Неделя 2–3</div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Auth модуль</div><div class="task-desc">JWT + Passport, 4 роли (Guard декораторы), регистрация, логин, refresh token, восстановление пароля.</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">CI/CD пайплайн</div><div class="task-desc">GitHub Actions: lint → test → build → deploy. Vercel для фронта, Railway для NestJS+DB.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="phase" style="display:none">
+  <div class="phase-header">
+    <span class="phase-title">Фаза 2 — Ядро</span>
+    <span class="phase-badge">Недели 4–8 · ~200 ч</span>
+  </div>
+  <div class="gantt">
+    <div class="g-weeks">
+      <div class="g-week">4</div><div class="g-week">5</div><div class="g-week">6</div><div class="g-week">7</div><div class="g-week">8</div>
+    </div>
+    <div class="g-row"><div class="g-label">Дизайн</div><div class="g-track"><div class="g-bar g-d" style="left:0%;width:60%">Кабинеты + каталог hi-fi</div></div></div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:0%;width:100%">Tours API + Bookings + файлы</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:0%;width:100%">Публичные страницы + Auth UI</div></div></div>
+  </div>
+  <div class="track-tabs">
+    <button class="ttab active" onclick="setTrack(this,0)">Дизайн</button>
+    <button class="ttab" onclick="setTrack(this,1)">Frontend</button>
+    <button class="ttab" onclick="setTrack(this,2)">Backend</button>
+  </div>
+  <div class="track-content active">
+    <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Hi-fi: кабинет клиента и партнёра</div><div class="task-desc">Все состояния: пустой кабинет, заполненный, прогресс-бар на разных значениях, мобильные версии.</div></div></div>
+    <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Hi-fi: admin-панель</div><div class="task-desc">Таблицы заявок, форма тура, модальные окна смены статуса, страница модерации UGC.</div></div></div>
+    <div class="task"><div class="dot dot-d"></div><div><div class="task-name">Email-шаблоны (react-email)</div><div class="task-desc">Дизайн 5 писем: доступы, реферальное событие, напоминание модерации, вывод средств, welcome.</div></div></div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Главная страница</div><div class="task-desc">Поисковый блок, горячие туры, блок "как поехать бесплатно", последние отзывы из профилей. SEO meta.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Каталог туров</div><div class="task-desc">SSG страница, фильтры (тип питания, звёзды, цена, дата), сортировка, URL-параметры для фильтров (для SEO).</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Страница тура</div><div class="task-desc">Фотогалерея (Cloudinary), описание с мультиязычным контентом, блок отзывов, форма заявки, Open Graph.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Auth UI</div><div class="task-desc">Страницы входа, регистрации, восстановления пароля. React Hook Form + Zod валидация.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Интеграция с NestJS API</div><div class="task-desc">Axios/TanStack Query, типизация ответов (shared types из монорепо), обработка ошибок, loading states.</div></div></div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Tours модуль</div><div class="task-desc">CRUD с мультиязычными JSONB полями, загрузка фото на Cloudinary, фильтрация/поиск/сортировка, пагинация.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Bookings модуль</div><div class="task-desc">Создание заявки, статусная машина (4 статуса), history tracking, email уведомление менеджеру.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Media модуль</div><div class="task-desc">Cloudinary интеграция, валидация файлов (тип, размер), трансформации (ресайз, webp), signed URLs.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Currencies модуль</div><div class="task-desc">Таблица курсов (TJS/USD/RUB), ручное обновление через admin API, конвертация на лету в response.</div></div></div>
+  </div>
+</div>
+
+<div class="phase" style="display:none">
+  <div class="phase-header">
+    <span class="phase-title">Фаза 3 — Ключевые фичи</span>
+    <span class="phase-badge">Недели 9–13 · ~250 ч</span>
+  </div>
+  <div class="gantt">
+    <div class="g-weeks">
+      <div class="g-week">9</div><div class="g-week">10</div><div class="g-week">11</div><div class="g-week">12</div><div class="g-week">13</div>
+    </div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:0%;width:60%">Referral + Payout engine</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:0%;width:60%">Кабинет клиента</div></div></div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:60%;width:40%">UGC + Notifications</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:60%;width:40%">Кабинет партнёра + UGC</div></div></div>
+  </div>
+  <div class="track-tabs">
+    <button class="ttab active" onclick="setTrack(this,0)">Backend</button>
+    <button class="ttab" onclick="setTrack(this,1)">Frontend</button>
+  </div>
+  <div class="track-content active">
+    <div class="task-group">
+      <div class="tg-title">Недели 9–11 · Referral Engine<span class="tag tag-r">высокий приоритет</span></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Генерация уникальных ссылок</div><div class="task-desc">UUID-based ссылки, привязка к user_id, поддержка ?ref=xxx на любой странице тура.</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Cookie-трекинг (last-click)</div><div class="task-desc">Middleware: при переходе по ref= устанавливает httpOnly cookie на 30 дней. При новом ref= перезаписывает.</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Триггер booking.paid</div><div class="task-desc">Event при смене статуса на "Оплачена": читает referral cookie → определяет тип реферера → диспатчит ClientReferralEvent или PartnerReferralEvent.</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Payout Engine (5%)</div><div class="task-desc">Расчёт комиссии, запись в transactions, обновление баланса партнёра. Запрос на вывод → статус pending → admin апрув.</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Счётчик бесплатного тура</div><div class="task-desc">Поле referred_paid_count в users. Сравнение с tour.referral_threshold при каждом событии. При достижении — уведомление клиенту.</div></div></div>
+    </div>
+    <div class="task-group">
+      <div class="tg-title">Недели 12–13 · UGC + Notifications</div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Reviews модуль</div><div class="task-desc">Загрузка фото (до 10 шт.), текст отзыва, привязка к tour_id и user_id, статус модерации (pending/approved/rejected).</div></div></div>
+      <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Notification Service (Resend)</div><div class="task-desc">Bull queue для отправки. 6 типов писем × 3 языка. Триггеры: booking created, booking paid, referral success, free tour unlocked, payout processed, moderation reminder (cron 48ч).</div></div></div>
+    </div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task-group">
+      <div class="tg-title">Недели 9–11 · Кабинет клиента</div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Профиль и мои туры</div><div class="task-desc">Аватар (Cloudinary upload), редактирование данных, список купленных туров со статусами.</div></div></div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Реферальный блок</div><div class="task-desc">Уникальная ссылка + кнопка копирования, шеринг в Telegram/WhatsApp/VK, animated progress bar с процентом.</div></div></div>
+    </div>
+    <div class="task-group">
+      <div class="tg-title">Недели 12–13 · Партнёр + UGC</div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Дашборд партнёра</div><div class="task-desc">Recharts: линейный график переходов, bar chart продаж, метрики баланса. Фильтр по периоду.</div></div></div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Финансы партнёра</div><div class="task-desc">Баланс, история транзакций (таблица), форма реквизитов, кнопка "запросить вывод" + статус pending.</div></div></div>
+      <div class="task"><div class="dot dot-f"></div><div><div class="task-name">UGC форма</div><div class="task-desc">Multi-upload фото (drag-and-drop, preview, удаление), текстовый редактор отзыва, статус "на модерации".</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="phase" style="display:none">
+  <div class="phase-header">
+    <span class="phase-title">Фаза 4 — Админ, i18n, контент</span>
+    <span class="phase-badge">Недели 14–16 · ~160 ч</span>
+  </div>
+  <div class="gantt">
+    <div class="g-weeks">
+      <div class="g-week">14</div><div class="g-week">15</div><div class="g-week">16</div>
+    </div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:0%;width:67%">Admin API endpoints</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:0%;width:100%">Admin UI + переводы</div></div></div>
+    <div class="g-row"><div class="g-label">Дизайн</div><div class="g-track"><div class="g-bar g-d" style="left:67%;width:33%">UI-ревью и правки</div></div></div>
+  </div>
+  <div class="track-tabs">
+    <button class="ttab active" onclick="setTrack(this,0)">Frontend (Admin)</button>
+    <button class="ttab" onclick="setTrack(this,1)">Frontend (i18n)</button>
+    <button class="ttab" onclick="setTrack(this,2)">Backend</button>
+  </div>
+  <div class="track-content active">
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Управление турами</div><div class="task-desc">Таблица со всеми турами, форма создания/редактирования (мультиязычные поля, загрузка фото), настройка referral_threshold, активация/деактивация.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Обработка заявок<span class="tag tag-r">крит.</span></div><div class="task-desc">Таблица заявок с фильтрами по статусу/дате/туру. Модалка смены статуса — это триггерная точка всей реферальной логики.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Управление пользователями</div><div class="task-desc">Список клиентов и партнёров, апрув партнёра, просмотр реферальной статистики, блокировка аккаунта.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Модерация UGC</div><div class="task-desc">Очередь с фото и текстом, кнопки апрув/отклонить, причина отклонения (отправится пользователю), бейдж-счётчик в навбаре.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Финансовый модуль</div><div class="task-desc">Список запросов на вывод, апрув выплаты, управление курсами валют (TJS/USD/RUB).</div></div></div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Перевод всех UI-строк</div><div class="task-desc">Заполнение JSON-файлов ru/en/tj. Русский и английский — команда. Таджикский — нейтивный переводчик (внешний).</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Мультиязычный контент туров</div><div class="task-desc">Admin-форма с табами RU/EN/TJ для каждого текстового поля тура. Валидация — хотя бы русский обязателен.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">SEO для 3 языков</div><div class="task-desc">hreflang теги, alternate URLs (/ru/, /en/, /tj/), локализованные meta-title и description.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Языковой switcher</div><div class="task-desc">Запоминание выбора в cookie, автоопределение по Accept-Language заголовку, сохранение текущего URL при смене языка.</div></div></div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Admin API endpoints</div><div class="task-desc">Protected routes с RoleGuard(Admin), bulk операции над заявками, статистика по рефералам, экспорт транзакций в CSV.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Audit log</div><div class="task-desc">Логирование всех действий админа (кто, что, когда изменил). Особенно важно для финансовых операций.</div></div></div>
+  </div>
+</div>
+
+<div class="phase" style="display:none">
+  <div class="phase-header">
+    <span class="phase-title">Фаза 5 — QA и запуск</span>
+    <span class="phase-badge">Недели 17–18 · ~80 ч</span>
+  </div>
+  <div class="gantt">
+    <div class="g-weeks">
+      <div class="g-week">17</div><div class="g-week">18</div>
+    </div>
+    <div class="g-row"><div class="g-label">Все</div><div class="g-track"><div class="g-bar g-b" style="left:0%;width:50%">E2E тесты + bug fixes</div></div></div>
+    <div class="g-row"><div class="g-label">Backend</div><div class="g-track"><div class="g-bar g-b" style="left:50%;width:50%">Prod деплой + мониторинг</div></div></div>
+    <div class="g-row"><div class="g-label">Frontend</div><div class="g-track"><div class="g-bar g-f" style="left:50%;width:50%">Performance + SEO аудит</div></div></div>
+  </div>
+  <div class="track-tabs">
+    <button class="ttab active" onclick="setTrack(this,0)">Тестирование</button>
+    <button class="ttab" onclick="setTrack(this,1)">Деплой</button>
+  </div>
+  <div class="track-content active">
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">E2E: реферальные сценарии<span class="tag tag-r">обязательно</span></div><div class="task-desc">Playwright: 3 user story из ТЗ + edge cases (два ref= подряд, отмена после начисления, достижение порога).</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">E2E: финансовые операции</div><div class="task-desc">Расчёт 5%, корректность баланса при нескольких транзакциях, запрос вывода → апрув → статус.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Cross-browser + мобильное тестирование</div><div class="task-desc">Chrome, Safari, Firefox. iOS Safari и Android Chrome — самые проблемные комбо.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">Lighthouse аудит</div><div class="task-desc">Performance ≥ 85, SEO = 100, Accessibility ≥ 90. Оптимизация изображений, LCP, CLS.</div></div></div>
+  </div>
+  <div class="track-content" style="display:none">
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Production окружение</div><div class="task-desc">Vercel (Next.js), Railway (NestJS + PostgreSQL), Cloudinary аккаунт, Resend домен, env-переменные через Vercel/Railway secrets.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Мониторинг и алерты</div><div class="task-desc">Sentry (FE + BE ошибки), uptime мониторинг (Better Uptime или UptimeRobot), логи Railway.</div></div></div>
+    <div class="task"><div class="dot dot-b"></div><div><div class="task-name">Резервное копирование БД</div><div class="task-desc">Автобэкапы Railway (ежедневно), ручной экспорт перед релизом.</div></div></div>
+    <div class="task"><div class="dot dot-f"></div><div><div class="task-name">DNS + домен + SSL</div><div class="task-desc">Настройка домена, SSL через Vercel, редиректы http → https, www → non-www.</div></div></div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const phases = document.querySelectorAll('.phase');
+const phaseBtns = document.querySelectorAll('.ptab');
+function setPhase(i) {
+  phases.forEach((p,j) => p.style.display = j===i?'block':'none');
+  phaseBtns.forEach((b,j) => b.classList.toggle('active', j===i));
+  phases[i].querySelectorAll('.track-content').forEach((tc,k) => { tc.style.display = k===0?'block':'none'; tc.classList.toggle('active',k===0); });
+  phases[i].querySelectorAll('.ttab').forEach((tb,k) => tb.classList.toggle('active', k===0));
+}
+function setTrack(btn, i) {
+  const phase = btn.closest('.phase');
+  phase.querySelectorAll('.ttab').forEach((b,j) => b.classList.toggle('active', j===i));
+  phase.querySelectorAll('.track-content').forEach((tc,j) => { tc.style.display = j===i?'block':'none'; });
+}
+</script>

@@ -1,0 +1,3 @@
+admin@tours.local admin123
+alice@tours.local client123
+bob@tours.local partner123
