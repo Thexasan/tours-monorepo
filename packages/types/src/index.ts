@@ -1,8 +1,11 @@
-export type UserRole = "guest" | "client" | "partner" | "admin";
+// @tours/types — общие типы между web и api.
+// Source of truth для enum'ов: @tours/db (Prisma).
+// Здесь — production-shape DTO с camelCase.
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  fullName: string;
-  role: UserRole;
-}
+export * from "./common";
+export * from "./auth";
+export * from "./tour";
+export * from "./booking";
+export * from "./review";
+export * from "./referral";
+export * from "./partner";

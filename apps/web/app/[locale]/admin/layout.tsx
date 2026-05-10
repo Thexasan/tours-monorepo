@@ -1,12 +1,10 @@
-import { Footer } from "@/src/widgets/layout/footer";
-import { Navbar } from "@/src/widgets/layout/navbar";
+import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
+import { AdminShell } from "@/src/components/admin/admin-shell";
 
-export default function LocalizedAdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 bg-zinc-100">{children}</main>
-      <Footer />
-    </>
+    <PageWrapper>
+      <AdminShell>{children}</AdminShell>
+    </PageWrapper>
   );
 }

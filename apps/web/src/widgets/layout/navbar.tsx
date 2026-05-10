@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
+import { CurrencySelector } from "@/src/components/shared/currency-selector";
 
 const navLinks = [
   { href: "/ru", label: "Главная" },
@@ -21,6 +22,9 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          <div className="ml-4 flex items-center border-l border-zinc-200 pl-4">
+            <CurrencySelector />
+          </div>
         </nav>
       </PageWrapper>
     </header>

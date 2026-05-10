@@ -4,3 +4,15 @@ node_modules
 dist
 coverage
 .DS_Store
+
+# env files (могут содержать секреты)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Claude Code internal files
+.claude/
+
+# logs
+*.log

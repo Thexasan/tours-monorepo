@@ -1,0 +1,15 @@
+{
+  "catalogTitle": "Каталоги турҳо",
+  "searchPlaceholder": "Ба куҷо рафтан мехоҳед?",
+  "labels": {
+    "hotTour": "Тури доғ",
+    "days": "рӯз",
+    "from": "аз"
+  },
+  "mealPlan": {
+    "ALL_INCLUSIVE": "Ҳама дар бар",
+    "HALF_BOARD": "Нимпансион",
+    "BREAKFAST": "Наҳорӣ",
+    "NO_MEALS": "Бе ғизо"
+  }
+}

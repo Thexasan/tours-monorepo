@@ -1,0 +1,39 @@
+# Tours — локальная инфраструктура для разработки.
+# Запуск:  docker compose up -d
+# Остановить: docker compose down
+# Сбросить (с удалением данных): docker compose down -v
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tours-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tours
+      POSTGRES_PASSWORD: tours_dev_password
+      POSTGRES_DB: tours
+    ports:
+      - "5432:5432"
+    volumes:
+      - tours_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tours -d tours"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Adminer — простой веб-UI для просмотра БД в браузере.
+  # Открыть на http://localhost:8080  (system: PostgreSQL, server: postgres, user: tours, pass: tours_dev_password, db: tours)
+  adminer:
+    image: adminer:latest
+    container_name: tours-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  tours_postgres_data:
+    name: tours_postgres_data

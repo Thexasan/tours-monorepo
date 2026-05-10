@@ -1,64 +1,68 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { getAuthToken, useAuthStore } from "@/src/shared/store/auth-store";
+import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
 
-const apiClient = axios.create({
+export const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
+  withCredentials: true, // отправляем httpOnly cookies
+  timeout: 15_000,
 });
 
-let refreshPromise: Promise<string | null> | null = null;
+// Auto-refresh при 401: пробуем один раз обновить access-токен через /auth/refresh
+let refreshPromise: Promise<void> | null = null;
 
-async function refreshAccessToken() {
+async function refreshAccess(): Promise<void> {
   if (!refreshPromise) {
-    refreshPromise = apiClient
-      .post<{ accessToken?: string }>("/auth/refresh")
-      .then((response) => response.data.accessToken ?? null)
-      .catch(() => null)
+    refreshPromise = axios
+      .post(`${API_URL}/auth/refresh`, {}, { withCredentials: true })
+      .then(() => undefined)
       .finally(() => {
         refreshPromise = null;
       });
   }
-
   return refreshPromise;
 }
 
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = getAuthToken();
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const original = error.config;
+  (res) => res,
+  async (err: AxiosError) => {
+    const status = err.response?.status;
+    const config = err.config as AxiosRequestConfig & { _retried?: boolean };
 
-    if (error.response?.status === 401 && original && !(original as { _retry?: boolean })._retry) {
-      (original as { _retry?: boolean })._retry = true;
+    // Не пытаемся рефрешить запросы к самим auth-endpoint'ам
+    const url = config?.url ?? "";
+    const isAuthEndpoint = /\/auth\/(login|register|refresh|logout)/.test(url);
 
-      const nextToken = await refreshAccessToken();
-
-      if (nextToken) {
-        const authState = useAuthStore.getState();
-        useAuthStore.setState({ token: nextToken, user: authState.user, role: authState.role });
-        original.headers = original.headers ?? {};
-        original.headers.Authorization = `Bearer ${nextToken}`;
-        return apiClient.request(original);
+    if (status === 401 && !config?._retried && !isAuthEndpoint) {
+      try {
+        await refreshAccess();
+        if (config) {
+          config._retried = true;
+          return apiClient.request(config);
+        }
+      } catch {
+        // refresh не получился → пробрасываем 401
       }
     }
-
-    if (error.response?.status === 401) {
-      useAuthStore.getState().clearAuth();
-    }
-
-    return Promise.reject(error);
+    return Promise.reject(err);
   },
 );
 
-export { apiClient };
+export type ApiErrorPayload = {
+  statusCode: number;
+  message: string | string[];
+  error?: string;
+};
+
+/** Унифицированный extractor сообщения ошибки. */
+export function extractErrorMessage(err: unknown): string {
+  if (axios.isAxiosError(err)) {
+    const data = err.response?.data as ApiErrorPayload | undefined;
+    if (data?.message) {
+      return Array.isArray(data.message) ? data.message.join(", ") : data.message;
+    }
+    return err.message;
+  }
+  if (err instanceof Error) return err.message;
+  return "Unknown error";
+}

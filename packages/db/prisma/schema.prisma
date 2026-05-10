@@ -1,0 +1,379 @@
+// Tours — Travel Referral Platform
+// Полный schema.prisma. Документация: ../../../CLAUDE.md
+//
+// Конвенции:
+// - camelCase в TS, snake_case в БД через @map.
+// - cuid() для всех id.
+// - createdAt / updatedAt на всех бизнес-моделях.
+// - Soft-delete: пока не используем, при необходимости добавим deletedAt.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum UserRole {
+  GUEST
+  CLIENT
+  PARTNER
+  ADMIN
+}
+
+enum BookingStatus {
+  NEW          // Только что оставлена клиентом
+  IN_PROGRESS  // Менеджер связался, ведёт работу
+  PAID         // Оплата получена → триггер начисления вознаграждений
+  COMPLETED    // Тур состоялся
+  CANCELLED    // Отменена
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MealPlan {
+  ALL_INCLUSIVE
+  HALF_BOARD
+  BREAKFAST
+  NO_MEALS
+}
+
+enum PartnerApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayoutStatus {
+  REQUESTED
+  PROCESSING
+  PAID
+  REJECTED
+}
+
+enum TransactionType {
+  REFERRAL_COUNT       // +1 к счётчику клиента
+  COMMISSION_EARNED    // +5% на баланс партнёра
+  PAYOUT_REQUEST       // -сумма с баланса партнёра при запросе вывода
+  PAYOUT_REJECTED      // +возврат на баланс при отклонении вывода
+  ADMIN_ADJUSTMENT     // Ручная корректировка админом
+}
+
+// =====================================================
+// USERS
+// =====================================================
+
+model User {
+  id                  String   @id @default(cuid())
+  email               String   @unique
+  phone               String?  @unique
+  passwordHash        String   @map("password_hash")
+  fullName            String   @map("full_name")
+  avatarUrl           String?  @map("avatar_url")
+  role                UserRole @default(CLIENT)
+
+  // Реферальная программа
+  referralCode        String   @unique @map("referral_code") // 8 символов, base32
+  referrerId          String?  @map("referrer_id")
+  referrer            User?    @relation("UserReferrals", fields: [referrerId], references: [id])
+  referrals           User[]   @relation("UserReferrals")
+
+  // Прогресс клиента (B2C)
+  referralCount       Int      @default(0) @map("referral_count")        // Сколько привёл оплативших туры
+  freeToursAvailable  Int      @default(0) @map("free_tours_available")  // Доступно бесплатных туров
+
+  // Партнёр (B2B)
+  balance             Decimal  @default(0) @db.Decimal(12, 2)            // В USD
+  isPartnerApproved   Boolean  @default(false) @map("is_partner_approved")
+
+  // Метаданные
+  emailVerifiedAt     DateTime? @map("email_verified_at")
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Связи
+  bookings            Booking[]               @relation("UserBookings")
+  referredBookings    Booking[]               @relation("BookingReferrer")
+  reviews             Review[]
+  partnerApplication  PartnerApplication?
+  payouts             Payout[]
+  transactions        Transaction[]
+  referralClicks      ReferralClick[]         @relation("RefererClicks")
+  refreshTokens       RefreshToken[]
+
+  @@index([role])
+  @@index([referrerId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String   @unique @map("token_hash")
+  expiresAt   DateTime @map("expires_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// =====================================================
+// TOURS
+// =====================================================
+
+model Tour {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  title              Json     // { ru: "...", en: "...", tj: "..." }
+  description        Json     // { ru: "...", en: "...", tj: "..." }
+  programIncluded    Json     @map("program_included")     // { ru: [...], en: [...] }
+  programExcluded    Json     @map("program_excluded")     // { ru: [...], en: [...] }
+
+  country            String
+  city               String?
+  hotelName          String?  @map("hotel_name")
+  hotelStars         Int      @default(3) @map("hotel_stars")
+  mealPlan           MealPlan @default(BREAKFAST) @map("meal_plan")
+  durationDays       Int      @default(7) @map("duration_days")
+
+  // Цены (всегда храним в USD, конвертация на фронте)
+  priceUsd           Decimal  @db.Decimal(12, 2) @map("price_usd")
+
+  // Медиа
+  coverImage         String   @map("cover_image")
+  images             String[] @default([])
+
+  // Бизнес-метки
+  isActive           Boolean  @default(true) @map("is_active")
+  isHot              Boolean  @default(false) @map("is_hot")
+
+  // Реферальная программа per-tour
+  referralThreshold  Int      @default(50) @map("referral_threshold")
+
+  // Денормализация для скорости
+  avgRating          Float    @default(0) @map("avg_rating")
+  reviewsCount       Int      @default(0) @map("reviews_count")
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  bookings           Booking[]
+  reviews            Review[]
+  referralClicks     ReferralClick[]
+
+  @@index([country])
+  @@index([isActive, isHot])
+  @@index([priceUsd])
+  @@map("tours")
+}
+
+// =====================================================
+// BOOKINGS
+// =====================================================
+
+model Booking {
+  id                String        @id @default(cuid())
+  tourId            String        @map("tour_id")
+  tour              Tour          @relation(fields: [tourId], references: [id])
+
+  // Клиент: может быть зарегистрирован или нет на момент создания
+  userId            String?       @map("user_id")
+  user              User?         @relation("UserBookings", fields: [userId], references: [id])
+
+  // Контактные данные (заполняются всегда, даже для гостей)
+  contactName       String        @map("contact_name")
+  contactEmail      String        @map("contact_email")
+  contactPhone      String        @map("contact_phone")
+
+  // Параметры бронирования
+  guestsCount       Int           @default(1) @map("guests_count")
+  preferredDate     DateTime?     @map("preferred_date")
+  notes             String?       @db.Text
+
+  // Финансы
+  totalPriceUsd     Decimal       @db.Decimal(12, 2) @map("total_price_usd")
+
+  // Реферальная привязка
+  referrerId        String?       @map("referrer_id")
+  referrer          User?         @relation("BookingReferrer", fields: [referrerId], references: [id])
+  referralCookieAt  DateTime?     @map("referral_cookie_at") // Когда был установлен cookie
+  referralIp        String?       @map("referral_ip")
+
+  // Статус заявки
+  status            BookingStatus @default(NEW)
+  statusChangedAt   DateTime      @default(now()) @map("status_changed_at")
+  paidAt            DateTime?     @map("paid_at")
+  completedAt       DateTime?     @map("completed_at")
+  cancelledAt       DateTime?     @map("cancelled_at")
+  cancelReason      String?       @map("cancel_reason")
+
+  // Менеджер обработки
+  managerId         String?       @map("manager_id")
+  managerNotes      String?       @map("manager_notes") @db.Text
+
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  reviews           Review[]
+  transactions      Transaction[]
+
+  @@index([tourId])
+  @@index([userId])
+  @@index([referrerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+// =====================================================
+// REVIEWS (UGC)
+// =====================================================
+
+model Review {
+  id          String       @id @default(cuid())
+  tourId      String       @map("tour_id")
+  tour        Tour         @relation(fields: [tourId], references: [id])
+  userId      String       @map("user_id")
+  user        User         @relation(fields: [userId], references: [id])
+  bookingId   String?      @map("booking_id")
+  booking     Booking?     @relation(fields: [bookingId], references: [id])
+
+  rating      Int          // 1-5
+  text        String       @db.Text
+  status      ReviewStatus @default(PENDING)
+
+  moderatedBy String?      @map("moderated_by")
+  moderatedAt DateTime?    @map("moderated_at")
+  rejectReason String?     @map("reject_reason")
+
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  photos      Photo[]
+
+  @@index([tourId, status])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  reviewId  String   @map("review_id")
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([reviewId])
+  @@map("photos")
+}
+
+// =====================================================
+// REFERRAL TRACKING
+// =====================================================
+
+model ReferralClick {
+  id          String   @id @default(cuid())
+  referrerId  String   @map("referrer_id")
+  referrer    User     @relation("RefererClicks", fields: [referrerId], references: [id])
+  tourId      String?  @map("tour_id")
+  tour        Tour?    @relation(fields: [tourId], references: [id])
+  ip          String?
+  userAgent   String?  @map("user_agent") @db.Text
+  fingerprint String?  // браузерный fingerprint для антифрода
+  country     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([referrerId, createdAt])
+  @@map("referral_clicks")
+}
+
+// =====================================================
+// PARTNERS
+// =====================================================
+
+model PartnerApplication {
+  id           String                   @id @default(cuid())
+  userId       String                   @unique @map("user_id")
+  user         User                     @relation(fields: [userId], references: [id])
+  motivation   String                   @db.Text
+  socialLinks  String[]                 @default([]) @map("social_links")
+  audienceSize Int?                     @map("audience_size")
+
+  status       PartnerApplicationStatus @default(PENDING)
+  reviewedBy   String?                  @map("reviewed_by")
+  reviewedAt   DateTime?                @map("reviewed_at")
+  rejectReason String?                  @map("reject_reason")
+
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("partner_applications")
+}
+
+model Payout {
+  id            String       @id @default(cuid())
+  userId        String       @map("user_id")
+  user          User         @relation(fields: [userId], references: [id])
+  amountUsd     Decimal      @db.Decimal(12, 2) @map("amount_usd")
+  status        PayoutStatus @default(REQUESTED)
+
+  // Реквизиты (для простоты — JSON; на продакшне можно вынести в отдельную модель)
+  bankDetails   Json         @map("bank_details") // { bank, accountNumber, swift, beneficiary }
+
+  processedBy   String?      @map("processed_by")
+  processedAt   DateTime?    @map("processed_at")
+  rejectReason  String?      @map("reject_reason")
+  externalRef   String?      @map("external_ref") // ID банковской транзакции
+
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  transactions  Transaction[]
+
+  @@index([userId, status])
+  @@map("payouts")
+}
+
+// =====================================================
+// AUDIT TRAIL — все начисления/списания
+// =====================================================
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String          @map("user_id")
+  user        User            @relation(fields: [userId], references: [id])
+  type        TransactionType
+  amountUsd   Decimal         @default(0) @db.Decimal(12, 2) @map("amount_usd")
+  // Для REFERRAL_COUNT: amountUsd=0, increment=1
+  increment   Int             @default(0) // +1 для счётчика рефералов клиента
+
+  bookingId   String?         @map("booking_id")
+  booking     Booking?        @relation(fields: [bookingId], references: [id])
+  payoutId    String?         @map("payout_id")
+  payout      Payout?         @relation(fields: [payoutId], references: [id])
+
+  description String?         @db.Text
+  performedBy String?         @map("performed_by") // userId автора (админа) или 'SYSTEM'
+
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("transactions")
+}

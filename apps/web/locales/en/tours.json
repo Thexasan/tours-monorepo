@@ -1,0 +1,15 @@
+{
+  "catalogTitle": "Tour Catalog",
+  "searchPlaceholder": "Where do you want to go?",
+  "labels": {
+    "hotTour": "Hot Tour",
+    "days": "days",
+    "from": "from"
+  },
+  "mealPlan": {
+    "ALL_INCLUSIVE": "All Inclusive",
+    "HALF_BOARD": "Half Board",
+    "BREAKFAST": "Breakfast",
+    "NO_MEALS": "No Meals"
+  }
+}

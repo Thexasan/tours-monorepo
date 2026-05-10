@@ -1,0 +1,45 @@
+{
+  "appName": "Traveling Tours",
+  "nav": {
+    "home": "Home",
+    "tours": "Tours",
+    "login": "Login"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover the World With Us",
+      "subtitle": "Best tours at the best prices with a cashback reward system"
+    },
+    "search": {
+      "destination": "Where are we going?",
+      "destinationPlaceholder": "Country, city or tour",
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "guests": "Guests",
+      "button": "Search"
+    },
+    "hotTours": {
+      "title": "Hot Tours",
+      "empty": "No hot tours available right now"
+    },
+    "howItWorks": {
+      "title": "How to travel for free?",
+      "step1": {
+        "title": "1. Share your link",
+        "desc": "Send your referral link to friends and acquaintances."
+      },
+      "step2": {
+        "title": "2. They book a tour",
+        "desc": "Your friend books a tour on our platform."
+      },
+      "step3": {
+        "title": "3. Get a free tour",
+        "desc": "Accumulate points and travel for free!"
+      }
+    },
+    "reviews": {
+      "title": "Latest Reviews",
+      "empty": "No reviews yet"
+    }
+  }
+}

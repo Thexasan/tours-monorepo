@@ -1,4 +1,15 @@
 {
   "catalogTitle": "Каталог туров",
-  "searchPlaceholder": "Куда хотите поехать?"
+  "searchPlaceholder": "Куда хотите поехать?",
+  "labels": {
+    "hotTour": "Горящий тур",
+    "days": "дней",
+    "from": "от"
+  },
+  "mealPlan": {
+    "ALL_INCLUSIVE": "Всё включено",
+    "HALF_BOARD": "Полупансион",
+    "BREAKFAST": "Завтрак",
+    "NO_MEALS": "Без питания"
+  }
 }
