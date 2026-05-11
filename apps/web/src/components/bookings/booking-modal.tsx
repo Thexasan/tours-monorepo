@@ -155,7 +155,7 @@ export function BookingModal({ tourId, tourTitle, pricePerPerson, open, onClose 
                 <div className="rounded-md bg-zinc-50 border border-zinc-200 p-3 text-sm">
                   <span className="text-zinc-600">Итого: </span>
                   <span className="font-semibold text-zinc-900">${totalPrice}</span>
-                  <span className="text-zinc-500 text-xs ml-2">({guestsCount} × ${pricePerPerson})</span>
+                  <span className="text-zinc-500 text-xs ml-2">({String(guestsCount)} × ${pricePerPerson})</span>
                 </div>
 
                 <Button type="submit" disabled={submitting} className="mt-2">

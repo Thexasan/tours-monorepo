@@ -69,7 +69,6 @@ export function TripsList() {
     );
   }
 
-  // Sort: active first
   const order: Record<BookingStatus, number> = {
     IN_PROGRESS: 0, NEW: 1, PAID: 2, COMPLETED: 3, CANCELLED: 4,
   };
@@ -81,7 +80,7 @@ export function TripsList() {
     <div className="flex flex-col gap-3.5">
       {ordered.map((b) => {
         const tour = b.tour;
-        const tourTitle = tour ? (tour.title[lang] ?? tour.title.ru) : "—";
+        const tourTitle = tour ? (tour.title[lang] ?? tour.title.ru ?? tour.slug) : "—";
         const statusInfo = STATUS_META[b.status]!;
         return (
           <article

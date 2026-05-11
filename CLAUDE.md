@@ -100,7 +100,7 @@ Tours/
 │               ├── users/             # PATCH /users/me
 │               ├── tours/             # GET /tours (с фильтрами), GET /tours/:slug
 │               ├── bookings/          # POST /bookings (с auto-ref), GET /bookings/my, ADMIN: list+update status
-│               ├── admin/             # CRUD туров (только ADMIN)
+│               ├── admin/             # AdminToursController (CRUD туров) + AdminUsersController (список пользователей с фильтрами)
 │               ├── referrals/         # POST /click, GET /stats, GET /partner/stats (timeline за 30 дней + transactions)
 │               ├── partners/          # PartnerApplications: submit/getMy + ADMIN list/review (approve→role PARTNER)
 │               ├── payouts/           # POST /payouts (PARTNER), GET /payouts/my, ADMIN: list+process (approve/reject)
@@ -152,6 +152,7 @@ Tours/
 | GET | `/api/v1/reviews/my` | Auth | Мои отзывы со статусами модерации |
 | GET | `/api/v1/admin/reviews` | ADMIN | Список отзывов (фильтр по status) |
 | PATCH | `/api/v1/admin/reviews/:id` | ADMIN | Approve/Reject. При APPROVE атомарно пересчитывается `tour.avgRating` и `tour.reviewsCount` |
+| GET | `/api/v1/admin/users` | ADMIN | Список пользователей с фильтрами `search` (email/fullName), `role`, пагинация `page`/`pageSize` |
 
 **Глобальный guard:** `JwtAuthGuard` стоит глобально в `app.module.ts` через `APP_GUARD`. Эндпоинты с `@Public()` декоратором его пропускают.
 
@@ -325,7 +326,30 @@ DATABASE_URL=postgresql://tours:tours_dev_password@localhost:5432/tours?schema=p
 - ✅ День 4 — ReferralsModule + PartnersModule, /dashboard/referrals с прогрессом, /become-partner, /admin/partner-applications, /partner кабинет с Recharts
 - ✅ День 5 — **Триггер начисления вознаграждений** (атомарная транзакция при → PAID), PayoutsModule, /admin/bookings (главная админка), /admin/payouts, форма вывода у партнёра. Антифрод: один email = один реферер
 - ✅ День 6 — ReviewsModule (UGC + модерация с пересчётом avgRating), EmailService (Resend + dev-fallback), email-триггеры (welcome/booking/status/reward), /dashboard/reviews(/new), /admin/moderation
-- ✅ День 7 — Swagger UI на /api/v1/docs (все 27 эндпоинтов задокументированы), LanguageSwitcher RU/EN в навбаре, полный DEPLOY.md с тремя сценариями (свой VPS / Vercel+Render+Neon / Railway)
+- ✅ День 7 — Swagger UI на /api/v1/docs (все 28 эндпоинтов задокументированы), LanguageSwitcher RU/EN в навбаре, полный DEPLOY.md с тремя сценариями (свой VPS / Vercel+Render+Neon / Railway)
+- ✅ **Day 7+ post-MVP апгрейд (после pull с ноутбука):** полный UI-refresh с design system на CSS-переменных, AdminUsersModule + страница `/admin/users`, страницы `/admin/profile` и `/partner/profile`, compound DB indexes для скорости, 4 spec-теста на сервисы (~1137 строк), новые компоненты page-header / admin-page-header
+
+## 15.1 Дизайн-система (UI Day 7+)
+
+`apps/web/app/globals.css` содержит **полную design-систему** на CSS-переменных:
+
+- **Brand palette:** teal-600 (primary) / rose-500 (accent) / amber-500 (sunset) / sky-600 (ocean) / emerald-600 (forest)
+- **Gradients:** `--gradient-hero`, `--gradient-sunset`, `--gradient-amber`, `--gradient-forest`, `--gradient-page`
+- **Shadows:** xs/sm/md/lg + специальные glow-shadows для бренд-цветов
+- **Утилиты:** `.tv-surface`, `.tv-surface-elevated`, `.tv-chip` — переиспользуемые классы
+
+Все shadcn-компоненты (`button`, `card`, `dialog`, `badge`, `form`, `input`, `label`, `skeleton`) обновлены под этот стиль. Главная страница, страница тура, все кабинеты (admin/partner/dashboard) используют этот единый стиль.
+
+## 15.2 Тесты (API)
+
+`apps/api/src/modules/{auth,bookings,payouts,reviews}.service.spec.ts` — unit-тесты на ключевую бизнес-логику (~1100 строк). Jest с `moduleNameMapper` для резолва `@tours/db` и `@tours/types`. Запуск: `npm test` из `apps/api`.
+
+## 15.3 Performance: compound DB indexes
+
+Миграция `20260511063907_add_compound_indexes`:
+- `bookings(user_id, status)` — быстрый запрос `/bookings/my?status=...`
+- `bookings(status, created_at)` — быстрая `/admin/bookings` сортировка
+- `reviews(user_id, created_at)` — быстрый `/reviews/my`
 
 ## 16. Известные «грабли» / решения
 

@@ -55,6 +55,7 @@ export interface Payout {
   createdAt: string;
   processedAt: string | null;
   rejectReason: string | null;
+  externalRef: string | null;
 }
 
 export interface Transaction {

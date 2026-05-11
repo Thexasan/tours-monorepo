@@ -1,0 +1,8 @@
+apps/api
+packages/db/prisma/migrations
+.git
+.next
+node_modules
+*.log
+.env*
+!.env.example

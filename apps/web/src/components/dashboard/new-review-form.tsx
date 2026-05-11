@@ -44,11 +44,10 @@ export function NewReviewForm() {
   useEffect(() => {
     bookingsApi.listMy({ pageSize: 100 })
       .then((r) => {
-        // Туры с заявками PAID или COMPLETED
         const eligibleSet = new Map<string, EligibleTour>();
         for (const b of r.items) {
           if ((b.status === "PAID" || b.status === "COMPLETED") && b.tour) {
-            const title = b.tour.title[lang] ?? b.tour.title.ru;
+            const title = b.tour.title[lang] ?? b.tour.title.ru ?? b.tour.slug;
             eligibleSet.set(b.tour.id, { tourId: b.tour.id, title, bookingId: b.id });
           }
         }
@@ -113,7 +112,7 @@ export function NewReviewForm() {
               <Star className={`w-7 h-7 transition-colors ${n <= Number(ratingVal) ? "fill-amber-400 text-amber-400" : "text-zinc-300 hover:text-amber-300"}`} />
             </button>
           ))}
-          <span className="ml-2 text-sm text-zinc-600">{ratingVal}/5</span>
+          <span className="ml-2 text-sm text-zinc-600">{String(ratingVal)}/5</span>
         </div>
         <input type="hidden" {...register("rating")} />
       </div>
