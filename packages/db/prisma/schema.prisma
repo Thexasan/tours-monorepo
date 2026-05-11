@@ -236,6 +236,8 @@ model Booking {
   @@index([referrerId])
   @@index([status])
   @@index([createdAt])
+  @@index([userId, status])
+  @@index([status, createdAt])
   @@map("bookings")
 }
 
@@ -267,6 +269,7 @@ model Review {
 
   @@index([tourId, status])
   @@index([userId])
+  @@index([userId, createdAt])
   @@map("reviews")
 }
 

@@ -6,8 +6,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, MapPin, Calendar, Users } from "lucide-react";
 
 const searchSchema = z.object({
   destination: z.string().min(1, "Обязательное поле"),
@@ -45,44 +44,66 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col md:flex-row gap-4 p-4 bg-white rounded-xl shadow-lg w-full max-w-5xl mx-auto items-start md:items-end"
+      className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_0.7fr_auto] gap-2 p-2 bg-white rounded-2xl shadow-[0_20px_50px_-12px_rgba(15,23,42,0.18)] ring-1 ring-slate-100"
     >
-      <div className="w-full md:flex-1">
-        <label className="block text-sm font-medium text-zinc-700 mb-1">
-          {t("destination", { fallback: "Куда едем?" })}
-        </label>
-        <Input
+      <Field icon={<MapPin className="h-4 w-4 text-rose-500" />} label={t("destination", { fallback: "Куда едем?" })}>
+        <input
           {...register("destination")}
-          placeholder={t("destinationPlaceholder", { fallback: "Страна, город или тур" })}
-          className={errors.destination ? "border-red-500" : ""}
+          placeholder={t("destinationPlaceholder", { fallback: "Бали, Турция, Дубай…" })}
+          className={`w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-400 outline-none ${errors.destination ? "text-rose-600" : ""}`}
         />
-      </div>
+      </Field>
 
-      <div className="w-full md:w-40">
-        <label className="block text-sm font-medium text-zinc-700 mb-1">
-          {t("dateFrom", { fallback: "Дата с" })}
-        </label>
-        <Input type="date" {...register("dateFrom")} className="block w-full" />
-      </div>
+      <Field icon={<Calendar className="h-4 w-4 text-teal-600" />} label={t("dateFrom", { fallback: "Дата с" })}>
+        <input
+          type="date"
+          {...register("dateFrom")}
+          className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-400 outline-none"
+        />
+      </Field>
 
-      <div className="w-full md:w-40">
-        <label className="block text-sm font-medium text-zinc-700 mb-1">
-          {t("dateTo", { fallback: "Дата по" })}
-        </label>
-        <Input type="date" {...register("dateTo")} className="block w-full" />
-      </div>
+      <Field icon={<Calendar className="h-4 w-4 text-sky-600" />} label={t("dateTo", { fallback: "Дата по" })}>
+        <input
+          type="date"
+          {...register("dateTo")}
+          className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-400 outline-none"
+        />
+      </Field>
 
-      <div className="w-full md:w-24">
-        <label className="block text-sm font-medium text-zinc-700 mb-1">
-          {t("guests", { fallback: "Гости" })}
-        </label>
-        <Input type="number" min={1} max={20} {...register("guests")} />
-      </div>
+      <Field icon={<Users className="h-4 w-4 text-amber-500" />} label={t("guests", { fallback: "Гости" })}>
+        <input
+          type="number"
+          min={1}
+          max={20}
+          {...register("guests")}
+          className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-400 outline-none"
+        />
+      </Field>
 
-      <Button type="submit" className="w-full md:w-auto h-10 mt-1">
-        <Search className="w-4 h-4 mr-2" />
-        {t("button", { fallback: "Найти" })}
+      <Button type="submit" size="lg" className="md:h-full md:px-7">
+        <Search className="w-4 h-4" />
+        <span>{t("button", { fallback: "Найти" })}</span>
       </Button>
     </form>
+  );
+}
+
+function Field({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-0.5 px-3.5 py-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-text">
+      <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+        {icon}
+        {label}
+      </span>
+      {children}
+    </label>
   );
 }

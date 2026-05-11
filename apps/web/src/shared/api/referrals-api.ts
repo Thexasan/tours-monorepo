@@ -22,6 +22,7 @@ export interface ReferralStats {
 export interface PartnerStats {
   role: UserRole;
   balance: number;
+  referralCode: string;
   totals: {
     totalClicks: number;
     totalRegistrations: number;

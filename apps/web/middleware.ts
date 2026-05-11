@@ -16,27 +16,46 @@ export default async function middleware(req: NextRequest) {
   const refParam = req.nextUrl.searchParams.get("ref");
   if (refParam && /^[A-Z0-9]{4,16}$/.test(refParam)) {
     const existing = req.cookies.get(REFERRAL_COOKIE)?.value;
-    if (!existing) {
-      response.cookies.set(REFERRAL_COOKIE, refParam, {
-        maxAge: REFERRAL_COOKIE_MAX_AGE,
-        path: "/",
-        httpOnly: false,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-      });
-    }
-    // Записываем клик в API (fire-and-forget). Берём slug тура если URL ведёт на /tours/[slug]
+
     const pathParts = req.nextUrl.pathname.split("/").filter(Boolean);
     let tourSlug: string | undefined;
     const toursIdx = pathParts.indexOf("tours");
     if (toursIdx !== -1 && pathParts[toursIdx + 1]) tourSlug = pathParts[toursIdx + 1];
 
-    // fire-and-forget — не ждём ответа, не блокируем редирект
-    fetch(`${API_URL}/referrals/click`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ referralCode: refParam, tourSlug }),
-    }).catch(() => undefined);
+    if (!existing) {
+      // Ждём ответа API: устанавливаем cookie только если реф-код валиден (не принадлежит ADMIN).
+      // Таймаут 800ms чтобы не замедлять навигацию при недоступном API.
+      try {
+        const ac = new AbortController();
+        const timer = setTimeout(() => ac.abort(), 800);
+        const r = await fetch(`${API_URL}/referrals/click`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ referralCode: refParam, tourSlug }),
+          signal: ac.signal,
+        });
+        clearTimeout(timer);
+        const data = await r.json() as { ok: boolean };
+        if (data.ok) {
+          response.cookies.set(REFERRAL_COOKIE, refParam, {
+            maxAge: REFERRAL_COOKIE_MAX_AGE,
+            path: "/",
+            httpOnly: false,
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+          });
+        }
+      } catch {
+        // API недоступен или таймаут — не устанавливаем cookie (безопасный дефолт)
+      }
+    } else {
+      // Cookie уже есть — просто записываем клик для аналитики (fire-and-forget)
+      fetch(`${API_URL}/referrals/click`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referralCode: refParam, tourSlug }),
+      }).catch(() => undefined);
+    }
   }
 
   return response;

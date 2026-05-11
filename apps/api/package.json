@@ -68,6 +68,10 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@tours/db$": "<rootDir>/../../../packages/db/src/index.ts",
+      "^@tours/types(.*)$": "<rootDir>/../../../packages/types/src$1"
+    }
   }
 }

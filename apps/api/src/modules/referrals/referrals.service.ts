@@ -18,9 +18,9 @@ export class ReferralsService {
   async trackClick(dto: TrackClickDto, ctx: ClickContext) {
     const referrer = await this.prisma.user.findUnique({
       where: { referralCode: dto.referralCode },
-      select: { id: true, isActive: true },
+      select: { id: true, isActive: true, role: true },
     });
-    if (!referrer || !referrer.isActive) return { ok: false };
+    if (!referrer || !referrer.isActive || referrer.role === UserRole.ADMIN) return { ok: false };
 
     let tourId: string | null = null;
     if (dto.tourSlug) {
@@ -99,7 +99,7 @@ export class ReferralsService {
   async getPartnerStats(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true, balance: true },
+      select: { id: true, role: true, balance: true, referralCode: true },
     });
     if (!user) throw new NotFoundException("User not found");
 
@@ -148,6 +148,7 @@ export class ReferralsService {
     return {
       role: user.role,
       balance: Number(user.balance),
+      referralCode: user.referralCode,
       totals,
       timeline: {
         clicks: clicksByDay.map((r) => ({ day: r.day.toISOString().slice(0, 10), count: Number(r.count) })),

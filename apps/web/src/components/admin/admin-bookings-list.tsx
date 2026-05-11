@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useLocale } from "next-intl";
-import { Search, Mail, Phone, User, Briefcase } from "lucide-react";
+import {
+  Search, Mail, Phone, User, Briefcase, Calendar, DollarSign, Filter, AlertCircle, Check,
+} from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { Button } from "@/src/components/ui/button";
@@ -12,12 +14,12 @@ import { Input } from "@/src/components/ui/input";
 import type { BookingStatus } from "@tours/types";
 
 const STATUS_OPTIONS: BookingStatus[] = ["NEW", "IN_PROGRESS", "PAID", "COMPLETED", "CANCELLED"];
-const STATUS_META: Record<BookingStatus, { label: string; cls: string }> = {
-  NEW:         { label: "Новая",       cls: "bg-blue-100 text-blue-700" },
-  IN_PROGRESS: { label: "В работе",    cls: "bg-amber-100 text-amber-700" },
-  PAID:        { label: "Оплачена",    cls: "bg-emerald-100 text-emerald-700" },
-  COMPLETED:   { label: "Завершена",   cls: "bg-zinc-200 text-zinc-700" },
-  CANCELLED:   { label: "Отменена",    cls: "bg-red-100 text-red-700" },
+const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
+  NEW:         { label: "Новая",       cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100", dot: "bg-sky-500" },
+  IN_PROGRESS: { label: "В работе",    cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", dot: "bg-amber-500" },
+  PAID:        { label: "Оплачена",    cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:   { label: "Завершена",   cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200", dot: "bg-slate-500" },
+  CANCELLED:   { label: "Отменена",    cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", dot: "bg-rose-500" },
 };
 
 export function AdminBookingsList() {
@@ -43,46 +45,92 @@ export function AdminBookingsList() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "bookings"] }),
   });
 
+  const total = data?.items.length ?? 0;
+
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
-        <div className="flex flex-wrap gap-1">
-          {(["ALL", ...STATUS_OPTIONS] as const).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                statusFilter === s
-                  ? "bg-blue-600 text-white"
-                  : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50"
-              }`}
-            >
-              {s === "ALL" ? "Все" : STATUS_META[s].label}
-            </button>
-          ))}
-        </div>
+      {/* Filter bar */}
+      <div className="tv-surface-elevated p-4 mb-5">
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 shrink-0">
+            <Filter className="h-3.5 w-3.5" />
+            Статус
+          </div>
+          <div className="flex flex-wrap gap-1.5 flex-1">
+            {(["ALL", ...STATUS_OPTIONS] as const).map((s) => {
+              const active = statusFilter === s;
+              const meta = s !== "ALL" ? STATUS_META[s] : null;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatusFilter(s)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    active
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "bg-slate-50 border border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300"
+                  }`}
+                >
+                  {meta && <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />}
+                  {meta ? meta.label : "Все"}
+                </button>
+              );
+            })}
+          </div>
 
-        <form
-          onSubmit={(e) => { e.preventDefault(); setSearch(searchInput.trim()); }}
-          className="flex gap-2 md:ml-auto md:max-w-sm"
-        >
-          <Input
-            placeholder="Поиск по имени, email или телефону"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <Button type="submit" variant="outline" size="icon">
-            <Search className="w-4 h-4" />
-          </Button>
-        </form>
+          <form
+            onSubmit={(e) => { e.preventDefault(); setSearch(searchInput.trim()); }}
+            className="flex gap-2 md:ml-auto md:max-w-xs w-full md:w-auto"
+          >
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Имя, email, телефон…"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Button type="submit" variant="outline" size="icon">
+              <Search className="w-4 h-4" />
+            </Button>
+          </form>
+        </div>
       </div>
 
-      {isLoading && <p className="text-zinc-500">Загрузка...</p>}
+      {/* Counter */}
+      {data && (
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            Найдено: <strong className="text-slate-900 tabular-nums">{total}</strong>
+          </p>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="tv-surface p-4 animate-pulse">
+              <div className="flex gap-4">
+                <div className="w-32 h-32 rounded-xl bg-slate-100" />
+                <div className="flex-1 space-y-2 py-2">
+                  <div className="h-4 w-2/5 rounded bg-slate-100" />
+                  <div className="h-3 w-1/3 rounded bg-slate-100" />
+                  <div className="h-3 w-3/4 rounded bg-slate-100" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {data && data.items.length === 0 && (
-        <div className="bg-white rounded-xl border border-zinc-200 p-12 text-center text-zinc-500">
-          Заявок не найдено.
+        <div className="tv-surface-elevated p-12 text-center text-slate-500">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-slate-100 grid place-items-center text-slate-400">
+            <Mail className="h-6 w-6" />
+          </div>
+          <p className="mt-4 font-semibold text-slate-900">Заявок не найдено</p>
+          <p className="text-sm">Измените фильтры или сбросьте поиск.</p>
         </div>
       )}
 
@@ -90,86 +138,114 @@ export function AdminBookingsList() {
         {data?.items.map((b) => {
           const tour = b.tour;
           const tourTitle = tour ? (tour.title[lang] ?? tour.title.ru) : "—";
-          const meta = STATUS_META[b.status];
+          const meta = STATUS_META[b.status]!;
           const referrer = (b as { referrer?: { id: string; email: string; fullName: string; role: string } | null }).referrer;
           return (
-            <div key={b.id} className="bg-white rounded-xl border border-zinc-200 p-4">
+            <article key={b.id} className="tv-surface p-4 md:p-5">
               <div className="flex flex-col md:flex-row md:items-start gap-4">
-                {tour?.coverImage && (
-                  <div className="relative w-full md:w-32 aspect-video md:aspect-square rounded-lg overflow-hidden bg-zinc-100 shrink-0">
-                    <Image src={tour.coverImage} alt="" fill className="object-cover" sizes="128px" />
-                  </div>
-                )}
+                <div className="relative w-full md:w-36 aspect-video md:aspect-square rounded-xl overflow-hidden bg-slate-100 shrink-0 ring-1 ring-slate-200/70">
+                  {tour?.coverImage ? (
+                    <Image src={tour.coverImage} alt="" fill className="object-cover" sizes="144px" />
+                  ) : (
+                    <div className="absolute inset-0 grid place-items-center text-slate-400 text-xs">Без фото</div>
+                  )}
+                  <span className={`absolute top-2 left-2 tv-chip ${meta.cls}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+                    {meta.label}
+                  </span>
+                </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-semibold text-zinc-900">{tourTitle}</h3>
-                    <span className={`text-xs font-medium px-2 py-1 rounded shrink-0 ${meta.cls}`}>
-                      {meta.label}
-                    </span>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-slate-900 leading-tight">{tourTitle}</h3>
+                      <p className="text-sm text-slate-500 mt-0.5">{tour?.country}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-zinc-500 mb-2">{tour?.country}</p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-zinc-700 mb-3">
-                    <div className="flex items-center gap-2"><User className="w-3.5 h-3.5 text-zinc-400" />{b.contactName}</div>
-                    <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-zinc-400" />{b.contactEmail}</div>
-                    <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-zinc-400" />{b.contactPhone}</div>
-                    <div className="text-zinc-500">
-                      Гостей: {b.guestsCount} • Сумма: <strong className="text-zinc-900">${b.totalPriceUsd}</strong>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 text-sm mt-3">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <User className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="font-medium">{b.contactName}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="truncate">{b.contactEmail}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{b.contactPhone}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-slate-700">
+                      <span className="flex items-center gap-1"><User className="h-3.5 w-3.5 text-slate-400" />{b.guestsCount}</span>
+                      <span className="flex items-center gap-1 font-semibold text-emerald-700">
+                        <DollarSign className="h-3.5 w-3.5" />
+                        {b.totalPriceUsd}
+                      </span>
                     </div>
                   </div>
 
                   {referrer && (
-                    <div className="text-xs text-zinc-500 mb-2 flex items-center gap-1">
+                    <div className="inline-flex items-center gap-1.5 mt-3 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 ring-1 ring-amber-100">
                       <Briefcase className="w-3 h-3" />
-                      Реферер: {referrer.fullName} ({referrer.role})
+                      Реферер: <strong>{referrer.fullName}</strong>
+                      <span className="text-amber-600">·</span>
+                      <span>{referrer.role}</span>
                     </div>
                   )}
 
                   {b.notes && (
-                    <p className="text-sm text-zinc-600 italic mb-2">«{b.notes}»</p>
+                    <p className="text-sm text-slate-600 italic mt-2 px-3 py-2 rounded-lg bg-slate-50 border-l-2 border-slate-300">
+                      «{b.notes}»
+                    </p>
                   )}
 
-                  <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-zinc-100">
-                    <span className="text-xs text-zinc-400">
-                      Создана {new Date(b.createdAt).toLocaleString("ru-RU")}
+                  <div className="flex items-center justify-between flex-wrap gap-2 pt-3 mt-3 border-t border-slate-100">
+                    <span className="text-xs text-slate-400 inline-flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(b.createdAt).toLocaleString("ru-RU")}
                     </span>
                     <div className="flex items-center gap-2">
                       <select
                         defaultValue={b.status}
                         onChange={(e) => {
                           const newStatus = e.target.value as BookingStatus;
+                          const nextMeta = STATUS_META[newStatus]!;
                           if (newStatus !== b.status &&
-                              confirm(`Сменить статус "${meta.label}" → "${STATUS_META[newStatus].label}"?` +
+                              confirm(`Сменить статус "${meta.label}" → "${nextMeta.label}"?` +
                                      (newStatus === "PAID" ? "\n\n⚡ Это запустит триггер начисления вознаграждения!" : ""))) {
                             updateStatusM.mutate({ id: b.id, status: newStatus });
                           } else {
                             (e.target as HTMLSelectElement).value = b.status;
                           }
                         }}
-                        className="h-9 rounded-md border border-zinc-200 px-3 text-sm bg-white"
+                        className="h-9 rounded-lg border border-slate-200 px-3 text-sm bg-white hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 outline-none transition-colors"
                       >
                         {STATUS_OPTIONS.map((s) => (
-                          <option key={s} value={s}>{STATUS_META[s].label}</option>
+                          <option key={s} value={s}>{STATUS_META[s]!.label}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
 
       {updateStatusM.isError && (
-        <div className="mt-3 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+        <div className="mt-3 rounded-xl bg-rose-50 border border-rose-100 p-3 text-sm text-rose-700 flex items-start gap-2">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           {extractErrorMessage(updateStatusM.error)}
         </div>
       )}
       {updateStatusM.isSuccess && (
-        <div className="fixed bottom-4 right-4 rounded-md bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 shadow-md">
-          ✓ Статус обновлён
+        <div className="fixed bottom-6 right-6 rounded-xl bg-white ring-1 ring-emerald-200 px-4 py-3 text-sm text-emerald-700 shadow-xl flex items-center gap-2 z-50">
+          <span className="grid place-items-center h-6 w-6 rounded-full bg-emerald-500 text-white">
+            <Check className="h-3.5 w-3.5" />
+          </span>
+          Статус обновлён
         </div>
       )}
     </>

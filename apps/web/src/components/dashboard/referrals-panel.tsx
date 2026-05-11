@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, Check, Send, MessageCircle, Share2 } from "lucide-react";
+import {
+  Copy, Check, Send, MessageCircle, Share2, Gift,
+  MousePointerClick, UserPlus, ShoppingBag, TrendingUp, Sparkles,
+} from "lucide-react";
 import { useLocale } from "next-intl";
 import { referralsApi } from "@/src/shared/api/referrals-api";
 import { Button } from "@/src/components/ui/button";
@@ -29,115 +32,213 @@ export function ReferralsPanel() {
 
   const shareText = "Привет! Зацени туры на этом сайте, очень крутые предложения 🌍";
 
-  if (isLoading) return <div className="text-zinc-500">Загрузка статистики…</div>;
-  if (isError || !data) return <div className="text-red-600">Не удалось загрузить статистику.</div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-44 rounded-3xl tv-shimmer" />
+        <div className="h-32 rounded-2xl tv-shimmer" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-24 rounded-2xl tv-shimmer" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (isError || !data) {
+    return <div className="text-rose-600">Не удалось загрузить статистику.</div>;
+  }
 
   return (
     <div className="space-y-6">
-      {/* Прогресс */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-blue-200 text-sm">Прогресс к бесплатному туру</p>
-            <p className="text-3xl font-bold">{data.referralCount} / {data.threshold}</p>
+      {/* Hero header */}
+      <header className="tv-hero p-7 md:p-9">
+        <div className="flex flex-col md:flex-row md:items-end gap-6">
+          <div className="flex-1 min-w-0">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
+              <Sparkles className="h-3 w-3" /> Реферальная программа
+            </div>
+            <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight text-white">
+              Приглашай друзей — получай туры в подарок
+            </h1>
+            <p className="mt-2 text-white/85 max-w-2xl">
+              {data.remaining > 0
+                ? `Осталось ${data.remaining} ${pluralize(data.remaining, "приглашение", "приглашения", "приглашений")} до бесплатного тура!`
+                : "🎉 Поздравляем! Можете оформить бесплатный тур."}
+            </p>
           </div>
-          {data.freeToursAvailable > 0 && (
-            <span className="bg-amber-400 text-amber-900 font-semibold px-3 py-1 rounded-full text-sm">
-              🎉 Доступно: {data.freeToursAvailable} бесплатный тур
-            </span>
-          )}
+
+          {/* Progress ring-ish */}
+          <div className="md:w-80 shrink-0">
+            <div className="flex items-baseline justify-between text-white">
+              <p className="text-xs uppercase tracking-[0.12em] text-white/70">Прогресс</p>
+              <p className="text-2xl font-bold tabular-nums">
+                {data.referralCount}
+                <span className="text-white/60 text-base"> / {data.threshold}</span>
+              </p>
+            </div>
+            <div className="mt-3 h-3 rounded-full bg-black/25 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500 transition-[width] duration-700"
+                style={{ width: `${Math.min(100, data.progressPercent)}%` }}
+              />
+            </div>
+            {data.freeToursAvailable > 0 && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-300/95 px-3 py-2 text-amber-950 text-sm font-semibold shadow-sm">
+                <Gift className="h-4 w-4" />
+                Доступно: {data.freeToursAvailable} бесплатный тур
+              </div>
+            )}
+          </div>
         </div>
-        <div className="w-full bg-blue-900/40 rounded-full h-3 overflow-hidden">
-          <div
-            className="bg-gradient-to-r from-amber-300 to-amber-500 h-full transition-all duration-500"
-            style={{ width: `${data.progressPercent}%` }}
-          />
-        </div>
-        <p className="text-blue-100 text-sm mt-3">
-          {data.remaining > 0
-            ? `Осталось ${data.remaining} ${pluralize(data.remaining, "приглашение", "приглашения", "приглашений")} до бесплатного тура!`
-            : "Поздравляем! Можете оформить бесплатный тур."}
-        </p>
+      </header>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatTile label="Переходы" value={data.clicks} hint="клики по ссылке"
+          icon={MousePointerClick} tone="sky" />
+        <StatTile label="Регистрации" value={data.registrations} hint="зарегистрировались"
+          icon={UserPlus} tone="teal" />
+        <StatTile label="Оплачено" value={data.paidBookings} hint="купили тур"
+          icon={ShoppingBag} tone="emerald" />
+        <StatTile label="Конверсия" value={`${data.conversionRate}%`} hint="клик → продажа"
+          icon={TrendingUp} tone="amber" />
       </div>
 
-      {/* Реф-ссылка */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-6">
-        <h3 className="font-semibold text-zinc-900 mb-3">Твоя реферальная ссылка</h3>
-        <div className="flex gap-2">
+      {/* Referral link */}
+      <section className="tv-surface-elevated p-6 md:p-7">
+        <h3 className="font-semibold text-slate-900 text-lg">Твоя реферальная ссылка</h3>
+        <p className="text-sm text-slate-500 mt-0.5">
+          Поделись ссылкой — мы сами посчитаем переходы, регистрации и продажи.
+        </p>
+
+        <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <input
-            type="text" readOnly value={refLink}
-            className="flex-1 h-10 rounded-md border border-zinc-200 px-3 text-sm font-mono bg-zinc-50"
+            type="text"
+            readOnly
+            value={refLink}
+            className="flex-1 h-11 rounded-xl border border-slate-200 px-3.5 text-sm font-mono bg-slate-50 text-slate-700 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 outline-none"
             onClick={(e) => e.currentTarget.select()}
           />
           <Button onClick={onCopy} variant={copied ? "default" : "outline"} className="shrink-0">
-            {copied ? (<><Check className="w-4 h-4 mr-1" />Скопировано</>) : (<><Copy className="w-4 h-4 mr-1" />Скопировать</>)}
+            {copied ? (<><Check className="w-4 h-4" />Скопировано</>) : (<><Copy className="w-4 h-4" />Скопировать</>)}
           </Button>
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          <a
-            href={`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-sky-500 text-white text-sm hover:bg-sky-600"
-          >
-            <Send className="w-4 h-4" /> Telegram
-          </a>
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${refLink}`)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-emerald-500 text-white text-sm hover:bg-emerald-600"
-          >
-            <MessageCircle className="w-4 h-4" /> WhatsApp
-          </a>
-          <a
-            href={`https://vk.com/share.php?url=${encodeURIComponent(refLink)}&title=${encodeURIComponent(shareText)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-700 text-white text-sm hover:bg-blue-800"
-          >
-            <Share2 className="w-4 h-4" /> VK
-          </a>
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 mb-2">Поделиться</p>
+          <div className="flex flex-wrap gap-2">
+            <ShareLink
+              href={`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`}
+              className="bg-[#229ED9] hover:bg-[#1f8fc5]"
+              icon={<Send className="h-4 w-4" />}
+              label="Telegram"
+            />
+            <ShareLink
+              href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${refLink}`)}`}
+              className="bg-[#25D366] hover:bg-[#21bd5b]"
+              icon={<MessageCircle className="h-4 w-4" />}
+              label="WhatsApp"
+            />
+            <ShareLink
+              href={`https://vk.com/share.php?url=${encodeURIComponent(refLink)}&title=${encodeURIComponent(shareText)}`}
+              className="bg-[#0077FF] hover:bg-[#006ae3]"
+              icon={<Share2 className="h-4 w-4" />}
+              label="VK"
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Статистика */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Переходы" value={data.clicks} hint="всего кликов по ссылке" />
-        <StatCard label="Регистрации" value={data.registrations} hint="зарегистрировались" />
-        <StatCard label="Оплачено" value={data.paidBookings} hint="купили тур" />
-        <StatCard label="Конверсия" value={`${data.conversionRate}%`} hint="клик → продажа" />
-      </div>
-
+      {/* Notices */}
       {data.pendingBookings > 0 && (
-        <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-          🔔 У вас {data.pendingBookings} {pluralize(data.pendingBookings, "заявка", "заявки", "заявок")} в работе у менеджера.
-          Когда они будут оплачены, счётчик увеличится.
+        <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-900">
+          <span className="grid place-items-center h-9 w-9 rounded-xl bg-amber-100 text-amber-700 shrink-0">
+            <ShoppingBag className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="font-semibold">{data.pendingBookings} {pluralize(data.pendingBookings, "заявка", "заявки", "заявок")} в работе у менеджера</p>
+            <p className="text-amber-700/90">Когда они будут оплачены, счётчик увеличится автоматически.</p>
+          </div>
         </div>
       )}
 
       {data.role === "PARTNER" && (
-        <div className="rounded-md bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800">
-          💼 Вы партнёр! Подробная статистика и баланс — в <a href={`/${locale}/partner/dashboard`} className="font-semibold underline">кабинете партнёра</a>.
+        <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-900">
+          <span className="grid place-items-center h-9 w-9 rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
+            <Sparkles className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="font-semibold">Вы партнёр</p>
+            <p className="text-emerald-700/90">
+              Подробная статистика и баланс — в {" "}
+              <a href={`/${locale}/partner/dashboard`} className="font-semibold underline underline-offset-2">кабинете партнёра</a>.
+            </p>
+          </div>
         </div>
       )}
 
       {data.role === "CLIENT" && (
-        <div className="rounded-md bg-zinc-50 border border-zinc-200 p-4 text-sm text-zinc-700">
-          Хочешь зарабатывать 5% с каждой продажи как блогер или агент?{" "}
-          <a href={`/${locale}/become-partner`} className="font-semibold text-blue-600 underline">
-            Подай заявку на партнёрство
-          </a>
+        <div className="flex items-start gap-3 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700">
+          <span className="grid place-items-center h-9 w-9 rounded-xl bg-slate-200 text-slate-700 shrink-0">
+            <TrendingUp className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="font-semibold text-slate-900">Хотите зарабатывать 5% с каждой продажи?</p>
+            <p>
+              Подайте заявку — для блогеров и агентов.{" "}
+              <a href={`/${locale}/become-partner`} className="font-semibold text-teal-700 underline underline-offset-2">
+                Стать партнёром
+              </a>
+            </p>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function StatCard({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
+function ShareLink({
+  href, icon, label, className,
+}: { href: string; icon: React.ReactNode; label: string; className: string }) {
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 p-4">
-      <p className="text-sm text-zinc-500">{label}</p>
-      <p className="text-2xl font-bold text-zinc-900 mt-1">{value}</p>
-      {hint && <p className="text-xs text-zinc-400 mt-1">{hint}</p>}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_4px_12px_-4px_rgba(15,23,42,0.25)] hover:-translate-y-0.5 transition-transform ${className}`}
+    >
+      {icon} {label}
+    </a>
+  );
+}
+
+function StatTile({
+  label, value, hint, icon: Icon, tone,
+}: {
+  label: string;
+  value: number | string;
+  hint?: string;
+  icon: React.ElementType;
+  tone: "teal" | "sky" | "emerald" | "amber" | "rose";
+}) {
+  const toneCls: Record<typeof tone, string> = {
+    teal: "from-teal-500 to-teal-600 text-white",
+    sky: "from-sky-500 to-sky-600 text-white",
+    emerald: "from-emerald-500 to-emerald-600 text-white",
+    amber: "from-amber-400 to-amber-500 text-amber-950",
+    rose: "from-rose-500 to-rose-600 text-white",
+  };
+  return (
+    <div className="tv-kpi">
+      <div className="relative flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</span>
+        <span className={`grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-br ${toneCls[tone]} shadow-sm`}>
+          <Icon className="h-4 w-4" />
+        </span>
+      </div>
+      <p className="relative mt-2 text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{value}</p>
+      {hint && <p className="relative text-xs text-slate-400 mt-1">{hint}</p>}
     </div>
   );
 }

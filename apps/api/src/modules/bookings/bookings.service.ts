@@ -35,9 +35,9 @@ export class BookingsService {
     if (ctx.referralCode) {
       const code = ctx.referralCode.trim().toUpperCase();
       const referrer = await this.prisma.user.findUnique({
-        where: { referralCode: code }, select: { id: true, isActive: true },
+        where: { referralCode: code }, select: { id: true, isActive: true, role: true },
       });
-      if (referrer && referrer.isActive && referrer.id !== ctx.userId) {
+      if (referrer && referrer.isActive && referrer.role !== UserRole.ADMIN && referrer.id !== ctx.userId) {
         const normalizedEmail = dto.contactEmail.trim().toLowerCase();
         const earlierByEmail = await this.prisma.booking.findFirst({
           where: { contactEmail: normalizedEmail, referrerId: { not: null } },
@@ -225,6 +225,11 @@ export class BookingsService {
     });
     if (!referrer || !referrer.isActive) {
       this.logger.warn(`Reward skipped: referrer ${referrerId} not found or inactive`);
+      return null;
+    }
+
+    if (referrer.role === UserRole.ADMIN) {
+      this.logger.warn(`Reward blocked: referrer ${referrerId} is ADMIN — self-dealing prevention`);
       return null;
     }
 

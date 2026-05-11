@@ -3,8 +3,10 @@ import { AdminShell } from "@/src/components/admin/admin-shell";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PageWrapper>
-      <AdminShell>{children}</AdminShell>
-    </PageWrapper>
+    <div className="min-h-screen bg-slate-50">
+      <PageWrapper>
+        <AdminShell>{children}</AdminShell>
+      </PageWrapper>
+    </div>
   );
 }

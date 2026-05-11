@@ -119,9 +119,19 @@ export function UserMenu() {
           </Link>
 
           {/* Кросс-ссылки в другие разделы */}
-          {user.role !== "CLIENT" && (
+          {user.role === "ADMIN" && (
             <Link
-              href={`/${locale}/dashboard/profile`}
+              href={`/${locale}/admin/profile`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+            >
+              <User className="w-4 h-4" />
+              <span>Мой профиль</span>
+            </Link>
+          )}
+          {user.role === "PARTNER" && (
+            <Link
+              href={`/${locale}/partner/profile`}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
             >

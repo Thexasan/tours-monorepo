@@ -4,10 +4,11 @@ import type { UserRole } from "@tours/types";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthStore } from "@/src/shared/store/auth-store";
+import { getRoleHome } from "@/src/shared/hooks/role-routes";
 
 /**
  * Защита роута: редиректит неавторизованных на /login,
- * и пользователей с неподходящей ролью — на главную.
+ * и пользователей с неподходящей ролью — на их домашнюю страницу.
  * Ждёт hydration перед редиректом, чтобы не сделать ложный редирект во время SSR.
  */
 export function useRequireAuth(allowedRoles?: UserRole[]) {
@@ -19,14 +20,18 @@ export function useRequireAuth(allowedRoles?: UserRole[]) {
   useEffect(() => {
     if (!isHydrated) return;
 
+    // Извлекаем локаль из pathname (/ru/..., /en/...) — первый сегмент
+    const locale = pathname?.split("/")?.[1] ?? "ru";
+
     if (!user) {
       const redirectTo = encodeURIComponent(pathname ?? "/");
-      router.replace(`/ru/login?redirectTo=${redirectTo}`);
+      router.replace(`/${locale}/login?redirectTo=${redirectTo}`);
       return;
     }
 
     if (allowedRoles?.length && !allowedRoles.includes(user.role)) {
-      router.replace("/ru");
+      // Редиректим на домашнюю страницу реальной роли, а не просто на главную
+      router.replace(getRoleHome(user.role, locale));
     }
   }, [allowedRoles, pathname, user, isHydrated, router]);
 

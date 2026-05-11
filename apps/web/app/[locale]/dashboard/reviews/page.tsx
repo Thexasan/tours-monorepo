@@ -1,9 +1,16 @@
+import { MessageSquare } from "lucide-react";
 import { MyReviewsList } from "@/src/components/dashboard/my-reviews-list";
+import { PageHeader } from "@/src/components/dashboard/page-header";
 
 export default function MyReviewsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-zinc-900 mb-6">Мои отзывы</h1>
+      <PageHeader
+        eyebrow="Отзывы"
+        title="Мои отзывы"
+        description="Расскажите о впечатлениях — это помогает другим путешественникам."
+        icon={<MessageSquare className="h-5 w-5" />}
+      />
       <MyReviewsList />
     </div>
   );

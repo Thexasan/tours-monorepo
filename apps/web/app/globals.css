@@ -1,16 +1,72 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Modern Travel — Design System
+   Tokens: colors, radii, shadows, gradients
+   ============================================================ */
 :root {
-  --background: #ffffff;
+  /* Surface & text */
+  --background: #f7f9fc;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-foreground: #f8fafc;
+
+  /* Brand palette */
+  --primary: #0d9488;            /* teal-600 */
+  --primary-hover: #0f766e;      /* teal-700 */
+  --primary-foreground: #f0fdfa;
+  --primary-soft: #ccfbf1;       /* teal-100 */
+  --primary-soft-foreground: #0f766e;
+
+  --accent: #f43f5e;             /* rose-500 */
+  --accent-hover: #e11d48;
+  --accent-foreground: #fff1f2;
+  --accent-soft: #ffe4e6;
+
+  --sunset: #f59e0b;             /* amber-500 */
+  --sunset-soft: #fef3c7;
+  --sunset-foreground: #92400e;
+
+  --ocean: #0284c7;              /* sky-600 */
+  --ocean-soft: #e0f2fe;
+  --ocean-foreground: #075985;
+
+  --forest: #059669;             /* emerald-600 */
+  --forest-soft: #d1fae5;
+  --forest-foreground: #065f46;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #fef2f2;
+
+  /* Neutral scale */
   --muted: #f1f5f9;
-  --muted-foreground: #475569;
+  --muted-foreground: #64748b;
   --border: #e2e8f0;
-  --radius: 0.625rem;
+  --border-soft: #f1f5f9;
+  --input: #e2e8f0;
+  --ring: rgba(13, 148, 136, 0.45);
+
+  /* Shape */
+  --radius: 0.875rem;            /* 14px default card */
+  --radius-pill: 9999px;
+
+  /* Shadow scale */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 4px 6px -2px rgba(15, 23, 42, 0.06), 0 10px 20px -8px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 12px 28px -12px rgba(15, 23, 42, 0.18), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
+  --shadow-glow-teal: 0 18px 40px -16px rgba(13, 148, 136, 0.45);
+  --shadow-glow-rose: 0 18px 40px -16px rgba(244, 63, 94, 0.40);
+  --shadow-glow-amber: 0 18px 40px -16px rgba(245, 158, 11, 0.45);
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #0d9488 0%, #0284c7 55%, #1e3a8a 100%);
+  --gradient-sunset: linear-gradient(135deg, #f97316 0%, #f43f5e 100%);
+  --gradient-amber: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-forest: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --gradient-page: radial-gradient(1200px 600px at 0% -10%, rgba(20, 184, 166, 0.10) 0%, transparent 60%),
+                   radial-gradient(1000px 500px at 100% -20%, rgba(244, 63, 94, 0.08) 0%, transparent 55%),
+                   linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
 }
 
 @theme inline {
@@ -18,34 +74,191 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-secondary: var(--muted);
+  --color-secondary-foreground: var(--foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+
   --color-border: var(--border);
-  --radius-sm: calc(var(--radius) - 4px);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 14px);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #e2e8f0;
-    --card: #0f172a;
-    --card-foreground: #e2e8f0;
-    --primary: #38bdf8;
-    --primary-foreground: #082f49;
-    --muted: #1e293b;
-    --muted-foreground: #cbd5e1;
-    --border: #334155;
-  }
+/* ============================================================
+   Base
+   ============================================================ */
+html, body {
+  background: var(--gradient-page);
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Inter", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+::selection {
+  background: var(--primary-soft);
+  color: var(--primary-soft-foreground);
+}
+
+/* Scrollbar — subtle */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* ============================================================
+   Reusable utility classes
+   ============================================================ */
+
+/* Surface card with travel shadow */
+.tv-surface {
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.tv-surface-elevated {
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Page-level hero block */
+.tv-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  color: white;
+  background: var(--gradient-hero);
+  box-shadow: var(--shadow-glow-teal);
+}
+.tv-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(600px 240px at 90% 10%, rgba(255,255,255,0.18), transparent 60%),
+    radial-gradient(400px 200px at 10% 100%, rgba(255,255,255,0.10), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+.tv-hero-sunset { background: var(--gradient-sunset); box-shadow: var(--shadow-glow-rose); }
+.tv-hero-amber { background: var(--gradient-amber); box-shadow: var(--shadow-glow-amber); }
+.tv-hero-forest { background: var(--gradient-forest); box-shadow: var(--shadow-glow-teal); }
+
+/* Sidebar nav active */
+.tv-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  color: #334155;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.tv-nav-item:hover {
+  background: rgba(13, 148, 136, 0.06);
+  color: var(--primary);
+}
+.tv-nav-item[data-active="true"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(2, 132, 199, 0.10));
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.18);
+}
+.tv-nav-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: -0.375rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0d9488, #0284c7);
+}
+
+/* KPI tile */
+.tv-kpi {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  padding: 1.125rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.tv-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.tv-kpi::after {
+  content: "";
+  position: absolute;
+  right: -2rem;
+  top: -2rem;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--ring), transparent 60%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Status chip — solid soft */
+.tv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+
+/* Animated underline */
+@keyframes tv-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.tv-shimmer {
+  background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+  background-size: 200% 100%;
+  animation: tv-shimmer 1.4s linear infinite;
+}
+
+/* Soft focus ring respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

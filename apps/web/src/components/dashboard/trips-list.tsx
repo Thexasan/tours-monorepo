@@ -4,15 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
+import { MapPin, Users, Calendar, ArrowRight, Compass, Plane } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import type { BookingStatus } from "@tours/types";
+import { Button } from "@/src/components/ui/button";
 
-const STATUS_LABELS: Record<BookingStatus, { label: string; cls: string }> = {
-  NEW: { label: "Новая", cls: "bg-blue-100 text-blue-700" },
-  IN_PROGRESS: { label: "В работе", cls: "bg-amber-100 text-amber-700" },
-  PAID: { label: "Оплачена", cls: "bg-emerald-100 text-emerald-700" },
-  COMPLETED: { label: "Завершена", cls: "bg-zinc-200 text-zinc-700" },
-  CANCELLED: { label: "Отменена", cls: "bg-red-100 text-red-700" },
+const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
+  NEW:         { label: "Новая",       cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100", dot: "bg-sky-500" },
+  IN_PROGRESS: { label: "В работе",    cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", dot: "bg-amber-500" },
+  PAID:        { label: "Оплачена",    cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:   { label: "Завершена",   cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200", dot: "bg-slate-500" },
+  CANCELLED:   { label: "Отменена",    cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", dot: "bg-rose-500" },
 };
 
 export function TripsList() {
@@ -25,56 +27,135 @@ export function TripsList() {
   });
 
   if (isLoading) {
-    return <div className="text-zinc-500">Загрузка...</div>;
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="tv-surface p-4 flex gap-4 animate-pulse">
+            <div className="w-28 h-28 rounded-xl bg-slate-100" />
+            <div className="flex-1 space-y-2 py-2">
+              <div className="h-4 w-3/5 rounded bg-slate-100" />
+              <div className="h-3 w-2/5 rounded bg-slate-100" />
+              <div className="h-3 w-1/3 rounded bg-slate-100" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
   if (isError || !data) {
-    return <div className="text-red-600">Не удалось загрузить заявки.</div>;
+    return (
+      <div className="tv-surface p-8 text-center text-rose-600">
+        Не удалось загрузить заявки. Попробуйте обновить страницу.
+      </div>
+    );
   }
   if (data.items.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-zinc-200 p-12 text-center">
-        <p className="text-zinc-500 mb-4">У вас пока нет заявок.</p>
-        <Link href={`/${locale}/tours`} className="text-blue-600 hover:underline">
-          Перейти к каталогу туров →
+      <div className="tv-surface-elevated p-12 text-center">
+        <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
+          <Compass className="h-7 w-7" />
+        </div>
+        <h3 className="mt-4 text-lg font-semibold text-slate-900">Пока ни одной поездки</h3>
+        <p className="mt-1 text-slate-500 max-w-md mx-auto">
+          Начните с каталога — там собраны лучшие направления и сезонные предложения.
+        </p>
+        <Link href={`/${locale}/tours`} className="inline-block mt-5">
+          <Button size="lg">
+            <Plane className="h-4 w-4" />
+            Перейти к каталогу туров
+          </Button>
         </Link>
       </div>
     );
   }
 
+  // Sort: active first
+  const order: Record<BookingStatus, number> = {
+    IN_PROGRESS: 0, NEW: 1, PAID: 2, COMPLETED: 3, CANCELLED: 4,
+  };
+  const ordered = [...data.items].sort(
+    (a, b) => (order[a.status] ?? 99) - (order[b.status] ?? 99),
+  );
+
   return (
-    <div className="flex flex-col gap-3">
-      {data.items.map((b) => {
+    <div className="flex flex-col gap-3.5">
+      {ordered.map((b) => {
         const tour = b.tour;
         const tourTitle = tour ? (tour.title[lang] ?? tour.title.ru) : "—";
-        const statusInfo = STATUS_LABELS[b.status];
+        const statusInfo = STATUS_META[b.status]!;
         return (
-          <div key={b.id} className="bg-white rounded-xl border border-zinc-200 p-4 flex gap-4">
-            {tour?.coverImage && (
-              <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-zinc-100">
-                <Image src={tour.coverImage} alt={tourTitle} fill className="object-cover" sizes="96px" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <h3 className="font-semibold text-zinc-900 line-clamp-1">
-                  {tour ? (
-                    <Link href={`/${locale}/tours/${tour.slug}`} className="hover:text-blue-600">
-                      {tourTitle}
-                    </Link>
-                  ) : tourTitle}
-                </h3>
-                <span className={`text-xs font-medium px-2 py-1 rounded ${statusInfo.cls} shrink-0`}>
+          <article
+            key={b.id}
+            className="group tv-surface p-4 sm:p-5 flex flex-col sm:flex-row gap-4 hover:border-teal-200 hover:shadow-[0_10px_30px_-12px_rgba(13,148,136,0.25)] transition-all"
+          >
+            <div className="relative w-full sm:w-32 sm:h-32 aspect-video sm:aspect-square rounded-xl overflow-hidden shrink-0 bg-slate-100 ring-1 ring-slate-200/70">
+              {tour?.coverImage ? (
+                <Image
+                  src={tour.coverImage}
+                  alt={tourTitle}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(min-width: 640px) 128px, 100vw"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center text-slate-400">
+                  <Compass className="h-6 w-6" />
+                </div>
+              )}
+              <div className="absolute top-2 left-2">
+                <span className={`tv-chip ${statusInfo.cls}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusInfo.dot}`} />
                   {statusInfo.label}
                 </span>
               </div>
-              <p className="text-sm text-zinc-600">{tour?.country}</p>
-              <div className="flex items-center gap-4 mt-2 text-sm text-zinc-500">
-                <span>Гостей: {b.guestsCount}</span>
-                <span>Сумма: ${b.totalPriceUsd}</span>
-                <span>{new Date(b.createdAt).toLocaleDateString("ru-RU")}</span>
-              </div>
             </div>
-          </div>
+
+            <div className="flex-1 min-w-0 flex flex-col">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-semibold text-slate-900 leading-tight line-clamp-2 group-hover:text-teal-700 transition-colors">
+                  {tour ? (
+                    <Link href={`/${locale}/tours/${tour.slug}`} className="focus:outline-none">
+                      {tourTitle}
+                    </Link>
+                  ) : (
+                    tourTitle
+                  )}
+                </h3>
+              </div>
+
+              {tour?.country && (
+                <p className="text-sm text-slate-500 flex items-center gap-1 mb-3">
+                  <MapPin className="h-3.5 w-3.5 text-teal-600" />
+                  {tour.country}
+                </p>
+              )}
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+                <div className="flex items-center gap-1.5 text-slate-600">
+                  <Users className="h-3.5 w-3.5 text-slate-400" />
+                  <span>Гостей: <strong className="text-slate-900">{b.guestsCount}</strong></span>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-600">
+                  <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                  <span>{new Date(b.createdAt).toLocaleDateString("ru-RU")}</span>
+                </div>
+                <div className="text-slate-600 flex items-center gap-1.5">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500" />
+                  <span>Сумма: <strong className="text-slate-900 tabular-nums">${b.totalPriceUsd}</strong></span>
+                </div>
+              </div>
+
+              {tour && (
+                <Link
+                  href={`/${locale}/tours/${tour.slug}`}
+                  className="mt-auto pt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800 self-start"
+                >
+                  Подробнее о туре
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
+            </div>
+          </article>
         );
       })}
     </div>

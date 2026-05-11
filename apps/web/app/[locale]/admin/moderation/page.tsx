@@ -1,10 +1,16 @@
+import { MessageSquare } from "lucide-react";
 import { AdminModerationList } from "@/src/components/admin/admin-moderation-list";
+import { AdminPageHeader } from "@/src/components/admin/admin-page-header";
 
 export default function AdminModerationPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-zinc-900 mb-2">Модерация отзывов</h1>
-      <p className="text-sm text-zinc-600 mb-6">Одобряй отзывы — они появятся на странице тура и в блоке «Последние отзывы» на главной.</p>
+      <AdminPageHeader
+        eyebrow="Контент"
+        title="Модерация отзывов"
+        description="Одобряйте отзывы — они появятся на странице тура и в блоке «Последние отзывы» на главной."
+        icon={<MessageSquare className="h-5 w-5" />}
+      />
       <AdminModerationList />
     </div>
   );
