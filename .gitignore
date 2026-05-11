@@ -16,3 +16,4 @@ coverage
 
 # logs
 *.log
+prod-init.sql

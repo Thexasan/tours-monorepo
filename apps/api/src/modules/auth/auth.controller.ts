@@ -75,9 +75,11 @@ export class AuthController {
 
   private setAuthCookies(res: Response, tokens: AuthTokens) {
     const isProd = this.config.get<string>("NODE_ENV") === "production";
+    // В проде фронт и API живут на разных доменах (Vercel + Render),
+    // поэтому cookies должны быть SameSite=None; Secure — иначе браузер их не отправит.
     const baseOpts = {
       httpOnly: true,
-      sameSite: "lax" as const,
+      sameSite: (isProd ? "none" : "lax") as "none" | "lax",
       secure: isProd,
       path: "/",
     };
@@ -92,7 +94,13 @@ export class AuthController {
   }
 
   private clearAuthCookies(res: Response) {
-    res.clearCookie(ACCESS_COOKIE, { path: "/" });
-    res.clearCookie(REFRESH_COOKIE, { path: "/" });
+    const isProd = this.config.get<string>("NODE_ENV") === "production";
+    const baseOpts = {
+      path: "/",
+      sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+      secure: isProd,
+    };
+    res.clearCookie(ACCESS_COOKIE, baseOpts);
+    res.clearCookie(REFRESH_COOKIE, baseOpts);
   }
 }

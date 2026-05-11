@@ -15,6 +15,10 @@ async function bootstrap() {
   }));
   app.use(cookieParser());
 
+  // На проде фронт и API на разных доменах (Vercel + Render),
+  // поэтому Express должен доверять прокси Render — иначе secure cookies не выставятся.
+  app.getHttpAdapter().getInstance().set("trust proxy", 1);
+
   // CORS
   app.enableCors({
     origin: (process.env.WEB_ORIGIN ?? "http://localhost:3000").split(","),
@@ -58,9 +62,10 @@ async function bootstrap() {
     },
   });
 
+  // На Render и других PaaS нужно слушать 0.0.0.0, иначе health-check не достучится.
   const port = Number(process.env.PORT ?? 4000);
-  await app.listen(port);
-  logger.log(`API listening on http://localhost:${port}/api/v1`);
-  logger.log(`Swagger UI:      http://localhost:${port}/api/v1/docs`);
+  await app.listen(port, "0.0.0.0");
+  logger.log(`API listening on port ${port} (prefix /api/v1)`);
+  logger.log(`Swagger UI available at /api/v1/docs`);
 }
 void bootstrap();
