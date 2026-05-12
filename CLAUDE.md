@@ -77,8 +77,9 @@ Tours/
 │   │   │   │   ├── reviews/           # review-card
 │   │   │   │   ├── bookings/          # booking-modal, book-button (Day 3)
 │   │   │   │   ├── dashboard/         # dashboard-shell, profile-form, trips-list, referrals-panel (Day 3-4)
-│   │   │   │   ├── admin/             # admin-shell, admin-tours-list, tour-form-modal, admin-partner-applications (Day 3-4)
-│   │   │   │   ├── partners/          # become-partner-form, partner-shell, partner-dashboard, partner-finance, payout-request-modal (Day 4-5)
+│   │   │   │   ├── admin/             # admin-shell, admin-tours-list, admin-partners-list (post-MVP: создание партнёров вручную)
+│   │   │   │   ├── partners/          # partner-shell, partner-dashboard, partner-finance, payout-request-modal
+│   │   │   │   #                      # become-partner-form УДАЛЁН (self-application отключён)
 │   │   │   │   ├── search/            # search-form
 │   │   │   │   └── shared/            # currency-selector
 │   │   │   ├── shared/
@@ -100,9 +101,9 @@ Tours/
 │               ├── users/             # PATCH /users/me
 │               ├── tours/             # GET /tours (с фильтрами), GET /tours/:slug
 │               ├── bookings/          # POST /bookings (с auto-ref), GET /bookings/my, ADMIN: list+update status
-│               ├── admin/             # AdminToursController (CRUD туров) + AdminUsersController (список пользователей с фильтрами)
+│               ├── admin/             # AdminToursController + AdminUsersController + AdminPartnersController (ручное создание партнёров)
 │               ├── referrals/         # POST /click, GET /stats, GET /partner/stats (timeline за 30 дней + transactions)
-│               ├── partners/          # PartnerApplications: submit/getMy + ADMIN list/review (approve→role PARTNER)
+│               ├── partners/          # УДАЛЁН (self-application отключён). Управление партнёрами в AdminPartnersController
 │               ├── payouts/           # POST /payouts (PARTNER), GET /payouts/my, ADMIN: list+process (approve/reject)
 │               ├── reviews/           # POST /reviews (auth с PAID-проверкой), public list, ADMIN moderate (с пересчётом avgRating)
 │               └── email/             # EmailService с Resend (если RESEND_API_KEY) или console-fallback. Шаблоны: welcome/booking/status/reward
@@ -139,10 +140,10 @@ Tours/
 | POST | `/api/v1/referrals/click` | Public | Запись клика по реф-ссылке (вызывается из Next middleware) |
 | GET | `/api/v1/referrals/stats` | Auth | Статистика клиента: clicks, регистрации, оплаты, прогресс к бесплатному туру |
 | GET | `/api/v1/partner/stats` | PARTNER+ADMIN | Расширенная статистика партнёра: timeline за 30 дней, totals, transactions |
-| POST | `/api/v1/partner-applications` | Auth | Подать заявку на партнёрство |
-| GET | `/api/v1/partner-applications/me` | Auth | Моя заявка |
-| GET | `/api/v1/admin/partner-applications` | ADMIN | Список заявок (фильтр по status) |
-| PATCH | `/api/v1/admin/partner-applications/:id` | ADMIN | Approve/Reject. При APPROVE: `User.role=PARTNER`, `isPartnerApproved=true` |
+| POST | `/api/v1/admin/partners` | ADMIN | Создать партнёра вручную. Генерит реф-код + временный пароль, отправляет email с паролем |
+| GET | `/api/v1/admin/partners` | ADMIN | Список партнёров с метриками (баланс, кол-во рефералов) |
+| PATCH | `/api/v1/admin/partners/:id` | ADMIN | Обновить (имя, телефон, isActive) |
+| POST | `/api/v1/admin/partners/:id/reset-password` | ADMIN | Сгенерить новый временный пароль и отправить email партнёру |
 | POST | `/api/v1/payouts` | PARTNER+ADMIN | Запрос вывода. Атомарно списывает balance + создаёт Payout REQUESTED + Transaction. Минимум $50 |
 | GET | `/api/v1/payouts/my` | Auth | Мои запросы на вывод |
 | GET | `/api/v1/admin/payouts` | ADMIN | Все запросы (фильтр по status) |
@@ -328,6 +329,10 @@ DATABASE_URL=postgresql://tours:tours_dev_password@localhost:5432/tours?schema=p
 - ✅ День 6 — ReviewsModule (UGC + модерация с пересчётом avgRating), EmailService (Resend + dev-fallback), email-триггеры (welcome/booking/status/reward), /dashboard/reviews(/new), /admin/moderation
 - ✅ День 7 — Swagger UI на /api/v1/docs (все 28 эндпоинтов задокументированы), LanguageSwitcher RU/EN в навбаре, полный DEPLOY.md с тремя сценариями (свой VPS / Vercel+Render+Neon / Railway)
 - ✅ **Day 7+ post-MVP апгрейд (после pull с ноутбука):** полный UI-refresh с design system на CSS-переменных, AdminUsersModule + страница `/admin/users`, страницы `/admin/profile` и `/partner/profile`, compound DB indexes для скорости, 4 spec-теста на сервисы (~1137 строк), новые компоненты page-header / admin-page-header
+- ✅ **Day 7++ business changes (post-prod-deploy):**
+  - **Партнёрство ручное (по требованию клиента):** убрали self-application flow целиком. Партнёров теперь создаёт админ вручную через `POST /admin/partners`. Email с временным паролем уходит автоматически. Страница `/admin/partners` со списком + кнопкой «Добавить партнёра». Старые маршруты `/become-partner` и `/admin/partner-applications` удалены, `PartnersModule` (заявки) удалён. Таблица `partner_applications` в БД оставлена как dormant — не используется.
+  - **Гостевая регистрация через email:** в письме «Заявка получена» для гостей теперь есть CTA «Зарегистрироваться» с pre-fill email и bookingId. При регистрации `AuthService.register` атомарно подцепляет все гостевые заявки этого email (`UPDATE bookings SET user_id WHERE user_id IS NULL AND contact_email = ?`). Если регистрация пришла с `?bookingId=` — редирект на `/dashboard/trips`, чтобы пользователь сразу увидел свою заявку.
+  - **⚠️ Известный баг прода (отложен):** реферальный код не доходит от Vercel-фронта до Render-API через cross-domain cookie. Cookie `tours_ref` ставится на домене Vercel и не отдаётся при POST на Render. Решение: передавать `referralCode` явно в body POST `/bookings` (фронт читает cookie через JS и кладёт в DTO). Ждём подтверждения от клиента.
 
 ## 15.1 Дизайн-система (UI Day 7+)
 

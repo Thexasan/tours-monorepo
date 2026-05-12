@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { getRoleHome } from "@/src/shared/hooks/role-routes";
@@ -31,14 +31,20 @@ export function RegisterForm() {
   const { register: registerUser, isLoading } = useAuth();
   const router = useRouter();
   const locale = useLocale();
+  const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
   const [refFromCookie, setRefFromCookie] = useState<string | undefined>();
+
+  // Параметры из URL: ?email=... (pre-fill email после гостевой заявки),
+  // ?bookingId=... (есть гостевая заявка — после регистрации идём в /dashboard/trips).
+  const prefillEmail = searchParams?.get("email") ?? "";
+  const hasGuestBooking = Boolean(searchParams?.get("bookingId"));
 
   const {
     register, handleSubmit, setValue, formState: { errors },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", fullName: "", phone: "", referralCode: "" },
+    defaultValues: { email: prefillEmail, password: "", fullName: "", phone: "", referralCode: "" },
   });
 
   useEffect(() => {
@@ -59,7 +65,12 @@ export function RegisterForm() {
         phone: values.phone || undefined,
         referralCode: values.referralCode || undefined,
       });
-      router.push(getRoleHome(u.role, locale));
+      // Если была гостевая заявка — ведём пользователя сразу в "Мои поездки",
+      // чтобы он увидел только что привязанную к нему заявку.
+      const target = hasGuestBooking
+        ? `/${locale}/dashboard/trips`
+        : getRoleHome(u.role, locale);
+      router.push(target);
       router.refresh();
     } catch (e) {
       setServerError(e instanceof Error ? e.message : "Ошибка регистрации");
@@ -68,6 +79,13 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      {hasGuestBooking && (
+        <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-800">
+          У вас уже есть гостевая заявка. После регистрации она появится в вашем кабинете —
+          сможете отслеживать статус и оставить отзыв после поездки.
+        </div>
+      )}
+
       <div>
         <Label htmlFor="fullName">Имя и фамилия</Label>
         <Input id="fullName" autoComplete="name" {...register("fullName")} />

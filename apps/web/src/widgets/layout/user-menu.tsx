@@ -8,7 +8,7 @@ import { useAuthStore } from "@/src/shared/store/auth-store";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
 
-export function UserMenu() {
+export function UserMenu({ transparent = false }: { transparent?: boolean }) {
   const user = useAuthStore((s) => s.user);
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const { logout } = useAuth();
@@ -35,7 +35,11 @@ export function UserMenu() {
       <div className="flex items-center gap-2">
         <Link
           href={`/${locale}/login`}
-          className="inline-flex items-center gap-1 text-sm font-medium text-zinc-700 hover:text-zinc-900 px-3 py-2 rounded-md"
+          className={`inline-flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+            transparent
+              ? "text-white/85 hover:text-white hover:bg-white/10"
+              : "text-zinc-700 hover:text-zinc-900"
+          }`}
         >
           <LogIn className="w-4 h-4" />
           Войти

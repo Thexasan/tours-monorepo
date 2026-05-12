@@ -42,7 +42,6 @@ export function Footer() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400 mb-3">Компания</p>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/ru/become-partner" className="text-slate-600 hover:text-teal-700">Партнёрам</Link></li>
               <li><Link href="/ru/dashboard/referrals" className="text-slate-600 hover:text-teal-700">Реферальная программа</Link></li>
               <li><a href="mailto:support@traveling-tours.local" className="text-slate-600 hover:text-teal-700">Поддержка</a></li>
             </ul>

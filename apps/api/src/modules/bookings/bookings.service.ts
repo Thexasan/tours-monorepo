@@ -75,10 +75,17 @@ export class BookingsService {
       `Booking created: ${booking.id}, tour=${tour.slug}, ref=${referrerId ?? "none"}`,
     );
 
-    // Email клиенту "заявка получена"
+    // Email клиенту "заявка получена".
+    // Для гостей (userId === null) — добавляем кнопку регистрации с pre-fill email
+    // и bookingId, чтобы после регистрации заявка привязалась к новому аккаунту.
     const tourTitleRu = (tour.title as { ru?: string }).ru ?? tour.slug;
+    const isGuest = !ctx.userId;
     void this.email.sendBookingReceived(
-      booking.contactEmail, booking.contactName, tourTitleRu, Number(totalPriceUsd),
+      booking.contactEmail,
+      booking.contactName,
+      tourTitleRu,
+      Number(totalPriceUsd),
+      { bookingId: booking.id, isGuest },
     ).catch(() => undefined);
 
     return this.serialize(booking);
@@ -194,7 +201,6 @@ export class BookingsService {
       return { booking: updated, rewardInfo, referrerEmail, referrerName };
     });
 
-    // Email вне транзакции: статус и reward (fire-and-forget)
     const tourTitleRu = (booking.tour.title as { ru?: string }).ru ?? booking.tour.slug;
     if (statusChanged) {
       void this.email.sendBookingStatusChanged(
@@ -210,7 +216,6 @@ export class BookingsService {
     return this.serialize(result.booking);
   }
 
-  /** Возвращает информацию о начислении (для последующей отправки email). */
   private async applyReferralReward(
     tx: Prisma.TransactionClient,
     bookingId: string,

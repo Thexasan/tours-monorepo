@@ -11,7 +11,8 @@ import { ToursModule } from "./modules/tours/tours.module";
 import { BookingsModule } from "./modules/bookings/bookings.module";
 import { AdminModule } from "./modules/admin/admin.module";
 import { ReferralsModule } from "./modules/referrals/referrals.module";
-import { PartnersModule } from "./modules/partners/partners.module";
+// PartnersModule (self-application) удалён — партнёров теперь создаёт админ вручную.
+// Управление партнёрами — в AdminPartnersController внутри AdminModule.
 import { PayoutsModule } from "./modules/payouts/payouts.module";
 import { ReviewsModule } from "./modules/reviews/reviews.module";
 import { EmailModule } from "./modules/email/email.module";
@@ -32,7 +33,6 @@ import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
     BookingsModule,
     AdminModule,
     ReferralsModule,
-    PartnersModule,
     PayoutsModule,
     ReviewsModule,
   ],

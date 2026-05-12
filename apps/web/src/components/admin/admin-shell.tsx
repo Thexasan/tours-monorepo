@@ -56,7 +56,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       title: "Пользователи",
       items: [
         { href: `/${locale}/admin/users`, label: "Пользователи", icon: Users },
-        { href: `/${locale}/admin/partner-applications`, label: "Заявки партнёров", icon: UserCog },
+        { href: `/${locale}/admin/partners`, label: "Партнёры", icon: UserCog },
       ],
     },
     {

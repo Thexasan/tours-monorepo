@@ -254,6 +254,20 @@ html, body {
   animation: tv-shimmer 1.4s linear infinite;
 }
 
+/* ── Hero Cinematic — CSS crossfade between 3 photos ── */
+@keyframes hero-crossfade {
+  0%   { opacity: 0; transform: scale(1.04); }
+  8%   { opacity: 1; transform: scale(1.04); }
+  32%  { opacity: 1; transform: scale(1.00); }
+  38%  { opacity: 0; transform: scale(1.00); }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+.hero-photo {
+  animation: hero-crossfade 18s ease-in-out infinite;
+  animation-fill-mode: backwards;
+  will-change: opacity, transform;
+}
+
 /* Soft focus ring respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -261,4 +275,7 @@ html, body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+  /* Keep only first hero photo visible, hide animated ones */
+  .hero-photo { animation: none !important; opacity: 0 !important; }
+  .hero-photo:nth-child(1) { opacity: 1 !important; }
 }

@@ -186,10 +186,11 @@ export function ReferralsPanel() {
           <div>
             <p className="font-semibold text-slate-900">Хотите зарабатывать 5% с каждой продажи?</p>
             <p>
-              Подайте заявку — для блогеров и агентов.{" "}
-              <a href={`/${locale}/become-partner`} className="font-semibold text-teal-700 underline underline-offset-2">
-                Стать партнёром
+              Партнёрство — для блогеров и агентов с большой аудиторией. Партнёров мы приглашаем сами; напишите нам на{" "}
+              <a href="mailto:support@traveling-tours.local" className="font-semibold text-teal-700 underline underline-offset-2">
+                support@traveling-tours.local
               </a>
+              , если хотите сотрудничать.
             </p>
           </div>
         </div>
@@ -243,11 +244,11 @@ function StatTile({
   );
 }
 
+
 function pluralize(n: number, one: string, few: string, many: string): string {
   const mod10 = n % 10;
   const mod100 = n % 100;
-  if (mod100 >= 11 && mod100 <= 14) return many;
-  if (mod10 === 1) return one;
-  if (mod10 >= 2 && mod10 <= 4) return few;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
   return many;
 }

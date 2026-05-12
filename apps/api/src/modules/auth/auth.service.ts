@@ -62,10 +62,19 @@ export class AuthService {
       select: { id: true, email: true, role: true, fullName: true, referralCode: true },
     });
 
+    // Автопривязка гостевых заявок: если есть бронирования с тем же email
+    // и без user_id — связываем их с новым аккаунтом.
+    const adoptedCount = await this.prisma.booking.updateMany({
+      where: { userId: null, contactEmail: email },
+      data: { userId: user.id },
+    });
+    if (adoptedCount.count > 0) {
+      this.logger.log(`Adopted ${adoptedCount.count} guest booking(s) for user=${user.email}`);
+    }
+
     const tokens = await this.issueTokens(user.id, user.email, user.role);
     this.logger.log(`User registered: ${user.email}${referrerId ? ` (ref: ${referrerId})` : ""}`);
 
-    // Welcome email (fire-and-forget — не блокируем регистрацию если email упал)
     void this.email.sendWelcome(user.email, user.fullName, user.referralCode).catch(() => undefined);
 
     return { userId: user.id, tokens };
