@@ -1,5 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import * as nodemailer from "nodemailer";
+import type { Transporter } from "nodemailer";
 
 interface EmailPayload {
   to: string;
@@ -7,30 +9,55 @@ interface EmailPayload {
   html: string;
 }
 
-interface ResendResponse {
-  id?: string;
-  error?: { message: string };
-}
-
 @Injectable()
-export class EmailService {
+export class EmailService implements OnModuleInit {
   private readonly logger = new Logger(EmailService.name);
-  private readonly resendApiKey: string | undefined;
+  private transporter: Transporter | null = null;
   private readonly fromAddress: string;
 
   constructor(private readonly config: ConfigService) {
-    this.resendApiKey = this.config.get<string>("RESEND_API_KEY");
-    this.fromAddress = this.config.get<string>("EMAIL_FROM") ?? "Tours <onboarding@resend.dev>";
+    this.fromAddress = this.config.get<string>("MAIL_FROM") ?? "Tours <no-reply@tours.local>";
+  }
 
-    if (!this.resendApiKey) {
+  /**
+   * Поднимаем SMTP-транспорт при старте. Если MAIL_HOST не задан — оставляем null,
+   * и тогда .send() уходит в console-fallback (полезно для разработки и для preview-окружений).
+   */
+  async onModuleInit(): Promise<void> {
+    const host = this.config.get<string>("MAIL_HOST");
+    if (!host) {
       this.logger.warn(
-        "RESEND_API_KEY not set. Emails will be logged to console instead of sent (dev mode).",
+        "MAIL_HOST not set — emails will be logged to console (no SMTP transport configured).",
       );
+      return;
+    }
+
+    const port = Number(this.config.get<string>("MAIL_PORT") ?? 587);
+    const secure = String(this.config.get<string>("MAIL_SECURE") ?? "false").toLowerCase() === "true";
+    const user = this.config.get<string>("MAIL_USER");
+    const pass = this.config.get<string>("MAIL_PASS");
+
+    this.transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure, // true для 465 (SMTPS), false для 587 (STARTTLS)
+      auth: user && pass ? { user, pass } : undefined,
+    });
+
+    try {
+      await this.transporter.verify();
+      this.logger.log(`SMTP transport ready (${host}:${port}, secure=${secure})`);
+    } catch (err) {
+      this.logger.error(`SMTP verify failed: ${(err as Error).message}. Emails will fail at send-time.`);
     }
   }
 
+  /**
+   * Базовая отправка. Если транспорт инициализирован — шлём через SMTP (nodemailer).
+   * Если нет — логируем письмо в консоль (dev-режим).
+   */
   async send(payload: EmailPayload): Promise<void> {
-    if (!this.resendApiKey) {
+    if (!this.transporter) {
       this.logger.log(
         `[EMAIL DEV-LOG] To: ${payload.to} | Subject: ${payload.subject}\n--- HTML ---\n${payload.html.slice(0, 500)}\n---`,
       );
@@ -38,27 +65,15 @@ export class EmailService {
     }
 
     try {
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${this.resendApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: this.fromAddress,
-          to: payload.to,
-          subject: payload.subject,
-          html: payload.html,
-        }),
+      const info = await this.transporter.sendMail({
+        from: this.fromAddress,
+        to: payload.to,
+        subject: payload.subject,
+        html: payload.html,
       });
-      const data = (await response.json()) as ResendResponse;
-      if (!response.ok || data.error) {
-        this.logger.error(`Resend send failed: ${data.error?.message ?? response.statusText}`);
-        return;
-      }
-      this.logger.log(`Email sent to ${payload.to}: ${data.id}`);
+      this.logger.log(`Email sent to ${payload.to} (messageId=${info.messageId})`);
     } catch (err) {
-      this.logger.error(`Email send exception: ${(err as Error).message}`);
+      this.logger.error(`Email send failed to ${payload.to}: ${(err as Error).message}`);
     }
   }
 
