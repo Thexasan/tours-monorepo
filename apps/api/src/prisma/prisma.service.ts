@@ -1,5 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit, Logger } from "@nestjs/common";
-import { PrismaClient } from "@tours/db";
+// Импортируем напрямую из @prisma/client — стабильный публичный API,
+// без re-export-цепочки через @tours/db (исключает edge case на Render TSC).
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
