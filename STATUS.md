@@ -1,0 +1,176 @@
+# STATUS.md — текущее состояние проекта
+
+> Передаточный документ для следующей сессии Claude (и для разработчика).
+> Читать после `CLAUDE.md` (общий контекст). Дата: **13 May 2026**.
+> Связанные доки: `EMAIL_SETUP.md` (план по email), `DEPLOY.md` (гайд деплоя), `PLAN.md` (история).
+
+---
+
+## 1. Прод-окружение (живёт прямо сейчас)
+
+| Слой | URL / Платформа | Статус |
+|---|---|---|
+| Web (Next.js 16) | https://tours-monorepo-web.vercel.app | ✅ Live |
+| API (NestJS 11) | https://tours-api-5h5s.onrender.com/api/v1 | ✅ Live (Render Free, cold-start ~50s) |
+| БД (Postgres 17) | Neon, проект `tours-prod`, US East 1 | ✅ Live, 10 туров + 4 партнёра + 3 юзера в seed |
+| Swagger | https://tours-api-5h5s.onrender.com/api/v1/docs | ✅ |
+| Email | Nodemailer + Gmail SMTP (НЕ РАБОТАЕТ на Render Free, см. ниже) | ❌ |
+
+**Тестовые учётки:**
+- `admin@tours.local` / `admin123` — ADMIN
+- `alice@tours.local` / `client123` — CLIENT
+- `bob@tours.local` / `partner123` — PARTNER (деактивирован недавно, можно реактивировать в /admin/partners)
+- `test-partner-1@tours.local` / `partner123` — PARTNER, реф-код `H2BNDJPN`
+
+---
+
+## 2. Что сделано в последней итерации (после прода)
+
+### ✅ Этап 1 — Партнёрство «только админ создаёт вручную»
+- Удалён `PartnersModule` на API (заявки от пользователей).
+- Удалены страницы `/become-partner` и `/admin/partner-applications`.
+- Удалены компоненты `become-partner-form` и `admin-partner-applications`.
+- Удалены ссылки на «Партнёрам» / «Стать партнёром» в навбаре, футере, дашборде клиента.
+- Добавлен **новый** `AdminPartnersController` (`POST /admin/partners`, `GET /admin/partners`, `PATCH /admin/partners/:id`, `POST /admin/partners/:id/reset-password`).
+- Добавлены email-шаблоны `sendPartnerWelcome` и `sendPartnerPasswordReset`.
+- Добавлена **новая страница** `/admin/partners` с таблицей партнёров и модалкой «Добавить партнёра».
+- Добавлен пункт «Партнёры» в боковом меню админки.
+- **Проверено E2E** в браузере: партнёр создаётся, попадает в /partner кабинет.
+
+### ✅ Этап 2 — Гостевая регистрация через email после заявки
+- Email-шаблон `sendBookingReceived` теперь принимает `bookingId` и `isGuest`, и для гостей в письме рендерится CTA «Зарегистрироваться» со ссылкой `/register?email=<email>&bookingId=<id>`.
+- В `AuthService.register` после создания юзера атомарно выполняется `UPDATE bookings SET user_id = newId WHERE user_id IS NULL AND contact_email = newEmail` — все гостевые заявки этого email автоматически привязываются к новому юзеру.
+- Страница `/register` читает `?email` (pre-fill) и `?bookingId` (показывает баннер «у вас есть гостевая заявка», после регистрации редиректит на `/dashboard/trips`).
+- **Проверено E2E**: гость подал заявку → зарегистрировался → заявка появилась в `/dashboard/trips`.
+
+### ✅ Дополнительно: убрана «Подать заявку» с главной landing
+- На главной `apps/web/app/[locale]/(public)/page.tsx` в секции «DUAL CTA» был блок «Станьте партнёром / Подать заявку» со ссылкой на удалённую страницу `/become-partner`.
+- Заменён на «Партнёрская программа / Связаться с нами» с ссылкой `mailto:support@traveling-tours.local?subject=Заявка%20на%20партнёрство`.
+
+### ✅ Дополнительно: попытка переключить email на Nodemailer + Gmail SMTP
+- Установлен `nodemailer@^6.9.16` + `@types/nodemailer`.
+- `EmailService` переписан с Resend HTTP API на Nodemailer SMTP.
+- Добавлены env: `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM`.
+- `verify()` вызывается в фоне (не блокирует bootstrap).
+- **НЕ РАБОТАЕТ в проде**: Render Free блокирует исходящие SMTP-порты (25/465/587). См. `EMAIL_SETUP.md`.
+
+---
+
+## 3. Что отложено / не сделано
+
+### ⚠️ Реферальный код cross-domain (важно!)
+**Симптом:** в проде, когда клиент шарит реф-ссылку и друг бронирует тур как гость — `referralCount` приглашающего НЕ увеличивается после перевода заявки на PAID.
+
+**Причина:** middleware на Vercel-домене (`tours-monorepo-web.vercel.app`) ставит cookie `tours_ref=CODE`. Но booking-POST уходит на Render-домен (`tours-api-5h5s.onrender.com`) — браузер не отправляет cookies между разными доменами. В итоге `bookings.controller.ts` строка 37 (`req.cookies?.[REF_COOKIE]`) всегда читает `undefined`, и `referrerId` записывается `null`. Триггер начисления вознаграждения `applyReferralReward` пропускается.
+
+**Как починить (когда вернёмся):**
+1. На фронте: при сабмите формы `booking-modal.tsx` читать cookie `tours_ref` через JS (она НЕ httpOnly, см. `apps/web/middleware.ts` строка 43) и подкладывать в body POST `/bookings` как поле `referralCode`.
+2. В DTO `CreateBookingDto` добавить опциональное поле `referralCode: string`.
+3. В `bookings.controller.ts`: брать referral сначала из `dto.referralCode`, потом из cookie как fallback.
+4. Тест: открыть инкогнито, перейти по `?ref=...`, забронировать как гость, в админке поставить PAID — у реферера должно подняться `referralCount`.
+
+**Локально на одном `localhost` это работало в день 5** (мы тестировали через Claude in Chrome и Bob получил +$85). На прод-доменах ломается, потому что разные origins.
+
+### ⚠️ Email не работает в проде
+- Render Free блокирует SMTP. См. `EMAIL_SETUP.md` для полного плана:
+  - Рекомендую **Brevo** (HTTPS API, 300 писем/день бесплатно, не требует домена).
+  - Альтернатива — **Resend** (HTTPS API, 3000/мес).
+  - Или **Mailgun:2525** (нестандартный SMTP порт, обычно проходит).
+  - Или поднять Render до Starter ($7/мес).
+
+### ⚠️ Старая таблица `partner_applications` в БД
+- Таблица существует в схеме Prisma (`packages/db/prisma/schema.prisma`), не используется кодом.
+- Можно либо оставить как dormant (ничего страшного), либо в следующей миграции дропнуть.
+
+### ⚠️ Старая ссылка в `referrals-panel.tsx`
+- Файл `apps/web/src/components/dashboard/referrals-panel.tsx` — в нём блок «Хотите зарабатывать 5%» теперь корректный (mailto), но содержит упоминание `support@traveling-tours.local`. Если домен изменится — поправить и тут, и в landing page.
+
+---
+
+## 4. Структура файлов (что где живёт)
+
+### API (`apps/api/src/`)
+- `modules/admin/admin-partners.controller.ts` — endpoints `/admin/partners`
+- `modules/admin/admin-partners.service.ts` — бизнес-логика создания партнёров
+- `modules/admin/dto/create-partner.dto.ts`, `update-partner.dto.ts` — DTO
+- `modules/email/email.service.ts` — отправка писем (сейчас Nodemailer/SMTP)
+- `modules/partners/` — **пустые stub-ы**, директорию можно удалить вручную (`rmdir /s /q apps\api\src\modules\partners`)
+- `modules/auth/auth.service.ts` — в методе `register()` добавлена автопривязка гостевых заявок (`updateMany` после `user.create`)
+- `modules/bookings/bookings.service.ts` — в методе `create()` теперь передаёт `bookingId` и `isGuest` в `sendBookingReceived`
+
+### Web (`apps/web/`)
+- `src/components/admin/admin-partners-list.tsx` — список + модалка добавления партнёра
+- `src/shared/api/admin-partners-api.ts` — API-клиент для admin/partners
+- `app/[locale]/admin/partners/page.tsx` — страница `/admin/partners`
+- `src/components/auth/register-form.tsx` — читает `?email` и `?bookingId`, баннер «гостевая заявка»
+- `src/components/admin/admin-shell.tsx` — в сайдбаре пункт «Партнёры» вместо «Заявки партнёров»
+- `app/[locale]/become-partner/page.tsx` — **stub** (redirect на `/`), можно удалить
+- `app/[locale]/admin/partner-applications/page.tsx` — **stub**, можно удалить
+- `src/components/partners/become-partner-form.tsx` — **stub**
+- `src/components/admin/admin-partner-applications.tsx` — **stub**
+- `src/shared/api/partners-api.ts` — **пустой stub** (`export const partnersApi = {}`)
+
+### Документация (root)
+- `CLAUDE.md` — общий контекст проекта (обновлён до Day 7++)
+- `EMAIL_SETUP.md` — план по email (HTTPS-провайдеры vs SMTP)
+- `STATUS.md` — этот файл
+- `DEPLOY.md` — гайд деплоя
+- `PLAN.md` — история работ
+- `prod-init.sql` — SQL для первичной заливки (в .gitignore)
+
+---
+
+## 5. План следующей сессии
+
+Если приоритеты не поменялись, делать в таком порядке:
+
+### 1. Включить отправку email в проде (самое срочное)
+Выбрать провайдера из `EMAIL_SETUP.md`. Я рекомендую **Brevo** — потому что:
+- Бесплатно 300 писем/день навсегда.
+- Не требует подтверждения домена для отправки.
+- Простой HTTPS API.
+
+**Что сделать в коде:**
+1. `npm i @getbrevo/brevo --workspace=apps/api` (или ручной fetch без SDK).
+2. В `EmailService.send` добавить ветку: если `BREVO_API_KEY` есть → шлём через Brevo, иначе fallback на Nodemailer SMTP, иначе console-лог.
+3. В Render env добавить `BREVO_API_KEY=...`.
+4. Создать тестового партнёра на свой email → проверить, что пришло.
+
+### 2. Починить cross-domain рефералку
+План в разделе 3 этого файла («Реферальный код cross-domain»).
+
+### 3. Удалить мусор
+- Удалить директорию `apps/api/src/modules/partners/` (там stub-ы).
+- Удалить файлы:
+  - `apps/web/app/[locale]/become-partner/page.tsx`
+  - `apps/web/app/[locale]/admin/partner-applications/page.tsx`
+  - `apps/web/src/components/partners/become-partner-form.tsx`
+  - `apps/web/src/components/admin/admin-partner-applications.tsx`
+  - `apps/web/src/shared/api/partners-api.ts`
+- Удалить `partner_applications` из Prisma schema + миграция DROP TABLE.
+
+### 4. (Опционально) Поднять Render до Starter
+$7/мес — снимет блокировку SMTP, ускорит cold-start, добавит SSD. Решение бизнес-владельца.
+
+---
+
+## 6. Известные грабли (повторяющиеся)
+
+1. **`Edit` tool обрезает файлы при работе через Windows mount.** Если после Edit файл «обрезан», нужно либо `git show HEAD:<path>` + python-патч, либо переписать целиком через bash heredoc.
+2. **Stale `.next/types/validator.ts`.** Если typecheck ругается на routes — `rm -rf apps/web/.next` и перезапустить.
+3. **`git index.lock`.** Если sandbox оставил lock — `del .git\index.lock` локально перед коммитом.
+4. **Render Free cold-start.** Первый запрос после 15 минут неактивности занимает ~50 секунд. Решение — апгрейд тарифа или пинговать `/health` каждые 14 минут через UptimeRobot.
+
+---
+
+## 7. Контакты / Доступы
+
+- **GitHub repo:** Thexasan/tours-monorepo (private)
+- **Vercel project:** thexasans-projects/tours-monorepo-web
+- **Render service:** tours-api (Free, Frankfurt region)
+- **Neon project:** Husenov Hasan / tours-prod (US East 1)
+- **Gmail для тестов SMTP:** vibeclubtech@gmail.com (App Password сохранён в Render env)
+
+---
+
+**Файл создан Claude 13 May 2026. Обновлять при значимых изменениях.**

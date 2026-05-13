@@ -603,18 +603,18 @@ export default async function HomePage() {
                   Для блогеров и агентов
                 </p>
                 <h3 className="mt-2 text-3xl md:text-4xl font-bold leading-tight tracking-tight">
-                  Станьте партнёром
+                  Партнёрская программа
                 </h3>
                 <p className="mt-3 text-white/90 leading-relaxed max-w-md">
-                  Зарабатывайте 5% с каждой продажи. Подключите свою аудиторию и получайте стабильный доход с путешествий.
+                  Зарабатывайте 5% с каждой продажи по вашей ссылке. Партнёров мы приглашаем индивидуально — напишите нам, расскажите о себе и своей аудитории.
                 </p>
-                <Link
-                  href={`/${locale}/become-partner`}
+                <a
+                  href="mailto:support@traveling-tours.local?subject=Заявка%20на%20партнёрство"
                   className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-rose-600 font-bold text-sm hover:-translate-y-0.5 transition-all"
                 >
-                  Подать заявку
+                  Связаться с нами
                   <ArrowRight className="h-4 w-4" />
-                </Link>
+                </a>
               </div>
             </div>
 
