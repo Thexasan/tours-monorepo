@@ -95,7 +95,7 @@ export class EmailService implements OnModuleInit {
     contactName: string,
     tourTitle: string,
     totalPrice: number,
-    options?: { bookingId?: string; isGuest?: boolean; locale?: string },
+    options?: { bookingId?: string; isGuest?: boolean; locale?: string; contactPhone?: string },
   ): Promise<void> {
     const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
     const locale = options?.locale ?? "ru";
@@ -107,7 +107,7 @@ export class EmailService implements OnModuleInit {
           <p style="margin:0 0 12px;color:#047857;font-size:14px">
             Так вы будете видеть статус, сможете оставить отзыв после поездки, и получите свою реферальную ссылку.
           </p>
-          <a href="${appUrl}/${encodeURIComponent(locale)}/register?email=${encodeURIComponent(to)}${options.bookingId ? `&bookingId=${encodeURIComponent(options.bookingId)}` : ""}"
+          <a href="${appUrl}/${encodeURIComponent(locale)}/register?email=${encodeURIComponent(to)}&name=${encodeURIComponent(contactName)}${options.contactPhone ? `&phone=${encodeURIComponent(options.contactPhone)}` : ""}${options.bookingId ? `&bookingId=${encodeURIComponent(options.bookingId)}` : ""}"
             style="display:inline-block;background:#059669;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600">
             Зарегистрироваться
           </a>

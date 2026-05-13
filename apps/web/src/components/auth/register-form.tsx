@@ -35,16 +35,18 @@ export function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [refFromCookie, setRefFromCookie] = useState<string | undefined>();
 
-  // Параметры из URL: ?email=... (pre-fill email после гостевой заявки),
-  // ?bookingId=... (есть гостевая заявка — после регистрации идём в /dashboard/trips).
+  // Параметры из URL: ?email=... ?name=... ?phone=... (pre-fill после гостевой заявки),
+  // ?bookingId=... (после регистрации идём в /dashboard/trips).
   const prefillEmail = searchParams?.get("email") ?? "";
+  const prefillName = searchParams?.get("name") ?? "";
+  const prefillPhone = searchParams?.get("phone") ?? "";
   const hasGuestBooking = Boolean(searchParams?.get("bookingId"));
 
   const {
     register, handleSubmit, setValue, formState: { errors },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: prefillEmail, password: "", fullName: "", phone: "", referralCode: "" },
+    defaultValues: { email: prefillEmail, password: "", fullName: prefillName, phone: prefillPhone, referralCode: "" },
   });
 
   useEffect(() => {

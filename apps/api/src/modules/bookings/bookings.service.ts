@@ -85,7 +85,7 @@ export class BookingsService {
       booking.contactName,
       tourTitleRu,
       Number(totalPriceUsd),
-      { bookingId: booking.id, isGuest },
+      { bookingId: booking.id, isGuest, contactPhone: booking.contactPhone ?? undefined },
     ).catch(() => undefined);
 
     return this.serialize(booking);
