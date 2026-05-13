@@ -19,10 +19,6 @@ export class EmailService implements OnModuleInit {
     this.fromAddress = this.config.get<string>("MAIL_FROM") ?? "Tours <no-reply@tours.local>";
   }
 
-  /**
-   * Поднимаем SMTP-транспорт при старте. Если MAIL_HOST не задан — оставляем null,
-   * и тогда .send() уходит в console-fallback (полезно для разработки и для preview-окружений).
-   */
   async onModuleInit(): Promise<void> {
     const host = this.config.get<string>("MAIL_HOST");
     if (!host) {
@@ -40,22 +36,21 @@ export class EmailService implements OnModuleInit {
     this.transporter = nodemailer.createTransport({
       host,
       port,
-      secure, // true для 465 (SMTPS), false для 587 (STARTTLS)
+      secure,
       auth: user && pass ? { user, pass } : undefined,
+      connectionTimeout: 10000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000,
     });
+    this.logger.log(`SMTP transport created (${host}:${port}, secure=${secure}, user=${user})`);
 
-    try {
-      await this.transporter.verify();
-      this.logger.log(`SMTP transport ready (${host}:${port}, secure=${secure})`);
-    } catch (err) {
-      this.logger.error(`SMTP verify failed: ${(err as Error).message}. Emails will fail at send-time.`);
-    }
+    // Verify в фоне — не блокируем bootstrap (важно для Render free).
+    this.transporter
+      .verify()
+      .then(() => this.logger.log(`SMTP transport verified ✓ (${host}:${port})`))
+      .catch((err) => this.logger.error(`SMTP verify failed: ${(err as Error).message}`));
   }
 
-  /**
-   * Базовая отправка. Если транспорт инициализирован — шлём через SMTP (nodemailer).
-   * Если нет — логируем письмо в консоль (dev-режим).
-   */
   async send(payload: EmailPayload): Promise<void> {
     if (!this.transporter) {
       this.logger.log(
@@ -95,10 +90,6 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  /**
-   * Письмо о принятой заявке. Для гостей (isGuest=true) добавляем CTA «Зарегистрироваться»
-   * с pre-fill email и bookingId — после регистрации заявка автоматически привяжется к новому юзеру.
-   */
   async sendBookingReceived(
     to: string,
     contactName: string,
