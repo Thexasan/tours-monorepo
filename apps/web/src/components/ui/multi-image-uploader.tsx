@@ -6,8 +6,8 @@ import { uploadImage } from "@/src/shared/api/upload-api";
 import { cn } from "@/src/lib/utils";
 
 interface Item {
-  localUrl: string;  // always shown as preview
-  serverUrl: string | null; // null = uploading
+  localUrl: string;
+  serverUrl: string | null;
 }
 
 interface MultiImageUploaderProps {
@@ -18,61 +18,59 @@ interface MultiImageUploaderProps {
   label?: string;
 }
 
-export function MultiImageUploader({
-  value,
-  onChange,
-  max = 20,
-  hint,
-  label,
-}: MultiImageUploaderProps) {
+function toServerUrls(items: Item[]): string[] {
+  return items.map(it => it.serverUrl).filter((u): u is string => u !== null);
+}
+
+export function MultiImageUploader({ value, onChange, max = 20, hint, label }: MultiImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  // Initialize from value (edit mode: show existing photos)
   const [items, setItems] = useState<Item[]>(() =>
     value.map(url => ({ localUrl: url, serverUrl: url }))
   );
+  // Always-current ref so async callbacks don't work with stale state
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handleFiles = useCallback(async (files: FileList | File[]) => {
-    const list = Array.from(files).slice(0, max - items.length);
+    const list = Array.from(files).slice(0, max - itemsRef.current.length);
     if (list.length === 0) return;
     setError(null);
 
-    // Add items immediately with local previews
     const newItems: Item[] = list.map(f => ({
       localUrl: URL.createObjectURL(f),
       serverUrl: null,
     }));
-    setItems(prev => [...prev, ...newItems]);
 
-    // Upload each file
+    const withPreviews = [...itemsRef.current, ...newItems];
+    setItems(withPreviews);
+
     await Promise.all(
       list.map(async (file, i) => {
         const localUrl = newItems[i]!.localUrl;
         try {
           const serverUrl = await uploadImage(file);
-          setItems(prev => {
-            const updated = prev.map(it =>
-              it.localUrl === localUrl ? { ...it, serverUrl } : it
-            );
-            onChange(updated.map(it => it.serverUrl).filter(Boolean) as string[]);
-            return updated;
-          });
+          const updated = itemsRef.current.map(it =>
+            it.localUrl === localUrl ? { ...it, serverUrl } : it
+          );
+          setItems(updated);
+          onChange(toServerUrls(updated));
         } catch {
-          setItems(prev => prev.filter(it => it.localUrl !== localUrl));
+          const filtered = itemsRef.current.filter(it => it.localUrl !== localUrl);
+          setItems(filtered);
           setError("Ошибка загрузки одного или нескольких файлов.");
         }
       })
     );
-  }, [items, onChange, max]);
+  }, [max, onChange]);
 
-  const remove = (localUrl: string) => {
-    setItems(prev => {
-      const updated = prev.filter(it => it.localUrl !== localUrl);
-      onChange(updated.map(it => it.serverUrl).filter(Boolean) as string[]);
-      return updated;
-    });
-  };
+  const remove = useCallback((localUrl: string) => {
+    const updated = itemsRef.current.filter(it => it.localUrl !== localUrl);
+    setItems(updated);
+    onChange(toServerUrls(updated));
+  }, [onChange]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) handleFiles(e.target.files);
