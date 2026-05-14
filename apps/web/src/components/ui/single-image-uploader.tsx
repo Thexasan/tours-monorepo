@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import Image from "next/image";
 import { UploadCloud, X, Loader2 } from "lucide-react";
 import { uploadImage } from "@/src/shared/api/upload-api";
 import { cn } from "@/src/lib/utils";
@@ -50,8 +49,9 @@ export function SingleImageUploader({ value, onChange, label, hint }: SingleImag
       {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
 
       {value ? (
-        <div className="relative group rounded-xl overflow-hidden ring-1 ring-slate-200 aspect-video w-full max-w-sm">
-          <Image src={value} alt="Обложка" fill className="object-cover" sizes="384px" />
+        <div className="relative group rounded-xl overflow-hidden ring-1 ring-slate-200 aspect-video w-full max-w-sm bg-slate-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="Обложка" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={() => onChange("")}

@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import Image from "next/image";
-import { UploadCloud, X, Loader2, ImagePlus } from "lucide-react";
+import { X, Loader2, ImagePlus } from "lucide-react";
 import { uploadImage } from "@/src/shared/api/upload-api";
 import { cn } from "@/src/lib/utils";
 
@@ -64,8 +63,9 @@ export function MultiImageUploader({
 
       <div className="flex flex-wrap gap-2">
         {value.map((url, idx) => (
-          <div key={url + idx} className="relative group h-20 w-20 rounded-lg overflow-hidden ring-1 ring-slate-200 shrink-0">
-            <Image src={url} alt={`фото ${idx + 1}`} fill className="object-cover" sizes="80px" />
+          <div key={url + idx} className="relative group h-20 w-20 rounded-lg overflow-hidden ring-1 ring-slate-200 shrink-0 bg-slate-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={`фото ${idx + 1}`} className="w-full h-full object-cover" />
             <button
               type="button"
               onClick={() => remove(idx)}
