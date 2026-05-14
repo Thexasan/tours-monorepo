@@ -14,17 +14,22 @@ interface SingleImageUploaderProps {
 
 export function SingleImageUploader({ value, onChange, label, hint }: SingleImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handle = useCallback(async (file: File) => {
     setError(null);
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    setPreview(localUrl);
     setLoading(true);
     try {
-      const url = await uploadImage(file);
-      onChange(url);
+      const serverUrl = await uploadImage(file);
+      onChange(serverUrl);
     } catch {
+      setPreview(null);
       setError("Ошибка загрузки. Попробуйте ещё раз.");
     } finally {
       setLoading(false);
@@ -44,22 +49,36 @@ export function SingleImageUploader({ value, onChange, label, hint }: SingleImag
     if (file) handle(file);
   };
 
+  const clear = () => {
+    setPreview(null);
+    onChange("");
+  };
+
+  const displayUrl = preview ?? value;
+
   return (
     <div className="space-y-1.5">
       {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
 
-      {value ? (
+      {displayUrl ? (
         <div className="relative group rounded-xl overflow-hidden ring-1 ring-slate-200 aspect-video w-full max-w-sm bg-slate-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Обложка" className="w-full h-full object-cover" />
-          <button
-            type="button"
-            onClick={() => onChange("")}
-            className="absolute top-2 right-2 h-7 w-7 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80"
-            aria-label="Удалить фото"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+          <img src={displayUrl} alt="Обложка" className="w-full h-full object-cover" />
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-xl">
+              <Loader2 className="h-7 w-7 animate-spin text-white" />
+            </div>
+          )}
+          {!loading && (
+            <button
+              type="button"
+              onClick={clear}
+              className="absolute top-2 right-2 h-7 w-7 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80"
+              aria-label="Удалить фото"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       ) : (
         <button
@@ -75,12 +94,8 @@ export function SingleImageUploader({ value, onChange, label, hint }: SingleImag
             loading && "pointer-events-none opacity-60"
           )}
         >
-          {loading
-            ? <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
-            : <UploadCloud className="h-8 w-8 text-slate-400" />}
-          <span className="text-sm text-slate-500">
-            {loading ? "Загружаю…" : "Нажмите или перетащите фото"}
-          </span>
+          <UploadCloud className="h-8 w-8 text-slate-400" />
+          <span className="text-sm text-slate-500">Нажмите или перетащите фото</span>
         </button>
       )}
 

@@ -13,6 +13,11 @@ interface MultiImageUploaderProps {
   label?: string;
 }
 
+interface PreviewItem {
+  localUrl: string;
+  serverUrl: string | null; // null = still uploading
+}
+
 export function MultiImageUploader({
   value,
   onChange,
@@ -21,24 +26,40 @@ export function MultiImageUploader({
   label,
 }: MultiImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
+  const [previews, setPreviews] = useState<PreviewItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handleFiles = useCallback(async (files: FileList | File[]) => {
-    const list = Array.from(files).slice(0, max - value.length);
+    const list = Array.from(files).slice(0, max - value.length - previews.filter(p => !p.serverUrl).length);
     if (list.length === 0) return;
     setError(null);
-    setLoading(true);
-    try {
-      const urls = await Promise.all(list.map(uploadImage));
-      onChange([...value, ...urls]);
-    } catch {
-      setError("Ошибка загрузки одного или нескольких файлов.");
-    } finally {
-      setLoading(false);
-    }
-  }, [value, onChange, max]);
+
+    // Create local previews immediately
+    const newPreviews: PreviewItem[] = list.map(f => ({
+      localUrl: URL.createObjectURL(f),
+      serverUrl: null,
+    }));
+    setPreviews(prev => [...prev, ...newPreviews]);
+
+    // Upload all in parallel
+    await Promise.all(
+      list.map(async (file, i) => {
+        try {
+          const serverUrl = await uploadImage(file);
+          const localUrl = newPreviews[i]!.localUrl;
+          setPreviews(prev =>
+            prev.map(p => p.localUrl === localUrl ? { ...p, serverUrl } : p)
+          );
+          onChange([...value, serverUrl]);
+        } catch {
+          const localUrl = newPreviews[i]!.localUrl;
+          setPreviews(prev => prev.filter(p => p.localUrl !== localUrl));
+          setError("Ошибка загрузки одного или нескольких файлов.");
+        }
+      })
+    );
+  }, [value, onChange, max, previews]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) handleFiles(e.target.files);
@@ -51,29 +72,48 @@ export function MultiImageUploader({
     if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   };
 
-  const remove = (idx: number) => {
-    onChange(value.filter((_, i) => i !== idx));
+  const removeServerUrl = (url: string) => {
+    onChange(value.filter(u => u !== url));
   };
 
-  const canAdd = value.length < max && !loading;
+  const removePreview = (localUrl: string) => {
+    setPreviews(prev => prev.filter(p => p.localUrl !== localUrl));
+  };
+
+  const uploading = previews.some(p => !p.serverUrl);
+  const totalCount = value.length + previews.filter(p => !p.serverUrl).length;
+  const canAdd = totalCount < max && !uploading;
+
+  // Thumbnails: uploaded (from value) + in-progress previews
+  const uploadedThumbs = value.map(url => ({ url, local: false, uploading: false }));
+  const pendingThumbs = previews
+    .filter(p => !p.serverUrl)
+    .map(p => ({ url: p.localUrl, local: true, uploading: true }));
+  const thumbs = [...uploadedThumbs, ...pendingThumbs];
 
   return (
     <div className="space-y-2">
       {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
 
       <div className="flex flex-wrap gap-2">
-        {value.map((url, idx) => (
+        {thumbs.map(({ url, uploading: isUploading }, idx) => (
           <div key={url + idx} className="relative group h-20 w-20 rounded-lg overflow-hidden ring-1 ring-slate-200 shrink-0 bg-slate-100">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt={`фото ${idx + 1}`} className="w-full h-full object-cover" />
-            <button
-              type="button"
-              onClick={() => remove(idx)}
-              className="absolute top-0.5 right-0.5 h-5 w-5 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80"
-              aria-label="Удалить"
-            >
-              <X className="h-3 w-3" />
-            </button>
+            {isUploading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <Loader2 className="h-4 w-4 animate-spin text-white" />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => removeServerUrl(url)}
+                className="absolute top-0.5 right-0.5 h-5 w-5 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80"
+                aria-label="Удалить"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
           </div>
         ))}
 
@@ -94,12 +134,6 @@ export function MultiImageUploader({
             <span className="text-[10px] leading-tight text-center">Добавить</span>
           </button>
         )}
-
-        {loading && (
-          <div className="h-20 w-20 shrink-0 flex items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-            <Loader2 className="h-5 w-5 animate-spin text-teal-500" />
-          </div>
-        )}
       </div>
 
       <input
@@ -113,8 +147,8 @@ export function MultiImageUploader({
 
       {hint && <p className="text-xs text-slate-400">{hint}</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}
-      {value.length > 0 && (
-        <p className="text-xs text-slate-400">{value.length} / {max} фото</p>
+      {totalCount > 0 && (
+        <p className="text-xs text-slate-400">{totalCount} / {max} фото</p>
       )}
     </div>
   );
