@@ -104,19 +104,13 @@ export function TourGallery({ images, title }: { images: string[]; title: string
           >
             <ChevronRight className="h-6 w-6" />
           </button>
-          <div
-            className="relative max-w-[88vw] max-h-[88vh] aspect-16/10"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={images[lightbox]!}
+            alt={`${title} — фото ${lightbox + 1}`}
+            className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain"
             onClick={e => e.stopPropagation()}
-          >
-            <Image
-              src={images[lightbox]!}
-              alt={`${title} — фото ${lightbox + 1}`}
-              fill
-              className="object-contain rounded-2xl"
-              sizes="88vw"
-              priority
-            />
-          </div>
+          />
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-mono">
             {lightbox + 1} / {images.length}
           </div>
