@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { SingleImageUploader } from "@/src/components/ui/single-image-uploader";
+import { MultiImageUploader } from "@/src/components/ui/multi-image-uploader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -32,8 +34,7 @@ const schema = z.object({
   durationDays: z.coerce.number().int().min(1).max(60),
   priceUsd: z.coerce.number().min(0),
 
-  coverImage: z.string().min(5, "Укажите URL обложки"),
-  imagesText: z.string().optional(),
+  coverImage: z.string().min(5, "Загрузите обложку"),
 
   includedRu: z.string().optional(),
   includedEn: z.string().optional(),
@@ -69,9 +70,10 @@ export function TourFormModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<Section>("Основное");
+  const [galleryImages, setGalleryImages] = useState<string[]>(tour?.images ?? []);
 
   const {
-    register, handleSubmit, formState: { errors },
+    register, handleSubmit, setValue, watch, formState: { errors },
   } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: tour ? {
@@ -88,7 +90,6 @@ export function TourFormModal({
       durationDays: tour.durationDays,
       priceUsd: tour.priceUsd,
       coverImage: tour.coverImage,
-      imagesText: tour.images.join("\n"),
       includedRu: toLines(tour.programIncluded?.ru),
       includedEn: toLines(tour.programIncluded?.en),
       excludedRu: toLines(tour.programExcluded?.ru),
@@ -107,7 +108,6 @@ export function TourFormModal({
       durationDays: 7,
       priceUsd: 500,
       coverImage: "",
-      imagesText: "",
       includedRu: "", includedEn: "",
       excludedRu: "", excludedEn: "",
       isHot: false,
@@ -145,7 +145,7 @@ export function TourFormModal({
         durationDays: v.durationDays,
         priceUsd: v.priceUsd,
         coverImage: v.coverImage,
-        images: v.imagesText ? fromLines(v.imagesText) : [],
+        images: galleryImages,
         isHot: v.isHot,
         ...(isEdit ? { isActive: v.isActive } : {}),
         referralThreshold: v.referralThreshold,
@@ -310,26 +310,24 @@ export function TourFormModal({
             {/* ── Section: Медиа ────────────────────── */}
             {openSection === "Медиа" && (
               <>
-                <Field label="Обложка (URL) *" error={errors.coverImage?.message} hint="Главное фото тура · рекомендуется 1920×1080">
-                  <input
-                    {...register("coverImage")}
-                    type="url"
-                    placeholder="https://images.unsplash.com/photo-xxx"
-                    className={fieldCls(!!errors.coverImage)}
-                  />
-                </Field>
+                <input type="hidden" {...register("coverImage")} />
+                <SingleImageUploader
+                  label="Обложка *"
+                  hint="Главное фото тура · рекомендуется 1920×1080 · JPEG / PNG / WebP до 8 МБ"
+                  value={watch("coverImage") ?? ""}
+                  onChange={url => setValue("coverImage", url, { shouldValidate: true })}
+                />
+                {errors.coverImage && (
+                  <p className="text-xs text-red-500 -mt-1">{errors.coverImage.message}</p>
+                )}
 
-                <Field
-                  label="Дополнительные фото"
-                  hint="Один URL на строку · до 20 фото · показываются в галерее тура"
-                >
-                  <textarea
-                    {...register("imagesText")}
-                    rows={6}
-                    placeholder={"https://images.unsplash.com/photo-aaa\nhttps://images.unsplash.com/photo-bbb"}
-                    className={`${textareaCls(false)} font-mono text-xs`}
-                  />
-                </Field>
+                <MultiImageUploader
+                  label="Галерея (дополнительные фото)"
+                  hint="До 20 фото · показываются в галерее тура"
+                  max={20}
+                  value={galleryImages}
+                  onChange={setGalleryImages}
+                />
               </>
             )}
 

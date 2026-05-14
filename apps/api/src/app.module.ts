@@ -16,6 +16,7 @@ import { ReferralsModule } from "./modules/referrals/referrals.module";
 import { PayoutsModule } from "./modules/payouts/payouts.module";
 import { ReviewsModule } from "./modules/reviews/reviews.module";
 import { EmailModule } from "./modules/email/email.module";
+import { UploadModule } from "./modules/upload/upload.module";
 import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
 
 @Module({
@@ -35,6 +36,7 @@ import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
     ReferralsModule,
     PayoutsModule,
     ReviewsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

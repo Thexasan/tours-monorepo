@@ -12,12 +12,12 @@ import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { Button } from "@/src/components/ui/button";
 import { Label } from "@/src/components/ui/label";
+import { MultiImageUploader } from "@/src/components/ui/multi-image-uploader";
 
 const schema = z.object({
   tourId: z.string().min(1, "Выберите тур"),
   rating: z.coerce.number().int().min(1).max(5),
   text: z.string().min(10, "Минимум 10 символов").max(2000),
-  photoUrls: z.string().optional(),
 });
 type Inp = z.input<typeof schema>;
 type Out = z.output<typeof schema>;
@@ -32,11 +32,12 @@ export function NewReviewForm() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<Inp, unknown, Out>({
       resolver: zodResolver(schema),
-      defaultValues: { tourId: "", rating: 5, text: "", photoUrls: "" },
+      defaultValues: { tourId: "", rating: 5, text: "" },
     });
 
   const ratingVal = watch("rating") ?? 5;
@@ -59,7 +60,6 @@ export function NewReviewForm() {
   const onSubmit = async (v: Out) => {
     setSubmitting(true); setError(null);
     try {
-      const photoUrls = (v.photoUrls ?? "").split("\n").map((s) => s.trim()).filter(Boolean);
       await reviewsApi.create({
         tourId: v.tourId,
         rating: v.rating,
@@ -128,15 +128,13 @@ export function NewReviewForm() {
       </div>
 
       <div>
-        <Label htmlFor="photoUrls">Фото (URL по одной на строку, до 10)</Label>
-        <textarea
-          id="photoUrls" rows={3} {...register("photoUrls")}
-          placeholder={"https://example.com/photo1.jpg\nhttps://example.com/photo2.jpg"}
-          className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950"
+        <MultiImageUploader
+          label="Фото (необязательно)"
+          hint="До 10 фото · JPEG / PNG / WebP до 8 МБ каждое"
+          max={10}
+          value={photoUrls}
+          onChange={setPhotoUrls}
         />
-        <p className="text-xs text-zinc-500 mt-1">
-          Загрузка с компьютера будет в следующих версиях. Пока можно вставить URL фото с любого сервиса (Imgur, Unsplash, Google Photos public link и т.д.)
-        </p>
       </div>
 
       {error && (
