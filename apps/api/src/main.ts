@@ -3,6 +3,8 @@ import { ValidationPipe, Logger } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import { join } from "path";
+import { existsSync, mkdirSync } from "fs";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -24,6 +26,12 @@ async function bootstrap() {
     origin: (process.env.WEB_ORIGIN ?? "http://localhost:3000").split(","),
     credentials: true,
   });
+
+  // Serve locally uploaded files (dev fallback when BLOB_READ_WRITE_TOKEN is not set)
+  const uploadsDir = join(process.cwd(), "uploads");
+  if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
+  const express = app.getHttpAdapter().getInstance() as import("express").Express;
+  express.use("/uploads", (await import("express")).static(uploadsDir));
 
   app.setGlobalPrefix("api/v1");
 

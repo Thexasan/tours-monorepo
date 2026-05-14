@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit, Archive, Star } from "lucide-react";
-import Image from "next/image";
 import { adminToursApi } from "@/src/shared/api/admin-tours-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { Button } from "@/src/components/ui/button";
@@ -60,8 +59,9 @@ export function AdminToursList() {
                 <tr key={t.id} className="border-b last:border-b-0 border-zinc-100 hover:bg-zinc-50/50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded overflow-hidden bg-zinc-100 shrink-0">
-                        <Image src={t.coverImage} alt="" fill className="object-cover" sizes="40px" />
+                      <div className="w-10 h-10 rounded overflow-hidden bg-zinc-100 shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={t.coverImage} alt="" className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="font-medium text-zinc-900">{t.title.ru}</p>

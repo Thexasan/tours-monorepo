@@ -8,6 +8,8 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { put } from "@vercel/blob";
 import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 8 * 1024 * 1024; // 8 MB
@@ -26,22 +28,25 @@ export class UploadController {
 
     const token = process.env.BLOB_READ_WRITE_TOKEN;
 
-    // Dev fallback: return a placeholder if no token configured
-    if (!token) {
-      return {
-        url: `https://placehold.co/1920x1080/e2e8f0/64748b?text=${encodeURIComponent(file.originalname)}`,
-      };
+    if (token) {
+      const ext = file.originalname.split(".").pop() ?? "jpg";
+      const name = `tours/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const blob = await put(name, file.buffer, {
+        access: "public",
+        token,
+        contentType: file.mimetype,
+      });
+      return { url: blob.url };
     }
 
+    // Dev fallback: save to local uploads/ directory and serve statically
     const ext = file.originalname.split(".").pop() ?? "jpg";
-    const name = `tours/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const uploadsDir = join(process.cwd(), "uploads");
+    await mkdir(uploadsDir, { recursive: true });
+    await writeFile(join(uploadsDir, filename), file.buffer);
 
-    const blob = await put(name, file.buffer, {
-      access: "public",
-      token,
-      contentType: file.mimetype,
-    });
-
-    return { url: blob.url };
+    const port = process.env.PORT ?? 4000;
+    return { url: `http://localhost:${port}/uploads/${filename}` };
   }
 }
