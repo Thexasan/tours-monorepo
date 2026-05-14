@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
       { protocol: "https", hostname: "**.uploadthing.com" },
+      { protocol: "https", hostname: "placehold.co" },
     ],
   },
   // strict mode для отлова багов в dev
