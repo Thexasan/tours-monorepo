@@ -144,18 +144,6 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
             </Link>
           )}
 
-          {user.role === "ADMIN" && (
-            <>
-              <Link
-                href={`/${locale}/admin/partner-applications`}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
-              >
-                <Briefcase className="w-4 h-4" />
-                <span>Заявки партнёров</span>
-              </Link>
-            </>
-          )}
 
           {user.role === "CLIENT" && (
             <Link

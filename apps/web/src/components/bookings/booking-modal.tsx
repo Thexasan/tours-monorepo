@@ -231,7 +231,7 @@ function MiniCalendar({
           <ChevronLeft className="h-4 w-4" />
         </button>
         <p className="text-sm font-semibold text-slate-900 tracking-tight">
-          {monthNames[view.m]} {view.y} <span className="text-slate-300 mx-1">→</span> {monthNames[months[1].m]} {months[1].y}
+          {monthNames[view.m]!} {view.y} <span className="text-slate-300 mx-1">→</span> {monthNames[months[1]!.m]!} {months[1]!.y}
         </p>
         <button type="button" onClick={() => setView(v => addMonths(v, 1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label="Вперёд">
           <ChevronRight className="h-4 w-4" />

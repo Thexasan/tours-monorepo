@@ -24,7 +24,7 @@
 
 ---
 
-## 2. Что сделано в последней итерации (после прода)
+## 2. Что сделано в последней итерации (14 мая 2026)
 
 ### ✅ Этап 1 — Партнёрство «только админ создаёт вручную»
 - Удалён `PartnersModule` на API (заявки от пользователей).
@@ -47,36 +47,24 @@
 - На главной `apps/web/app/[locale]/(public)/page.tsx` в секции «DUAL CTA» был блок «Станьте партнёром / Подать заявку» со ссылкой на удалённую страницу `/become-partner`.
 - Заменён на «Партнёрская программа / Связаться с нами» с ссылкой `mailto:support@traveling-tours.local?subject=Заявка%20на%20партнёрство`.
 
-### ✅ Дополнительно: попытка переключить email на Nodemailer + Gmail SMTP
-- Установлен `nodemailer@^6.9.16` + `@types/nodemailer`.
-- `EmailService` переписан с Resend HTTP API на Nodemailer SMTP.
-- Добавлены env: `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM`.
-- `verify()` вызывается в фоне (не блокирует bootstrap).
-- **НЕ РАБОТАЕТ в проде**: Render Free блокирует исходящие SMTP-порты (25/465/587). См. `EMAIL_SETUP.md`.
+### ✅ Email через Nodemailer (Gmail SMTP) — работает локально
+- `EmailService` переписан на Nodemailer SMTP. Env: `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM`.
+- Локально работает отлично. В проде пока не нужен — планируется свой VPS, где frontend и backend будут на одном домене.
+
+### ✅ Редизайн страницы тура (cinematic TourDetail)
+- Новые компоненты: `TourHero` (Ken Burns + sticky navbar -mt-16), `TourHighlightsBar`, `TourIncludedExcluded`, `TourItinerary` (accordion), `TourGallery` (6-tile + lightbox), `TourReviewsBlock`, `TourSimilar`
+- `TourBookingSidebar` — sticky прайс-калькулятор + реф-шеринг
+- `BookingModal` переписан в 3 шага: мини-календарь + количество людей → детали путешественника → итоговое подтверждение с roomType
+- Admin tour form — 5 вкладок, поля `programIncluded/Excluded`
+- Navbar прозрачный на главной и странице тура, solid с blur при скролле
 
 ---
 
 ## 3. Что отложено / не сделано
 
-### ⚠️ Реферальный код cross-domain (важно!)
-**Симптом:** в проде, когда клиент шарит реф-ссылку и друг бронирует тур как гость — `referralCount` приглашающего НЕ увеличивается после перевода заявки на PAID.
-
-**Причина:** middleware на Vercel-домене (`tours-monorepo-web.vercel.app`) ставит cookie `tours_ref=CODE`. Но booking-POST уходит на Render-домен (`tours-api-5h5s.onrender.com`) — браузер не отправляет cookies между разными доменами. В итоге `bookings.controller.ts` строка 37 (`req.cookies?.[REF_COOKIE]`) всегда читает `undefined`, и `referrerId` записывается `null`. Триггер начисления вознаграждения `applyReferralReward` пропускается.
-
-**Как починить (когда вернёмся):**
-1. На фронте: при сабмите формы `booking-modal.tsx` читать cookie `tours_ref` через JS (она НЕ httpOnly, см. `apps/web/middleware.ts` строка 43) и подкладывать в body POST `/bookings` как поле `referralCode`.
-2. В DTO `CreateBookingDto` добавить опциональное поле `referralCode: string`.
-3. В `bookings.controller.ts`: брать referral сначала из `dto.referralCode`, потом из cookie как fallback.
-4. Тест: открыть инкогнито, перейти по `?ref=...`, забронировать как гость, в админке поставить PAID — у реферера должно подняться `referralCount`.
-
-**Локально на одном `localhost` это работало в день 5** (мы тестировали через Claude in Chrome и Bob получил +$85). На прод-доменах ломается, потому что разные origins.
-
-### ⚠️ Email не работает в проде
-- Render Free блокирует SMTP. См. `EMAIL_SETUP.md` для полного плана:
-  - Рекомендую **Brevo** (HTTPS API, 300 писем/день бесплатно, не требует домена).
-  - Альтернатива — **Resend** (HTTPS API, 3000/мес).
-  - Или **Mailgun:2525** (нестандартный SMTP порт, обычно проходит).
-  - Или поднять Render до Starter ($7/мес).
+### ℹ️ Cross-domain рефералка (отложено, не срочно)
+- Локально работает (один `localhost`). В проде (разные домены Vercel/Render) cookie `tours_ref` не летит на API.
+- **Откладываем** до покупки своего VPS — тогда frontend и backend будут на одном домене и проблема исчезнет сама.
 
 ### ⚠️ Старая таблица `partner_applications` в БД
 - Таблица существует в схеме Prisma (`packages/db/prisma/schema.prisma`), не используется кодом.
@@ -122,35 +110,18 @@
 
 ## 5. План следующей сессии
 
-Если приоритеты не поменялись, делать в таком порядке:
+### ~~1. Удалить мусор~~ ✅ СДЕЛАНО (14 мая 2026)
+- Удалены все stub-файлы (become-partner, partner-applications, partners-api)
+- Убрана ссылка «Заявки партнёров» из user-menu.tsx
+- Перебилдил @tours/types (добавился roomType в dist)
+- Исправлены 3 TS-ошибки от последнего коммита (booking-modal, tour-gallery)
+- typecheck: 4/4 зелёный
 
-### 1. Включить отправку email в проде (самое срочное)
-Выбрать провайдера из `EMAIL_SETUP.md`. Я рекомендую **Brevo** — потому что:
-- Бесплатно 300 писем/день навсегда.
-- Не требует подтверждения домена для отправки.
-- Простой HTTPS API.
-
-**Что сделать в коде:**
-1. `npm i @getbrevo/brevo --workspace=apps/api` (или ручной fetch без SDK).
-2. В `EmailService.send` добавить ветку: если `BREVO_API_KEY` есть → шлём через Brevo, иначе fallback на Nodemailer SMTP, иначе console-лог.
-3. В Render env добавить `BREVO_API_KEY=...`.
-4. Создать тестового партнёра на свой email → проверить, что пришло.
-
-### 2. Починить cross-domain рефералку
-План в разделе 3 этого файла («Реферальный код cross-domain»).
-
-### 3. Удалить мусор
-- Удалить директорию `apps/api/src/modules/partners/` (там stub-ы).
-- Удалить файлы:
-  - `apps/web/app/[locale]/become-partner/page.tsx`
-  - `apps/web/app/[locale]/admin/partner-applications/page.tsx`
-  - `apps/web/src/components/partners/become-partner-form.tsx`
-  - `apps/web/src/components/admin/admin-partner-applications.tsx`
-  - `apps/web/src/shared/api/partners-api.ts`
-- Удалить `partner_applications` из Prisma schema + миграция DROP TABLE.
-
-### 4. (Опционально) Поднять Render до Starter
-$7/мес — снимет блокировку SMTP, ускорит cold-start, добавит SSD. Решение бизнес-владельца.
+### 2. Следующие фичи (определить с клиентом)
+- Мобильная адаптивность (QA всех страниц)
+- Загрузка фото через UI (Vercel Blob / UploadThing) — сейчас только URL вручную
+- SEO: meta-теги, OG-картинки, sitemap.xml, robots.txt
+- Блок последних APPROVED отзывов на главной
 
 ---
 

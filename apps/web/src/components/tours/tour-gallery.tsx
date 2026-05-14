@@ -109,7 +109,7 @@ export function TourGallery({ images, title }: { images: string[]; title: string
             onClick={e => e.stopPropagation()}
           >
             <Image
-              src={images[lightbox]}
+              src={images[lightbox]!}
               alt={`${title} — фото ${lightbox + 1}`}
               fill
               className="object-contain rounded-2xl"
