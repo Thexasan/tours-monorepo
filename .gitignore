@@ -17,3 +17,6 @@ coverage
 # logs
 *.log
 prod-init.sql
+
+# local dev uploads (NestJS disk fallback)
+apps/api/uploads/
