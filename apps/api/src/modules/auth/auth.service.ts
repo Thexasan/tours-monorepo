@@ -2,6 +2,7 @@ import {
   Injectable, ConflictException, UnauthorizedException, BadRequestException,
   NotFoundException, Logger,
 } from "@nestjs/common";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import type { JwtSignOptions } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -49,18 +50,29 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const referralCode = await this.generateUniqueReferralCode();
 
-    const user = await this.prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        fullName: dto.fullName.trim(),
-        phone: dto.phone?.trim(),
-        role: UserRole.CLIENT,
-        referralCode,
-        referrerId,
-      },
-      select: { id: true, email: true, role: true, fullName: true, referralCode: true },
-    });
+    let user: { id: string; email: string; role: UserRole; fullName: string; referralCode: string };
+    try {
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          passwordHash,
+          fullName: dto.fullName.trim(),
+          phone: dto.phone?.trim() || null,
+          role: UserRole.CLIENT,
+          referralCode,
+          referrerId,
+        },
+        select: { id: true, email: true, role: true, fullName: true, referralCode: true },
+      });
+    } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") {
+        const fields = (err.meta?.target as string[]) ?? [];
+        if (fields.includes("phone")) throw new ConflictException("Phone number already registered");
+        if (fields.includes("email")) throw new ConflictException("Email already registered");
+        throw new ConflictException("Account already exists");
+      }
+      throw err;
+    }
 
     // Автопривязка гостевых заявок: если есть бронирования с тем же email
     // и без user_id — связываем их с новым аккаунтом.
