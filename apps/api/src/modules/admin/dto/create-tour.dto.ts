@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import {
-  ArrayMaxSize, IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsObject, IsOptional, IsString,
+  IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsObject, IsOptional, IsString,
   Matches, Max, MaxLength, Min, MinLength,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -21,13 +21,13 @@ export class CreateTourDto {
   @IsObject()
   description!: Record<string, string>;
 
-  @ApiPropertyOptional({ example: [{ ru: "Перелёт", en: "Flights" }] })
-  @IsOptional() @IsArray() @ArrayMaxSize(50)
-  programIncluded?: Record<string, string>[];
+  @ApiPropertyOptional({ example: { ru: ["Перелёт", "Отель"], en: ["Flights", "Hotel"] } })
+  @IsOptional() @IsObject()
+  programIncluded?: Record<string, string[]>;
 
-  @ApiPropertyOptional({ example: [{ ru: "Виза", en: "Visa" }] })
-  @IsOptional() @IsArray() @ArrayMaxSize(50)
-  programExcluded?: Record<string, string>[];
+  @ApiPropertyOptional({ example: { ru: ["Виза", "Страховка"], en: ["Visa", "Insurance"] } })
+  @IsOptional() @IsObject()
+  programExcluded?: Record<string, string[]>;
 
   @ApiProperty({ example: "Индонезия" })
   @IsString() @MinLength(2) @MaxLength(100)

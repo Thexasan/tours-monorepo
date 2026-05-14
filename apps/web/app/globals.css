@@ -279,3 +279,9 @@ html, body {
   .hero-photo { animation: none !important; opacity: 0 !important; }
   .hero-photo:nth-child(1) { opacity: 1 !important; }
 }
+
+/* ── Tour Detail — Ken Burns hero animation ── */
+@keyframes kenBurns {
+  0%   { transform: scale(1.04) translate(0, 0); }
+  100% { transform: scale(1.10) translate(-1%, -1%); }
+}

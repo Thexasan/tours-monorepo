@@ -17,37 +17,58 @@ const T = {
 
 export function Navbar() {
   const pathname = usePathname();
-  const isHome = /^\/[a-z]{2}\/?$/.test(pathname ?? "");
+
+  // Pages where navbar overlaps a full-bleed hero image
+  const isHomePage = /^\/[a-z]{2}\/?$/.test(pathname ?? "");
+  const isTourDetail = /^\/[a-z]{2}\/tours\/[^/]+\/?$/.test(pathname ?? "");
+  const isHeroPage = isHomePage || isTourDetail;
+
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    if (!isHome) {
+    if (!isHeroPage) {
       setScrolled(true);
       return;
     }
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled(window.scrollY > 72);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome]);
+  }, [isHeroPage]);
 
-  const transparent = isHome && !scrolled;
+  const transparent = isHeroPage && !scrolled;
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 transition-all duration-300",
+        "sticky top-0 z-40 transition-all duration-500",
         transparent
-          ? "bg-transparent border-transparent"
-          : "border-b border-slate-200/70 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/65"
+          ? "bg-transparent border-transparent shadow-none"
+          : [
+              "border-b border-slate-200/60",
+              "bg-white/85 backdrop-blur-xl",
+              "supports-[backdrop-filter]:bg-white/70",
+              "shadow-[0_1px_12px_rgba(15,23,42,0.06)]",
+            ].join(" "),
       )}
     >
       <PageWrapper size="wide" className="flex h-16 items-center justify-between">
-        <Link href="/ru" className="group inline-flex items-center gap-2 font-bold tracking-tight">
-          <span className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-br from-teal-500 to-sky-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)] transition-transform group-hover:rotate-[-6deg]">
+        {/* Logo */}
+        <Link href="/ru" className="group inline-flex items-center gap-2.5 font-bold tracking-tight shrink-0">
+          <span
+            className={cn(
+              "grid place-items-center h-9 w-9 rounded-xl text-white transition-transform duration-300 group-hover:rotate-[-6deg]",
+              "bg-gradient-to-br from-teal-500 to-sky-600 shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]",
+            )}
+          >
             <Compass className="h-5 w-5" />
           </span>
-          <span className={cn("text-[17px] transition-colors duration-300", transparent ? "text-white" : "text-slate-900")}>
+          <span
+            className={cn(
+              "text-[17px] transition-colors duration-300",
+              transparent ? "text-white" : "text-slate-900",
+            )}
+          >
             Traveling
             <span className={cn("transition-colors duration-300", transparent ? "text-teal-300" : "text-teal-600")}>
               {" "}Tours
@@ -55,34 +76,15 @@ export function Navbar() {
           </span>
         </Link>
 
+        {/* Nav links + controls */}
         <nav className="flex items-center gap-1 sm:gap-2">
-          <Link
-            href="/ru"
-            className={cn(
-              "hidden sm:inline-block px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-              transparent
-                ? "text-white/85 hover:text-white hover:bg-white/10"
-                : "text-slate-700 hover:text-teal-700 hover:bg-slate-50"
-            )}
-          >
-            {T.home}
-          </Link>
-          <Link
-            href="/ru/tours"
-            className={cn(
-              "hidden sm:inline-block px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-              transparent
-                ? "text-white/85 hover:text-white hover:bg-white/10"
-                : "text-slate-700 hover:text-teal-700 hover:bg-slate-50"
-            )}
-          >
-            {T.tours}
-          </Link>
+          <NavLink href="/ru" label={T.home} transparent={transparent} active={isHomePage} />
+          <NavLink href="/ru/tours" label={T.tours} transparent={transparent} active={pathname?.includes("/tours")} />
 
           <div
             className={cn(
               "mx-1 hidden md:flex items-center gap-1 pl-2 transition-colors duration-300",
-              transparent ? "border-l border-white/20" : "border-l border-slate-200"
+              transparent ? "border-l border-white/25" : "border-l border-slate-200",
             )}
           >
             <LanguageSwitcher />
@@ -93,5 +95,30 @@ export function Navbar() {
         </nav>
       </PageWrapper>
     </header>
+  );
+}
+
+function NavLink({
+  href, label, transparent, active,
+}: { href: string; label: string; transparent: boolean; active?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 relative",
+        transparent
+          ? active
+            ? "text-white bg-white/15"
+            : "text-white/80 hover:text-white hover:bg-white/10"
+          : active
+          ? "text-teal-700 bg-teal-50"
+          : "text-slate-700 hover:text-teal-700 hover:bg-slate-50",
+      )}
+    >
+      {label}
+      {active && !transparent && (
+        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-500" />
+      )}
+    </Link>
   );
 }

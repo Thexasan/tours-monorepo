@@ -95,7 +95,7 @@ export class EmailService implements OnModuleInit {
     contactName: string,
     tourTitle: string,
     totalPrice: number,
-    options?: { bookingId?: string; isGuest?: boolean; locale?: string; contactPhone?: string },
+    options?: { bookingId?: string; isGuest?: boolean; locale?: string; contactPhone?: string; roomType?: string; notes?: string },
   ): Promise<void> {
     const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
     const locale = options?.locale ?? "ru";
@@ -114,6 +114,13 @@ export class EmailService implements OnModuleInit {
         </div>`
       : "";
 
+    const roomRow = options?.roomType
+      ? `<tr><td style="color:#6b7280;padding:6px 0">Тип размещения</td><td style="font-weight:600;padding:6px 0 6px 16px">${escapeHtml(options.roomType)}</td></tr>`
+      : "";
+    const notesRow = options?.notes
+      ? `<tr><td style="color:#6b7280;padding:6px 0;vertical-align:top">Примечание</td><td style="padding:6px 0 6px 16px">${escapeHtml(options.notes)}</td></tr>`
+      : "";
+
     await this.send({
       to,
       subject: `Заявка на тур "${tourTitle}" получена`,
@@ -121,7 +128,11 @@ export class EmailService implements OnModuleInit {
         <div style="font-family:sans-serif;max-width:600px;margin:auto">
           <h2 style="color:#059669">Спасибо, ${escapeHtml(contactName)}!</h2>
           <p>Мы получили вашу заявку на тур <strong>${escapeHtml(tourTitle)}</strong>.</p>
-          <p>Сумма: <strong>$${totalPrice}</strong></p>
+          <table style="border-collapse:collapse;width:100%;margin:16px 0;background:#f9fafb;border-radius:8px;padding:12px">
+            <tr><td style="color:#6b7280;padding:6px 0">Сумма к оплате</td><td style="font-weight:600;padding:6px 0 6px 16px">$${totalPrice}</td></tr>
+            ${roomRow}
+            ${notesRow}
+          </table>
           <p>Менеджер свяжется с вами в течение 1 часа для уточнения деталей.</p>
           ${registerCta}
           <p style="color:#6b7280;font-size:13px;margin-top:30px">Команда Tours</p>

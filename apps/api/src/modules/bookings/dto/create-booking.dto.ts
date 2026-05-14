@@ -31,6 +31,10 @@ export class CreateBookingDto {
   @IsOptional() @IsDateString()
   preferredDate?: string;
 
+  @ApiPropertyOptional({ example: "Делюкс с видом", description: "Тип номера/размещения" })
+  @IsOptional() @IsString() @MaxLength(200)
+  roomType?: string;
+
   @ApiPropertyOptional({ example: "Предпочитаем номер с видом на море" })
   @IsOptional() @IsString() @MaxLength(2000)
   notes?: string;

@@ -38,6 +38,7 @@ export interface BookingCreateInput {
   contactPhone: string;
   guestsCount?: number;
   preferredDate?: string;
+  roomType?: string;
   notes?: string;
 }
 

@@ -5,8 +5,8 @@ export interface AdminTourCreatePayload {
   slug: string;
   title: { ru: string; en?: string; tj?: string };
   description: { ru: string; en?: string; tj?: string };
-  programIncluded?: { ru: string; en?: string; tj?: string }[];
-  programExcluded?: { ru: string; en?: string; tj?: string }[];
+  programIncluded?: { ru: string[]; en?: string[]; tj?: string[] };
+  programExcluded?: { ru: string[]; en?: string[]; tj?: string[] };
   country: string;
   city?: string;
   hotelName?: string;

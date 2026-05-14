@@ -62,7 +62,7 @@ export class BookingsService {
         contactPhone: dto.contactPhone.trim(),
         guestsCount: dto.guestsCount ?? 1,
         preferredDate: dto.preferredDate ? new Date(dto.preferredDate) : null,
-        notes: dto.notes,
+        notes: [dto.roomType ? `Размещение: ${dto.roomType}` : null, dto.notes || null].filter(Boolean).join("\n") || null,
         totalPriceUsd,
         referrerId,
         referralCookieAt: referrerId ? new Date() : null,
@@ -85,7 +85,13 @@ export class BookingsService {
       booking.contactName,
       tourTitleRu,
       Number(totalPriceUsd),
-      { bookingId: booking.id, isGuest, contactPhone: booking.contactPhone ?? undefined },
+      {
+        bookingId: booking.id,
+        isGuest,
+        contactPhone: booking.contactPhone ?? undefined,
+        roomType: dto.roomType,
+        notes: dto.notes,
+      },
     ).catch(() => undefined);
 
     return this.serialize(booking);
