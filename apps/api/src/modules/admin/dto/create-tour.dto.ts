@@ -1,10 +1,24 @@
 import { Type } from "class-transformer";
 import {
   IsArray, IsBoolean, IsEnum, IsInt, IsNumber, IsObject, IsOptional, IsString,
-  Matches, Max, MaxLength, Min, MinLength,
+  Matches, Max, MaxLength, Min, MinLength, ValidateNested,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { MealPlan } from "@tours/db";
+
+export class RoomTypeOptionDto {
+  @IsString() @MinLength(1) @MaxLength(100)
+  id!: string;
+
+  @IsString() @MinLength(1) @MaxLength(200)
+  title!: string;
+
+  @IsOptional() @IsString() @MaxLength(500)
+  desc?: string;
+
+  @Type(() => Number) @IsNumber() @Min(0)
+  priceModifier!: number;
+}
 
 export class CreateTourDto {
   @ApiProperty({ example: "bali-7-nights", description: "Уникальный slug (a-z, 0-9, дефис)" })
@@ -64,6 +78,10 @@ export class CreateTourDto {
   @ApiPropertyOptional({ example: ["https://images.unsplash.com/photo-yyy"] })
   @IsOptional() @IsArray() @IsString({ each: true })
   images?: string[];
+
+  @ApiPropertyOptional({ type: [RoomTypeOptionDto] })
+  @IsOptional() @IsArray() @ValidateNested({ each: true }) @Type(() => RoomTypeOptionDto)
+  roomTypes?: RoomTypeOptionDto[];
 
   @ApiPropertyOptional({ example: false })
   @IsOptional() @IsBoolean()

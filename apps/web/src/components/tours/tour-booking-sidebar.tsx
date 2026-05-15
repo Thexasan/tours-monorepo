@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { BookingModal } from "@/src/components/bookings/booking-modal";
 import { cn } from "@/src/lib/utils";
+import type { RoomTypeOption } from "@tours/types";
 
 interface Props {
   tourId: string;
@@ -19,12 +20,13 @@ interface Props {
   country: string;
   hotelStars: number;
   durationDays: number;
+  roomTypes?: RoomTypeOption[];
   referralReward?: number;
 }
 
 export function TourBookingSidebar({
   tourId, tourTitle, tourSlug, pricePerPerson, oldPrice,
-  coverImage, country, hotelStars, durationDays, referralReward = 50,
+  coverImage, country, hotelStars, durationDays, roomTypes, referralReward = 50,
 }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -180,6 +182,7 @@ export function TourBookingSidebar({
         tourCountry={country}
         tourHotelStars={hotelStars}
         tourDurationDays={durationDays}
+        tourRoomTypes={roomTypes}
         initialGuests={guests}
         open={open}
         onClose={() => setOpen(false)}

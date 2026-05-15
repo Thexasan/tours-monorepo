@@ -33,8 +33,51 @@ export class AuthService {
 
   private normalizeEmail(email: string): string { return email.trim().toLowerCase(); }
 
+  async sendOtp(email: string): Promise<{ devCode?: string }> {
+    const normalizedEmail = this.normalizeEmail(email);
+
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const recentCount = await this.prisma.otpCode.count({
+      where: { email: normalizedEmail, createdAt: { gte: tenMinutesAgo } },
+    });
+    if (recentCount >= 3) {
+      throw new BadRequestException("Слишком много запросов. Подождите 10 минут.");
+    }
+
+    await this.prisma.otpCode.deleteMany({ where: { email: normalizedEmail, usedAt: null } });
+
+    const buf = randomBytes(4);
+    const code = (buf.readUInt32BE(0) % 1_000_000).toString().padStart(6, "0");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await this.prisma.otpCode.create({ data: { email: normalizedEmail, code, expiresAt } });
+
+    const smtpConfigured = !!this.config.get<string>("MAIL_HOST");
+    void this.email.sendOtp(normalizedEmail, code).catch(() => undefined);
+
+    if (!smtpConfigured) {
+      this.logger.warn(`[DEV] OTP for ${normalizedEmail}: ${code}`);
+      return { devCode: code };
+    }
+
+    this.logger.log(`OTP sent to ${normalizedEmail}`);
+    return {};
+  }
+
+  private async verifyOtpCode(email: string, code: string): Promise<void> {
+    const otp = await this.prisma.otpCode.findFirst({
+      where: { email, code, usedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!otp) throw new BadRequestException("Неверный или просроченный код подтверждения");
+    await this.prisma.otpCode.update({ where: { id: otp.id }, data: { usedAt: new Date() } });
+  }
+
   async register(dto: RegisterDto): Promise<{ userId: string; tokens: AuthTokens }> {
     const email = this.normalizeEmail(dto.email);
+
+    await this.verifyOtpCode(email, dto.otp);
+
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException("Email already registered");
 

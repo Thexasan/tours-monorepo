@@ -62,7 +62,8 @@ export class BookingsService {
         contactPhone: dto.contactPhone.trim(),
         guestsCount: dto.guestsCount ?? 1,
         preferredDate: dto.preferredDate ? new Date(dto.preferredDate) : null,
-        notes: [dto.roomType ? `Размещение: ${dto.roomType}` : null, dto.notes || null].filter(Boolean).join("\n") || null,
+        roomType: dto.roomType ?? null,
+        notes: dto.notes || null,
         totalPriceUsd,
         referrerId,
         referralCookieAt: referrerId ? new Date() : null,
@@ -308,7 +309,8 @@ export class BookingsService {
   private serialize(b: {
     id: string; tourId: string; userId: string | null;
     contactName: string; contactEmail: string; contactPhone: string;
-    guestsCount: number; preferredDate: Date | null; notes: string | null;
+    guestsCount: number; preferredDate: Date | null;
+    roomType: string | null; notes: string | null;
     totalPriceUsd: Prisma.Decimal;
     status: BookingStatus;
     referrerId: string | null;
@@ -320,6 +322,7 @@ export class BookingsService {
       contactName: b.contactName, contactEmail: b.contactEmail, contactPhone: b.contactPhone,
       guestsCount: b.guestsCount,
       preferredDate: b.preferredDate?.toISOString() ?? null,
+      roomType: b.roomType,
       notes: b.notes,
       totalPriceUsd: Number(b.totalPriceUsd),
       status: b.status,

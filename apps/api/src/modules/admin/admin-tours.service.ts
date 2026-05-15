@@ -30,6 +30,7 @@ export class AdminToursService {
         priceUsd: new Prisma.Decimal(dto.priceUsd),
         coverImage: dto.coverImage,
         images: dto.images ?? [],
+        roomTypes: (dto.roomTypes ?? []) as unknown as Prisma.InputJsonValue,
         isHot: dto.isHot ?? false,
         referralThreshold: dto.referralThreshold ?? 50,
       },
@@ -56,6 +57,7 @@ export class AdminToursService {
     if (dto.priceUsd !== undefined) data.priceUsd = new Prisma.Decimal(dto.priceUsd);
     if (dto.coverImage !== undefined) data.coverImage = dto.coverImage;
     if (dto.images !== undefined) data.images = dto.images;
+    if (dto.roomTypes !== undefined) data.roomTypes = dto.roomTypes as unknown as Prisma.InputJsonValue;
     if (dto.isHot !== undefined) data.isHot = dto.isHot;
     if (dto.referralThreshold !== undefined) data.referralThreshold = dto.referralThreshold;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
@@ -86,6 +88,7 @@ export class AdminToursService {
     hotelStars: number; mealPlan: string; durationDays: number;
     priceUsd: Prisma.Decimal;
     coverImage: string; images: string[];
+    roomTypes: Prisma.JsonValue;
     isActive: boolean; isHot: boolean; referralThreshold: number;
     avgRating: number; reviewsCount: number;
     createdAt: Date; updatedAt: Date;
@@ -96,6 +99,7 @@ export class AdminToursService {
     hotelStars: t.hotelStars, mealPlan: t.mealPlan, durationDays: t.durationDays,
     priceUsd: Number(t.priceUsd),
     coverImage: t.coverImage, images: t.images,
+    roomTypes: Array.isArray(t.roomTypes) ? t.roomTypes : [],
     isActive: t.isActive, isHot: t.isHot, referralThreshold: t.referralThreshold,
     avgRating: t.avgRating, reviewsCount: t.reviewsCount,
     createdAt: t.createdAt.toISOString(), updatedAt: t.updatedAt.toISOString(),

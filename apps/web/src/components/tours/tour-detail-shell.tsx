@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TourHero } from "./tour-hero";
 import { BookingModal } from "@/src/components/bookings/booking-modal";
+import type { RoomTypeOption } from "@tours/types";
 
 interface Props {
   tourId: string;
@@ -18,6 +19,7 @@ interface Props {
   isHot: boolean;
   hotelStars: number;
   durationDays: number;
+  roomTypes?: RoomTypeOption[];
   locale: string;
 }
 
@@ -34,6 +36,7 @@ export function TourDetailHeroWithModal(props: Props) {
         tourCountry={props.country}
         tourHotelStars={props.hotelStars}
         tourDurationDays={props.durationDays}
+        tourRoomTypes={props.roomTypes}
         open={open}
         onClose={() => setOpen(false)}
       />

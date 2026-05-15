@@ -131,6 +131,18 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+model OtpCode {
+  id        String    @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("otp_codes")
+}
+
 // =====================================================
 // TOURS
 // =====================================================
@@ -156,6 +168,9 @@ model Tour {
   // Медиа
   coverImage         String   @map("cover_image")
   images             String[] @default([])
+
+  // Типы размещения: [{ id, title, desc, priceModifier }]
+  roomTypes          Json     @default("[]") @map("room_types")
 
   // Бизнес-метки
   isActive           Boolean  @default(true) @map("is_active")
@@ -202,6 +217,7 @@ model Booking {
   // Параметры бронирования
   guestsCount       Int           @default(1) @map("guests_count")
   preferredDate     DateTime?     @map("preferred_date")
+  roomType          String?       @map("room_type")
   notes             String?       @db.Text
 
   // Финансы

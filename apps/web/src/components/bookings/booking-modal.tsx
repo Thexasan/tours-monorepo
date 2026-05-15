@@ -36,6 +36,7 @@ import { Button } from "@/src/components/ui/button";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { cn } from "@/src/lib/utils";
+import type { RoomTypeOption } from "@tours/types";
 
 /* Form schema — UNCHANGED from original implementation */
 const schema = z.object({
@@ -58,6 +59,7 @@ interface BookingModalProps {
   tourCountry?: string;
   tourHotelStars?: number;
   tourDurationDays?: number;
+  tourRoomTypes?: RoomTypeOption[];
   initialGuests?: number;
   open: boolean;
   onClose: () => void;
@@ -319,6 +321,7 @@ export function BookingModal({
   tourCountry,
   tourHotelStars,
   tourDurationDays = 7,
+  tourRoomTypes,
   initialGuests = 1,
   open,
   onClose,
@@ -333,15 +336,15 @@ export function BookingModal({
   const [date, setDate] = useState<CalDate>(null);
   const [guests, setGuests] = useState(initialGuests);
   useEffect(() => { if (open) setGuests(initialGuests); }, [open, initialGuests]);
-  const [room, setRoom] = useState("deluxe");
+  const rooms: { id: string; title: string; desc: string; mod: number }[] =
+    tourRoomTypes && tourRoomTypes.length > 0
+      ? tourRoomTypes.map(r => ({ id: r.id, title: r.title, desc: r.desc ?? "", mod: r.priceModifier }))
+      : [];
+
+  const [room, setRoom] = useState(rooms[0]?.id ?? "");
   const [agreed, setAgreed] = useState(false);
 
-  const rooms = [
-    { id: "standard", title: "Стандартный номер", desc: "Уютный номер с балконом, вид на сад", mod: 0 },
-    { id: "deluxe", title: "Делюкс с видом", desc: "Большой номер, private deck, открытая ванна", mod: 220 },
-    { id: "villa", title: "Вилла с бассейном", desc: "Отдельная вилла, бассейн, дворецкий", mod: 590 },
-  ];
-  const selectedRoom = rooms.find(r => r.id === room)!;
+  const selectedRoom = rooms.find(r => r.id === room) ?? rooms[0];
 
   /* React Hook Form — schema and submit handler UNCHANGED */
   const {
@@ -367,7 +370,7 @@ export function BookingModal({
         contactPhone: values.contactPhone,
         guestsCount: values.guestsCount,
         preferredDate: values.preferredDate || undefined,
-        roomType: selectedRoom.title,
+        roomType: selectedRoom?.title || undefined,
         notes: values.notes || undefined,
       });
       setSuccess(true);
@@ -381,7 +384,7 @@ export function BookingModal({
 
   /* Price math (UI-only — server recalculates from tour.priceUsd) */
   const base = pricePerPerson * guests;
-  const roomTotal = selectedRoom.mod * guests;
+  const roomTotal = (selectedRoom?.mod ?? 0) * guests;
   const subtotal = base + roomTotal;
   const taxes = Math.round(subtotal * 0.08);
   const total = subtotal + taxes;
@@ -472,14 +475,16 @@ export function BookingModal({
                 </div>
               </div>
 
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">Тип размещения</p>
-                <div className="grid sm:grid-cols-3 gap-3">
-                  {rooms.map(r => (
-                    <RoomCard key={r.id} {...r} selected={room === r.id} onSelect={setRoom} priceMod={r.mod} />
-                  ))}
+              {rooms.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">Тип размещения</p>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    {rooms.map(r => (
+                      <RoomCard key={r.id} {...r} selected={room === r.id} onSelect={setRoom} priceMod={r.mod} />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : step === 1 ? (
             <div className="space-y-4 mt-3">
@@ -573,7 +578,7 @@ export function BookingModal({
                   {[
                     { k: "Заезд / Выезд", v: `${fmtDate(date)} → ${fmtDate(plusDays(date, tourDurationDays))}`, Ic: Calendar },
                     { k: "Гостей", v: `${guests} ${guests === 1 ? "персона" : "персон"}`, Ic: Users },
-                    { k: "Размещение", v: selectedRoom.title, Ic: Hotel },
+                    ...(selectedRoom ? [{ k: "Размещение", v: selectedRoom.title, Ic: Hotel }] : []),
                     { k: "На имя", v: watchedName || "—", Ic: User },
                   ].map(({ k, v, Ic }) => (
                     <div key={k} className="flex items-center justify-between px-4 py-3">

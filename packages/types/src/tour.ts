@@ -2,6 +2,13 @@ import type { LocalizedText, LocalizedList } from "./common";
 
 export type MealPlan = "ALL_INCLUSIVE" | "HALF_BOARD" | "BREAKFAST" | "NO_MEALS";
 
+export interface RoomTypeOption {
+  id: string;
+  title: string;
+  desc?: string;
+  priceModifier: number;
+}
+
 export interface Tour {
   id: string;
   slug: string;
@@ -18,6 +25,7 @@ export interface Tour {
   priceUsd: number;
   coverImage: string;
   images: string[];
+  roomTypes: RoomTypeOption[];
   isActive: boolean;
   isHot: boolean;
   referralThreshold: number;
@@ -55,6 +63,7 @@ export interface TourCreateInput {
   priceUsd: number;
   coverImage: string;
   images?: string[];
+  roomTypes?: RoomTypeOption[];
   isHot?: boolean;
   referralThreshold?: number;
 }

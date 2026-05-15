@@ -4,6 +4,11 @@ import type {
 import { apiClient } from "./apiClient";
 
 export const authApi = {
+  async sendOtp(email: string): Promise<{ devCode?: string }> {
+    const { data } = await apiClient.post<{ ok: boolean; devCode?: string }>("/auth/otp/send", { email });
+    return { devCode: data.devCode };
+  },
+
   async register(payload: RegisterRequest): Promise<AuthUser> {
     const { data } = await apiClient.post<{ user: AuthUser }>("/auth/register", payload);
     return data.user;

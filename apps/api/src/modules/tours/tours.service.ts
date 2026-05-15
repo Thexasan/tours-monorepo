@@ -99,6 +99,7 @@ export class ToursService {
     mealPlan: string; durationDays: number;
     priceUsd: Prisma.Decimal;
     coverImage: string; images: string[];
+    roomTypes: Prisma.JsonValue;
     isActive: boolean; isHot: boolean; referralThreshold: number;
     avgRating: number; reviewsCount: number;
     createdAt: Date; updatedAt: Date;
@@ -118,6 +119,7 @@ export class ToursService {
     priceUsd: Number(tour.priceUsd),
     coverImage: tour.coverImage,
     images: tour.images,
+    roomTypes: Array.isArray(tour.roomTypes) ? tour.roomTypes : [],
     isActive: tour.isActive,
     isHot: tour.isHot,
     referralThreshold: tour.referralThreshold,

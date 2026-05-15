@@ -8,13 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   X, Globe, Hotel, Utensils, DollarSign, Image as ImageIcon,
-  CheckCircle2, XCircle, Settings, ChevronDown,
+  CheckCircle2, XCircle, Settings, ChevronDown, Plus, Trash2, BedDouble,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { adminToursApi } from "@/src/shared/api/admin-tours-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { cn } from "@/src/lib/utils";
-import type { Tour } from "@tours/types";
+import type { Tour, RoomTypeOption } from "@tours/types";
 
 const schema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, "только a-z, 0-9 и дефис").min(3).max(120),
@@ -56,7 +56,7 @@ function fromLines(text?: string): string[] {
   return text ? text.split("\n").map(s => s.trim()).filter(Boolean) : [];
 }
 
-const SECTIONS = ["Основное", "Отель и тур", "Медиа", "Программа", "Настройки"] as const;
+const SECTIONS = ["Основное", "Отель и тур", "Размещение", "Медиа", "Программа", "Настройки"] as const;
 type Section = (typeof SECTIONS)[number];
 
 export function TourFormModal({
@@ -71,6 +71,9 @@ export function TourFormModal({
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<Section>("Основное");
   const [galleryImages, setGalleryImages] = useState<string[]>(tour?.images ?? []);
+  const [roomTypes, setRoomTypes] = useState<RoomTypeOption[]>(
+    (tour?.roomTypes ?? []) as RoomTypeOption[]
+  );
 
   const {
     register, handleSubmit, setValue, watch, formState: { errors },
@@ -146,6 +149,7 @@ export function TourFormModal({
         priceUsd: v.priceUsd,
         coverImage: v.coverImage,
         images: galleryImages,
+        roomTypes,
         isHot: v.isHot,
         ...(isEdit ? { isActive: v.isActive } : {}),
         referralThreshold: v.referralThreshold,
@@ -305,6 +309,90 @@ export function TourFormModal({
                   </label>
                 </div>
               </>
+            )}
+
+            {/* ── Section: Размещение ──────────────── */}
+            {openSection === "Размещение" && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Типы размещения</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Добавьте варианты номеров с доплатой. Если список пуст — шаг выбора скрыт при бронировании.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRoomTypes(prev => [
+                      ...prev,
+                      { id: `room-${Date.now()}`, title: "", desc: "", priceModifier: 0 },
+                    ])}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Добавить
+                  </button>
+                </div>
+
+                {roomTypes.length === 0 ? (
+                  <div className="rounded-2xl border-2 border-dashed border-slate-200 p-8 text-center text-slate-400">
+                    <BedDouble className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">Нет типов размещения — при бронировании шаг будет пропущен</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {roomTypes.map((rt, idx) => (
+                      <div
+                        key={rt.id}
+                        className="rounded-2xl ring-1 ring-slate-200 bg-slate-50/40 p-4 space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                            Вариант {idx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setRoomTypes(prev => prev.filter((_, i) => i !== idx))}
+                            className="grid place-items-center h-7 w-7 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                            aria-label="Удалить"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Field label="Название *">
+                            <input
+                              value={rt.title}
+                              onChange={e => setRoomTypes(prev => prev.map((r, i) => i === idx ? { ...r, title: e.target.value } : r))}
+                              placeholder="Стандартный номер"
+                              className={fieldCls(false)}
+                            />
+                          </Field>
+                          <Field label="Доплата $">
+                            <input
+                              type="number"
+                              min={0}
+                              step={1}
+                              value={rt.priceModifier}
+                              onChange={e => setRoomTypes(prev => prev.map((r, i) => i === idx ? { ...r, priceModifier: Number(e.target.value) } : r))}
+                              placeholder="0"
+                              className={fieldCls(false)}
+                            />
+                          </Field>
+                        </div>
+                        <Field label="Описание (опц.)">
+                          <input
+                            value={rt.desc ?? ""}
+                            onChange={e => setRoomTypes(prev => prev.map((r, i) => i === idx ? { ...r, desc: e.target.value } : r))}
+                            placeholder="Уютный номер с балконом, вид на море"
+                            className={fieldCls(false)}
+                          />
+                        </Field>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* ── Section: Медиа ────────────────────── */}

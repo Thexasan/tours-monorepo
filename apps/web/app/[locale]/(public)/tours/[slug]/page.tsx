@@ -105,6 +105,7 @@ export default async function TourDetailPage({
         isHot={tour.isHot}
         hotelStars={tour.hotelStars}
         durationDays={tour.durationDays}
+        roomTypes={tour.roomTypes}
         locale={locale}
       />
 
@@ -173,6 +174,7 @@ export default async function TourDetailPage({
               country={tour.country}
               hotelStars={tour.hotelStars}
               durationDays={tour.durationDays}
+              roomTypes={tour.roomTypes}
               referralReward={50}
             />
           </aside>

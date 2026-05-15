@@ -26,7 +26,8 @@ export interface RegisterRequest {
   password: string;
   fullName: string;
   phone?: string;
-  referralCode?: string; // если зашёл по реф-ссылке
+  referralCode?: string;
+  otp: string;
 }
 
 export interface AuthResponse {

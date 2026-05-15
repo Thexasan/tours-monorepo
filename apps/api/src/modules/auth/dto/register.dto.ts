@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, MinLength, MaxLength, Matches } from "class-validator";
+import { IsEmail, IsOptional, IsString, MinLength, MaxLength, Matches, Length } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class RegisterDto {
@@ -29,4 +29,9 @@ export class RegisterDto {
   @IsString()
   @MaxLength(16)
   referralCode?: string;
+
+  @ApiProperty({ example: "123456", description: "6-значный OTP-код из письма" })
+  @IsString()
+  @Length(6, 6, { message: "OTP должен быть 6 символов" })
+  otp!: string;
 }

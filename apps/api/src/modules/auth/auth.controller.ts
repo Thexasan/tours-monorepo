@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import type { AuthTokens } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { SendOtpDto } from "./dto/send-otp.dto";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
@@ -20,6 +21,14 @@ export class AuthController {
     private readonly auth: AuthService,
     private readonly config: ConfigService,
   ) {}
+
+  @Public()
+  @HttpCode(200)
+  @Post("otp/send")
+  async sendOtp(@Body() dto: SendOtpDto): Promise<{ ok: boolean; devCode?: string }> {
+    const result = await this.auth.sendOtp(dto.email);
+    return { ok: true, devCode: result.devCode };
+  }
 
   @Public()
   @Post("register")

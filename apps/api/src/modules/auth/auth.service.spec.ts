@@ -39,6 +39,16 @@ const mockPrisma = {
     updateMany: jest.fn(),
     findUnique: jest.fn(),
   },
+  otpCode: {
+    count: jest.fn().mockResolvedValue(0),
+    deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
+    create: jest.fn().mockResolvedValue({}),
+    findFirst: jest.fn().mockResolvedValue({ id: "otp1", code: "123456" }),
+    update: jest.fn().mockResolvedValue({}),
+  },
+  booking: {
+    updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+  },
 };
 
 const mockJwt = {
@@ -65,6 +75,12 @@ describe("AuthService", () => {
     mockEmail.sendWelcome.mockResolvedValue(undefined);
     mockPrisma.refreshToken.create.mockResolvedValue({});
     mockJwt.signAsync.mockResolvedValue("mock_token");
+    mockPrisma.otpCode.count.mockResolvedValue(0);
+    mockPrisma.otpCode.deleteMany.mockResolvedValue({ count: 0 });
+    mockPrisma.otpCode.create.mockResolvedValue({});
+    mockPrisma.otpCode.findFirst.mockResolvedValue({ id: "otp1", code: "123456" });
+    mockPrisma.otpCode.update.mockResolvedValue({});
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 0 });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -90,6 +106,7 @@ describe("AuthService", () => {
         email: "Alice@Example.com",
         password: "password123",
         fullName: "Alice",
+        otp: "123456",
       });
 
       expect(result.tokens.accessToken).toBe("mock_token");
@@ -107,7 +124,7 @@ describe("AuthService", () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(makeUser());
 
       await expect(
-        service.register({ email: "alice@example.com", password: "pass", fullName: "Alice" }),
+        service.register({ email: "alice@example.com", password: "pass", fullName: "Alice", otp: "123456" }),
       ).rejects.toThrow(ConflictException);
 
       expect(mockPrisma.user.create).not.toHaveBeenCalled();
@@ -125,7 +142,8 @@ describe("AuthService", () => {
         email: "new@example.com",
         password: "password123",
         fullName: "New User",
-        referralCode: "refcode1", // lowercase — should be uppercased internally
+        referralCode: "refcode1",
+        otp: "123456",
       });
 
       expect(mockPrisma.user.create).toHaveBeenCalledWith(
@@ -147,6 +165,7 @@ describe("AuthService", () => {
         password: "password123",
         fullName: "New",
         referralCode: "INACTIVE",
+        otp: "123456",
       });
 
       const createCall = mockPrisma.user.create.mock.calls[0]?.[0] as { data: Record<string, unknown> };
@@ -157,7 +176,7 @@ describe("AuthService", () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null).mockResolvedValue(null);
       mockPrisma.user.create.mockResolvedValue(makeUser());
 
-      await service.register({ email: "alice@example.com", password: "pass123", fullName: "Alice" });
+      await service.register({ email: "alice@example.com", password: "pass123", fullName: "Alice", otp: "123456" });
 
       // fire-and-forget: await the promise so the mock is called before assertion
       await Promise.resolve();

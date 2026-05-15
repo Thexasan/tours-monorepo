@@ -16,6 +16,7 @@ export interface Booking {
 
   guestsCount: number;
   preferredDate: string | null;
+  roomType: string | null;
   notes: string | null;
 
   totalPriceUsd: number;

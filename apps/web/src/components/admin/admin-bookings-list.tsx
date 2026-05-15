@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useLocale } from "next-intl";
 import {
-  Search, Mail, Phone, User, Briefcase, Calendar, DollarSign, Filter, AlertCircle, Check,
+  Search, Mail, Phone, User, Briefcase, Calendar, DollarSign, Filter, AlertCircle, Check, BedDouble,
 } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
@@ -185,14 +185,22 @@ export function AdminBookingsList() {
                     </div>
                   </div>
 
-                  {referrer && (
-                    <div className="inline-flex items-center gap-1.5 mt-3 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 ring-1 ring-amber-100">
-                      <Briefcase className="w-3 h-3" />
-                      Реферер: <strong>{referrer.fullName}</strong>
-                      <span className="text-amber-600">·</span>
-                      <span>{referrer.role}</span>
-                    </div>
-                  )}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {b.roomType && (
+                      <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 ring-1 ring-teal-100">
+                        <BedDouble className="w-3 h-3" />
+                        {b.roomType}
+                      </div>
+                    )}
+                    {referrer && (
+                      <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 ring-1 ring-amber-100">
+                        <Briefcase className="w-3 h-3" />
+                        Реферер: <strong>{referrer.fullName}</strong>
+                        <span className="text-amber-600">·</span>
+                        <span>{referrer.role}</span>
+                      </div>
+                    )}
+                  </div>
 
                   {b.notes && (
                     <p className="text-sm text-slate-600 italic mt-2 px-3 py-2 rounded-lg bg-slate-50 border-l-2 border-slate-300">

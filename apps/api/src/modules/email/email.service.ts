@@ -72,6 +72,24 @@ export class EmailService implements OnModuleInit {
     }
   }
 
+  async sendOtp(to: string, code: string): Promise<void> {
+    await this.send({
+      to,
+      subject: "Ваш код подтверждения — Tours",
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:40px 24px">
+          <h2 style="color:#0d9488;margin:0 0 8px">Tours</h2>
+          <p style="color:#1e293b;font-size:16px;margin:0 0 20px">Ваш код подтверждения:</p>
+          <div style="font-size:40px;font-weight:700;letter-spacing:12px;color:#0f172a;text-align:center;padding:24px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin:0 0 20px">
+            ${escapeHtml(code)}
+          </div>
+          <p style="color:#64748b;font-size:14px;margin:0 0 8px">Код действителен <strong>10 минут</strong>. Не передавайте его никому.</p>
+          <p style="color:#94a3b8;font-size:13px;margin:0">Если вы не запрашивали этот код — просто проигнорируйте письмо.</p>
+        </div>
+      `,
+    });
+  }
+
   async sendWelcome(to: string, fullName: string, referralCode: string, locale = "ru"): Promise<void> {
     const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
     await this.send({
