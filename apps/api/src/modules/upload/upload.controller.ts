@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   BadRequestException,
 } from "@nestjs/common";
@@ -10,6 +11,9 @@ import { put } from "@vercel/blob";
 import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { UserRole } from "@tours/db";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 8 * 1024 * 1024; // 8 MB
@@ -18,6 +22,8 @@ const MAX_SIZE = 8 * 1024 * 1024; // 8 MB
 @Controller("upload")
 export class UploadController {
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiConsumes("multipart/form-data")
   @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } } } })
   @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_SIZE } }))

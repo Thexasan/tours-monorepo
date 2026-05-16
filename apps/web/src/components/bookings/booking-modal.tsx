@@ -1,44 +1,23 @@
 "use client";
 
-/* ============================================================
- * BookingModal — 3-step booking flow
- *
- * PRESERVED (same contracts as the original):
- *   - Props:  { tourId, tourTitle, pricePerPerson, open, onClose }
- *   - Form schema (zod): contactName, contactEmail, contactPhone,
- *                        guestsCount, preferredDate, notes
- *   - Submit handler:    bookingsApi.create({ ... })
- *   - Error formatter:   extractErrorMessage(e)
- *   - Success state UI   (success message + close)
- *
- * NEW (UI only):
- *   - 3 visual steps: options → traveler details → confirmation
- *   - Step indicator with progress bar
- *   - Mini 2-month date picker (writes the same preferredDate string)
- *   - Guest stepper + child counter (children combined into guestsCount)
- *   - Price breakdown summary on step 3
- *
- * Email notification is server-side (NestJS) and is triggered by
- * bookingsApi.create — same call, same payload.
- * ============================================================ */
-
 import { useState, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Image from "next/image";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 import {
   Check, X, ChevronLeft, ChevronRight, Plus, Minus,
   User, Mail, Phone, BookMarked, Calendar, Users, Hotel,
-  Shield, Sparkles, ArrowRight,
+  Shield, Sparkles, ArrowRight, UserPlus, LogIn, Lock,
 } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { useAuth } from "@/src/shared/hooks/use-auth";
 import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
 
-/* Form schema — UNCHANGED from original implementation */
 const schema = z.object({
   contactName: z.string().min(2, "Минимум 2 символа").max(100),
   contactEmail: z.string().email("Некорректный email"),
@@ -50,22 +29,42 @@ const schema = z.object({
 type FormInput = z.input<typeof schema>;
 type FormOutput = z.output<typeof schema>;
 
+export const BOOKING_INTENT_KEY = "pendingBookingIntent";
+
+export interface BookingIntent {
+  tourId: string;
+  tourSlug: string;
+  locale: string;
+  date: CalDate;
+  guests: number;
+  roomId: string;
+}
+
 interface BookingModalProps {
   tourId: string;
   tourTitle: string;
+  tourSlug?: string;
   pricePerPerson: number;
-  /** Optional — used for the confirmation slide image. */
   tourCoverImage?: string;
   tourCountry?: string;
   tourHotelStars?: number;
   tourDurationDays?: number;
   tourRoomTypes?: RoomTypeOption[];
   initialGuests?: number;
+  /** ISO date string "YYYY-MM-DD" pre-selected from sidebar date picker */
+  initialDate?: string;
   open: boolean;
   onClose: () => void;
 }
 
 type CalDate = { y: number; m: number; day: number } | null;
+
+function parseIsoDate(iso: string): CalDate {
+  const parts = iso.split("-").map(Number);
+  const y = parts[0], m = parts[1], d = parts[2];
+  if (!y || !m || !d) return null;
+  return { y, m: m - 1, day: d }; // month is 0-indexed
+}
 
 function toIso(d: CalDate): string | undefined {
   if (!d) return undefined;
@@ -86,9 +85,8 @@ function plusDays(d: CalDate, n: number): CalDate {
   return { y: dd.getFullYear(), m: dd.getMonth(), day: dd.getDate() };
 }
 
-/* ─── Step indicator ────────────────────────────────────────── */
-function Stepper({ step }: { step: 0 | 1 | 2 }) {
-  const labels = ["Опции", "Путешественники", "Подтверждение"];
+/* ─── Stepper — generic, labels + visual active index ──────────── */
+function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: number }) {
   return (
     <div className="px-6 sm:px-10 pt-6 pb-2">
       <div className="flex items-start gap-2 sm:gap-4">
@@ -98,14 +96,14 @@ function Stepper({ step }: { step: 0 | 1 | 2 }) {
               <div
                 className={cn(
                   "relative grid place-items-center h-10 w-10 rounded-full ring-4 transition-all duration-300",
-                  step > i
+                  activeIndex > i
                     ? "bg-teal-600 text-white ring-teal-100"
-                    : step === i
+                    : activeIndex === i
                     ? "bg-white text-teal-700 ring-teal-200 shadow-[0_10px_24px_-10px_rgba(13,148,136,0.6)]"
                     : "bg-white text-slate-400 ring-slate-200",
                 )}
               >
-                {step > i
+                {activeIndex > i
                   ? <Check className="h-[18px] w-[18px]" strokeWidth={2.5} />
                   : <span className="text-sm font-bold tabular-nums">{i + 1}</span>
                 }
@@ -113,7 +111,7 @@ function Stepper({ step }: { step: 0 | 1 | 2 }) {
               <span
                 className={cn(
                   "text-[11px] font-semibold uppercase tracking-wider text-center whitespace-nowrap",
-                  step >= i ? "text-slate-800" : "text-slate-400",
+                  activeIndex >= i ? "text-slate-800" : "text-slate-400",
                 )}
               >
                 {label}
@@ -123,7 +121,7 @@ function Stepper({ step }: { step: 0 | 1 | 2 }) {
               <div className="flex-1 h-px mt-5 relative overflow-hidden rounded-full bg-slate-200">
                 <div
                   className="absolute inset-y-0 left-0 bg-gradient-to-r from-teal-500 to-sky-500 transition-all duration-500"
-                  style={{ width: step > i ? "100%" : "0%" }}
+                  style={{ width: activeIndex > i ? "100%" : "0%" }}
                 />
               </div>
             )}
@@ -134,7 +132,7 @@ function Stepper({ step }: { step: 0 | 1 | 2 }) {
   );
 }
 
-/* ─── Counter ───────────────────────────────────────────────── */
+/* ─── Counter ───────────────────────────────────────────────────── */
 function Counter({
   value, onChange, min = 0, max = 9,
 }: { value: number; onChange: (v: number) => void; min?: number; max?: number }) {
@@ -163,7 +161,7 @@ function Counter({
   );
 }
 
-/* ─── Room card ─────────────────────────────────────────────── */
+/* ─── Room card ─────────────────────────────────────────────────── */
 function RoomCard({
   id, selected, onSelect, title, desc, priceMod,
 }: {
@@ -202,7 +200,7 @@ function RoomCard({
   );
 }
 
-/* ─── Mini calendar (2 months) ──────────────────────────────── */
+/* ─── Mini calendar (2 months) ──────────────────────────────────── */
 function MiniCalendar({
   value, onChange,
 }: { value: CalDate; onChange: (d: CalDate) => void }) {
@@ -223,7 +221,8 @@ function MiniCalendar({
   function isPast(d: { y: number; m: number; day: number }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return new Date(d.y, d.m, d.day) < today;
+    // Block today and past — earliest bookable day is tomorrow
+    return new Date(d.y, d.m, d.day) <= today;
   }
 
   return (
@@ -289,7 +288,7 @@ function MiniCalendar({
   );
 }
 
-/* ─── FormField ─────────────────────────────────────────────── */
+/* ─── FormField ─────────────────────────────────────────────────── */
 function FormField({
   label, icon: Icon, error, children,
 }: {
@@ -312,10 +311,11 @@ function FormField({
   );
 }
 
-/* ─── Main modal ────────────────────────────────────────────── */
+/* ─── Main modal ────────────────────────────────────────────────── */
 export function BookingModal({
   tourId,
   tourTitle,
+  tourSlug,
   pricePerPerson,
   tourCoverImage,
   tourCountry,
@@ -323,19 +323,32 @@ export function BookingModal({
   tourDurationDays = 7,
   tourRoomTypes,
   initialGuests = 1,
+  initialDate,
   open,
   onClose,
 }: BookingModalProps) {
-  /* Server-state — UNCHANGED */
+  const locale = useLocale();
+  const { user, isAuthenticated } = useAuth();
+
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successBookingId, setSuccessBookingId] = useState<string | null>(null);
+  const [successEmail, setSuccessEmail] = useState("");
 
-  /* UI-only step + extras */
   const [step, setStep] = useState<0 | 1 | 2>(0);
-  const [date, setDate] = useState<CalDate>(null);
+  const [showAuthGate, setShowAuthGate] = useState(false);
+  const [date, setDate] = useState<CalDate>(() => parseIsoDate(initialDate ?? ""));
   const [guests, setGuests] = useState(initialGuests);
-  useEffect(() => { if (open) setGuests(initialGuests); }, [open, initialGuests]);
+
+  useEffect(() => {
+    if (open) {
+      setGuests(initialGuests);
+      setShowAuthGate(false);
+      setDate(parseIsoDate(initialDate ?? ""));
+    }
+  }, [open, initialGuests, initialDate]);
+
   const rooms: { id: string; title: string; desc: string; mod: number }[] =
     tourRoomTypes && tourRoomTypes.length > 0
       ? tourRoomTypes.map(r => ({ id: r.id, title: r.title, desc: r.desc ?? "", mod: r.priceModifier }))
@@ -346,7 +359,6 @@ export function BookingModal({
 
   const selectedRoom = rooms.find(r => r.id === room) ?? rooms[0];
 
-  /* React Hook Form — schema and submit handler UNCHANGED */
   const {
     register, handleSubmit, setValue, watch, formState: { errors }, reset,
   } = useForm<FormInput, unknown, FormOutput>({
@@ -354,16 +366,35 @@ export function BookingModal({
     defaultValues: { guestsCount: 1, contactName: "", contactEmail: "", contactPhone: "", notes: "" },
   });
 
-  const watchedName = watch("contactName") ?? "";
-  const watchedEmail = watch("contactEmail") ?? "";
-  const watchedPhone = watch("contactPhone") ?? "";
+  // Auto-fill name + email from profile for authenticated users
+  useEffect(() => {
+    if (user && open) {
+      setValue("contactName", user.fullName, { shouldValidate: false });
+      setValue("contactEmail", user.email, { shouldValidate: false });
+    }
+  }, [user, open, setValue]);
 
-  /* Submit — IDENTICAL payload to original implementation */
+  // Restore booking intent from sessionStorage after redirect back from register/login
+  useEffect(() => {
+    if (!open || !isAuthenticated) return;
+    try {
+      const raw = sessionStorage.getItem(BOOKING_INTENT_KEY);
+      if (!raw) return;
+      const intent: BookingIntent = JSON.parse(raw);
+      if (intent.tourId === tourId) {
+        if (intent.date) setDate(intent.date);
+        if (intent.guests) setGuests(intent.guests);
+        if (intent.roomId) setRoom(intent.roomId);
+        sessionStorage.removeItem(BOOKING_INTENT_KEY);
+      }
+    } catch {}
+  }, [open, isAuthenticated, tourId]);
+
   const onSubmit: SubmitHandler<FormOutput> = async (values) => {
     setSubmitting(true);
     setError(null);
     try {
-      await bookingsApi.create({
+      const booking = await bookingsApi.create({
         tourId,
         contactName: values.contactName,
         contactEmail: values.contactEmail,
@@ -373,6 +404,8 @@ export function BookingModal({
         roomType: selectedRoom?.title || undefined,
         notes: values.notes || undefined,
       });
+      setSuccessBookingId(booking.id);
+      setSuccessEmail(values.contactEmail);
       setSuccess(true);
       reset();
     } catch (e) {
@@ -382,21 +415,33 @@ export function BookingModal({
     }
   };
 
-  /* Price math (UI-only — server recalculates from tour.priceUsd) */
   const base = pricePerPerson * guests;
   const roomTotal = (selectedRoom?.mod ?? 0) * guests;
   const subtotal = base + roomTotal;
   const taxes = Math.round(subtotal * 0.08);
   const total = subtotal + taxes;
 
-  const canStep1 = !!date && guests >= 1;
-  const canStep2 = watchedName.length >= 2 && watchedEmail.includes("@") && watchedPhone.length >= 6
+  const canStep0 = !!date && guests >= 1;
+  const watchedName = watch("contactName") ?? "";
+  const watchedEmail = watch("contactEmail") ?? "";
+  const watchedPhone = watch("contactPhone") ?? "";
+
+  const canStep1 = watchedName.length >= 2 && watchedEmail.includes("@") && watchedPhone.length >= 6
     && !errors.contactName && !errors.contactEmail && !errors.contactPhone;
+
+  // Stepper config: authenticated = 2 steps, guests = 3 steps
+  const stepperLabels = isAuthenticated
+    ? ["Опции", "Подтверждение"]
+    : ["Опции", "Путешественники", "Подтверждение"];
+  const stepperActiveIndex = isAuthenticated ? (step === 0 ? 0 : 1) : step;
 
   function handleClose() {
     setSuccess(false);
     setError(null);
     setStep(0);
+    setShowAuthGate(false);
+    setSuccessBookingId(null);
+    setSuccessEmail("");
     onClose();
   }
 
@@ -404,13 +449,31 @@ export function BookingModal({
     if (step === 0) {
       setValue("guestsCount", guests, { shouldValidate: true });
       setValue("preferredDate", toIso(date) ?? "", { shouldValidate: false });
-      setStep(1);
+      if (isAuthenticated) {
+        setStep(2);
+      } else {
+        // Save intent to sessionStorage before showing auth gate
+        if (tourSlug) {
+          try {
+            const intent: BookingIntent = { tourId, tourSlug, locale, date, guests, roomId: room };
+            sessionStorage.setItem(BOOKING_INTENT_KEY, JSON.stringify(intent));
+          } catch {}
+        }
+        setShowAuthGate(true);
+      }
     } else if (step === 1) {
       setStep(2);
     }
   }
 
+  function handleBack() {
+    // Auth users jump from step 0 to step 2, so back from step 2 returns to step 0
+    setStep(isAuthenticated && step === 2 ? 0 : (step - 1) as 0 | 1 | 2);
+  }
+
   if (!open) return null;
+
+  const showStepper = !success && !showAuthGate;
 
   return (
     <div
@@ -430,9 +493,11 @@ export function BookingModal({
           <X className="h-[18px] w-[18px]" />
         </button>
 
-        {!success && <Stepper step={step} />}
+        {showStepper && <Stepper labels={stepperLabels} activeIndex={stepperActiveIndex} />}
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto px-6 sm:px-10 pb-6 flex flex-col">
+
+          {/* ── SUCCESS ─────────────────────────────────────────────── */}
           {success ? (
             <div className="py-12 text-center max-w-md mx-auto">
               <div className="relative inline-grid place-items-center mb-5">
@@ -449,10 +514,87 @@ export function BookingModal({
                 <Sparkles className="h-3.5 w-3.5" />
                 +1 реферал засчитается после оплаты
               </div>
-              <div className="mt-7">
-                <Button type="button" onClick={handleClose}>Закрыть</Button>
+              <div className="mt-7 space-y-3">
+                {isAuthenticated ? (
+                  <Link
+                    href={`/${locale}/dashboard/trips`}
+                    onClick={handleClose}
+                    className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                    style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                  >
+                    Перейти в мои заявки
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href={`/${locale}/register?email=${encodeURIComponent(successEmail)}&bookingId=${successBookingId ?? ""}`}
+                      onClick={handleClose}
+                      className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                      style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Зарегистрируйтесь, чтобы следить за заявкой
+                    </Link>
+                    <Link
+                      href={`/${locale}/login?next=${encodeURIComponent(`/${locale}/dashboard/trips`)}`}
+                      onClick={handleClose}
+                      className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 transition"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      Уже есть аккаунт — войти
+                    </Link>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="block w-full text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
+                >
+                  Закрыть
+                </button>
               </div>
             </div>
+
+          /* ── AUTH GATE (guests only) ─────────────────────────────── */
+          ) : showAuthGate ? (
+            <div className="py-10 flex flex-col items-center gap-6 max-w-sm mx-auto text-center mt-3">
+              <div className="grid place-items-center h-16 w-16 rounded-2xl bg-teal-50 ring-1 ring-teal-100 text-teal-600">
+                <Lock className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">Нужен аккаунт для бронирования</h3>
+                <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                  Войдите или зарегистрируйтесь — ваши даты и параметры сохранятся автоматически.
+                </p>
+              </div>
+              <div className="w-full space-y-3">
+                <Link
+                  href={`/${locale}/register`}
+                  className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white hover:-translate-y-0.5 transition-all"
+                  style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Зарегистрироваться
+                </Link>
+                <Link
+                  href={`/${locale}/login`}
+                  className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 transition"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Уже есть аккаунт — войти
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowAuthGate(false)}
+                  className="block w-full text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
+                >
+                  ← Назад к выбору дат
+                </button>
+              </div>
+            </div>
+
+          /* ── STEP 0: OPTIONS ─────────────────────────────────────── */
           ) : step === 0 ? (
             <div className="space-y-5 mt-3">
               <div>
@@ -486,6 +628,8 @@ export function BookingModal({
                 </div>
               )}
             </div>
+
+          /* ── STEP 1: TRAVELER DETAILS (guests only) ─────────────── */
           ) : step === 1 ? (
             <div className="space-y-4 mt-3">
               <div>
@@ -554,6 +698,8 @@ export function BookingModal({
               <input type="hidden" {...register("guestsCount", { valueAsNumber: true })} />
               <input type="hidden" {...register("preferredDate")} />
             </div>
+
+          /* ── STEP 2: CONFIRMATION ────────────────────────────────── */
           ) : (
             <div className="space-y-4 mt-3">
               <div>
@@ -561,6 +707,37 @@ export function BookingModal({
                 <p className="text-sm text-slate-500 mt-0.5">Оплата после подтверждения менеджером</p>
               </div>
 
+              {/* Auth users: show profile read-only card + phone input */}
+              {isAuthenticated && (
+                <div className="space-y-3">
+                  <div className="rounded-2xl bg-teal-50/50 ring-1 ring-teal-100 p-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-teal-600 mb-3">Данные из профиля</p>
+                    <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="font-medium truncate">{user?.fullName}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">{user?.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <FormField label="Контактный телефон" icon={Phone} error={errors.contactPhone?.message}>
+                    <input
+                      {...register("contactPhone")}
+                      type="tel"
+                      placeholder="+7 705 123 4567"
+                      autoFocus
+                      className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-300 outline-none"
+                    />
+                  </FormField>
+                  <input type="hidden" {...register("guestsCount", { valueAsNumber: true })} />
+                  <input type="hidden" {...register("preferredDate")} />
+                </div>
+              )}
+
+              {/* Tour preview */}
               <div className="rounded-2xl ring-1 ring-slate-200 overflow-hidden">
                 <div className="flex gap-4 p-4 bg-gradient-to-br from-slate-50 to-white">
                   <div className="relative w-24 h-24 rounded-xl ring-1 ring-slate-200 shrink-0 overflow-hidden bg-slate-100">
@@ -579,7 +756,7 @@ export function BookingModal({
                     { k: "Заезд / Выезд", v: `${fmtDate(date)} → ${fmtDate(plusDays(date, tourDurationDays))}`, Ic: Calendar },
                     { k: "Гостей", v: `${guests} ${guests === 1 ? "персона" : "персон"}`, Ic: Users },
                     ...(selectedRoom ? [{ k: "Размещение", v: selectedRoom.title, Ic: Hotel }] : []),
-                    { k: "На имя", v: watchedName || "—", Ic: User },
+                    ...(!isAuthenticated ? [{ k: "На имя", v: watchedName || "—", Ic: User }] : []),
                   ].map(({ k, v, Ic }) => (
                     <div key={k} className="flex items-center justify-between px-4 py-3">
                       <span className="flex items-center gap-2 text-slate-500">
@@ -592,6 +769,7 @@ export function BookingModal({
                 </div>
               </div>
 
+              {/* Price breakdown */}
               <div className="rounded-2xl ring-1 ring-slate-200 p-4 text-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-600">
                   <span>Персон × {guests}</span>
@@ -649,7 +827,8 @@ export function BookingModal({
             </div>
           )}
 
-          {!success && (
+          {/* ── BOTTOM BAR ──────────────────────────────────────────── */}
+          {!success && !showAuthGate && (
             <div className="mt-6 -mx-6 sm:-mx-10 px-6 sm:px-10 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Сумма</p>
@@ -659,7 +838,7 @@ export function BookingModal({
                 {step > 0 && (
                   <button
                     type="button"
-                    onClick={() => setStep((s) => (s - 1) as 0 | 1 | 2)}
+                    onClick={handleBack}
                     className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-slate-700 text-sm font-semibold ring-1 ring-slate-200 hover:bg-slate-50 transition"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -669,7 +848,7 @@ export function BookingModal({
                 {step < 2 ? (
                   <button
                     type="button"
-                    disabled={step === 0 ? !canStep1 : !canStep2}
+                    disabled={step === 0 ? !canStep0 : !canStep1}
                     onClick={nextStep}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #f97316, #f43f5e)" }}
@@ -680,7 +859,7 @@ export function BookingModal({
                 ) : (
                   <button
                     type="submit"
-                    disabled={!agreed || submitting}
+                    disabled={!agreed || submitting || (isAuthenticated && watchedPhone.length < 6)}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
                   >

@@ -223,6 +223,112 @@ export class EmailService implements OnModuleInit {
     });
   }
 
+  async sendDocumentsRequested(
+    to: string,
+    contactName: string,
+    tourTitle: string,
+    bookingId: string,
+    note?: string,
+  ): Promise<void> {
+    const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
+    const noteBlock = note
+      ? `<p style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:12px 16px;margin:16px 0;color:#713f12">${escapeHtml(note)}</p>`
+      : "";
+    await this.send({
+      to,
+      subject: `Требуются документы для тура "${tourTitle}"`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2 style="color:#0d9488">Привет, ${escapeHtml(contactName)}!</h2>
+          <p>Ваш менеджер запросил документы для оформления тура <strong>${escapeHtml(tourTitle)}</strong>.</p>
+          ${noteBlock}
+          <p>Пожалуйста, войдите в личный кабинет и загрузите необходимые документы (паспорт, загранпаспорт).</p>
+          <p><a href="${appUrl}/ru/dashboard/trips/${encodeURIComponent(bookingId)}"
+            style="display:inline-block;background:#0d9488;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600">
+            Открыть заявку и загрузить документы
+          </a></p>
+          <p style="color:#6b7280;font-size:13px;margin-top:30px">Команда Tours</p>
+        </div>
+      `,
+    });
+  }
+
+  async sendDocumentsSubmitted(
+    to: string,
+    clientName: string,
+    tourTitle: string,
+    bookingId: string,
+  ): Promise<void> {
+    const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
+    await this.send({
+      to,
+      subject: `Документы загружены — ${tourTitle}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2>Новые документы по заявке</h2>
+          <p>Клиент <strong>${escapeHtml(clientName)}</strong> загрузил документы для тура <strong>${escapeHtml(tourTitle)}</strong>.</p>
+          <p>Зайдите в административную панель и подтвердите или отклоните документы.</p>
+          <p><a href="${appUrl}/ru/admin/bookings/${encodeURIComponent(bookingId)}"
+            style="display:inline-block;background:#2563eb;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600">
+            Открыть в админке
+          </a></p>
+        </div>
+      `,
+    });
+  }
+
+  async sendDocumentsConfirmed(
+    to: string,
+    contactName: string,
+    tourTitle: string,
+    bookingId: string,
+  ): Promise<void> {
+    const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
+    await this.send({
+      to,
+      subject: `Документы приняты — тур "${tourTitle}"`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2 style="color:#059669">Привет, ${escapeHtml(contactName)}!</h2>
+          <p>Ваши документы для тура <strong>${escapeHtml(tourTitle)}</strong> проверены и приняты. Менеджер приступает к оформлению.</p>
+          <p><a href="${appUrl}/ru/dashboard/trips/${encodeURIComponent(bookingId)}"
+            style="display:inline-block;background:#059669;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600">
+            Открыть мою заявку
+          </a></p>
+          <p style="color:#6b7280;font-size:13px;margin-top:30px">Команда Tours</p>
+        </div>
+      `,
+    });
+  }
+
+  async sendDocumentsRejected(
+    to: string,
+    contactName: string,
+    tourTitle: string,
+    bookingId: string,
+    rejectionNote: string,
+  ): Promise<void> {
+    const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
+    await this.send({
+      to,
+      subject: `Документы отклонены — тур "${tourTitle}"`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <h2>Привет, ${escapeHtml(contactName)}!</h2>
+          <p>К сожалению, документы по туру <strong>${escapeHtml(tourTitle)}</strong> не были приняты.</p>
+          <p style="font-weight:600">Причина:</p>
+          <p style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;color:#7f1d1d">${escapeHtml(rejectionNote)}</p>
+          <p>Пожалуйста, загрузите исправленные документы в личном кабинете.</p>
+          <p><a href="${appUrl}/ru/dashboard/trips/${encodeURIComponent(bookingId)}"
+            style="display:inline-block;background:#dc2626;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600">
+            Открыть заявку и загрузить заново
+          </a></p>
+          <p style="color:#6b7280;font-size:13px;margin-top:30px">Команда Tours</p>
+        </div>
+      `,
+    });
+  }
+
   async sendReferralRewarded(
     to: string, fullName: string, type: "client" | "partner", details: { count?: number; threshold?: number; commission?: number; freeTour?: boolean },
   ): Promise<void> {

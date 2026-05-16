@@ -1,23 +1,107 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Check, AlertCircle, Copy, Loader2, Sparkles } from "lucide-react";
+import { Check, AlertCircle, Copy, Loader2, Sparkles, UserCircle2, Camera } from "lucide-react";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { apiClient, extractErrorMessage } from "@/src/shared/api/apiClient";
 import { authApi } from "@/src/shared/api/auth-api";
+import { uploadImage } from "@/src/shared/api/upload-api";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 
 const schema = z.object({
-  fullName: z.string().min(2).max(100),
-  phone: z.string().regex(/^\+?[0-9\s\-()]{6,20}$/, "Некорректный телефон").optional().or(z.literal("")),
-  avatarUrl: z.string().url("Некорректный URL").optional().or(z.literal("")),
+  fullName:  z.string().min(2).max(100),
+  phone:     z.string().regex(/^\+?[0-9\s\-()]{6,20}$/, "Некорректный телефон").optional().or(z.literal("")),
+  avatarUrl: z.string().optional().or(z.literal("")),
 });
 type Values = z.infer<typeof schema>;
+
+// ── Avatar Uploader ──────────────────────────────────────────────────────────
+function AvatarUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFile(file: File) {
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const url = await uploadImage(file);
+      onChange(url);
+    } catch {
+      setUploadError("Ошибка загрузки. Попробуйте ещё раз.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 hover:border-teal-400 transition shrink-0 group"
+        aria-label="Загрузить аватар"
+      >
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt="Аватар" className="w-full h-full object-cover" />
+        ) : (
+          <UserCircle2 className="h-10 w-10 text-slate-400 m-auto" />
+        )}
+
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition">
+          {uploading
+            ? <Loader2 className="h-5 w-5 animate-spin text-white" />
+            : <Camera className="h-5 w-5 text-white" />
+          }
+        </div>
+      </button>
+
+      <div className="flex flex-col gap-1.5">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading ? "Загружаем…" : "Загрузить фото"}
+        </Button>
+
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-slate-500 hover:text-red-600 text-left transition"
+          >
+            Удалить фото
+          </button>
+        )}
+
+        <p className="text-xs text-slate-400">JPG, PNG, WebP · до 5 МБ</p>
+        {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={e => {
+          const file = e.target.files?.[0];
+          if (file) void handleFile(file);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
+}
 
 export function ProfileForm() {
   const { user, setUser } = useAuthStore();
@@ -27,7 +111,7 @@ export function ProfileForm() {
   const [copied, setCopied] = useState(false);
 
   const {
-    register, handleSubmit, reset, formState: { errors },
+    register, handleSubmit, reset, control, formState: { errors },
   } = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { fullName: "", phone: "", avatarUrl: "" },
@@ -115,14 +199,16 @@ export function ProfileForm() {
           </div>
 
           <div className="md:col-span-2">
-            <Label htmlFor="avatarUrl">URL аватара</Label>
-            <Input id="avatarUrl" type="url" placeholder="https://..." {...register("avatarUrl")} />
-            {errors.avatarUrl && (
-              <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {errors.avatarUrl.message}
-              </p>
-            )}
+            <Label>Фото профиля</Label>
+            <div className="mt-1.5">
+              <Controller
+                name="avatarUrl"
+                control={control}
+                render={({ field }) => (
+                  <AvatarUploader value={field.value ?? ""} onChange={field.onChange} />
+                )}
+              />
+            </div>
           </div>
         </div>
 

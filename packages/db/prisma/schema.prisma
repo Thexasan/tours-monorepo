@@ -29,11 +29,21 @@ enum UserRole {
 }
 
 enum BookingStatus {
-  NEW          // Только что оставлена клиентом
-  IN_PROGRESS  // Менеджер связался, ведёт работу
-  PAID         // Оплата получена → триггер начисления вознаграждений
-  COMPLETED    // Тур состоялся
-  CANCELLED    // Отменена
+  NEW                  // Только что оставлена клиентом
+  DOCUMENTS_REQUESTED  // Менеджер запросил документы (паспорта)
+  DOCUMENTS_SUBMITTED  // Клиент загрузил документы, ждём подтверждения
+  IN_PROGRESS          // Документы подтверждены, ведём работу
+  AWAITING_PAYMENT     // Менеджер выставил счёт, ждём перевода от клиента
+  PAID                 // Оплата получена → триггер начисления вознаграждений
+  COMPLETED            // Тур состоялся
+  CANCELLED            // Отменена
+}
+
+enum BookingDocumentKind {
+  PASSPORT_INTERNAL  // Внутренний паспорт
+  PASSPORT_FOREIGN   // Загранпаспорт
+  PAYMENT_RECEIPT    // Квитанция / скриншот банковского перевода
+  OTHER              // Прочий документ
 }
 
 enum ReviewStatus {
@@ -68,6 +78,17 @@ enum TransactionType {
   PAYOUT_REQUEST       // -сумма с баланса партнёра при запросе вывода
   PAYOUT_REJECTED      // +возврат на баланс при отклонении вывода
   ADMIN_ADJUSTMENT     // Ручная корректировка админом
+}
+
+enum NotificationType {
+  BOOKING_ACCEPTED
+  BOOKING_DOCUMENTS_REQUESTED
+  BOOKING_DOCUMENTS_CONFIRMED
+  BOOKING_DOCUMENTS_REJECTED
+  BOOKING_PAYMENT_REQUESTED    // Выставлен счёт на оплату
+  BOOKING_PAID
+  BOOKING_COMPLETED
+  BOOKING_CANCELLED
 }
 
 // =====================================================
@@ -112,6 +133,8 @@ model User {
   transactions        Transaction[]
   referralClicks      ReferralClick[]         @relation("RefererClicks")
   refreshTokens       RefreshToken[]
+  uploadedDocuments   BookingDocument[]       @relation("UploadedDocuments")
+  notifications       Notification[]
 
   @@index([role])
   @@index([referrerId])
@@ -222,6 +245,7 @@ model Booking {
 
   // Финансы
   totalPriceUsd     Decimal       @db.Decimal(12, 2) @map("total_price_usd")
+  paymentDetails    Json?         @map("payment_details") // { bankName, cardNumber, instructions, amount }
 
   // Реферальная привязка
   referrerId        String?       @map("referrer_id")
@@ -246,6 +270,8 @@ model Booking {
 
   reviews           Review[]
   transactions      Transaction[]
+  documents         BookingDocument[]
+  statusHistory     BookingStatusHistory[]
 
   @@index([tourId])
   @@index([userId])
@@ -255,6 +281,58 @@ model Booking {
   @@index([userId, status])
   @@index([status, createdAt])
   @@map("bookings")
+}
+
+model BookingDocument {
+  id              String              @id @default(cuid())
+  bookingId       String              @map("booking_id")
+  booking         Booking             @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  kind            BookingDocumentKind
+  uploadedById    String?             @map("uploaded_by_id")
+  uploadedBy      User?               @relation("UploadedDocuments", fields: [uploadedById], references: [id])
+  storageKey      String              @map("storage_key")   // путь в Vercel Blob или uploads/, НЕ публичный URL
+  fileName        String              @map("file_name")
+  sizeBytes       Int                 @map("size_bytes")
+  mimeType        String              @map("mime_type")
+  description     String?             // «Загранник Ивана»
+  visibleToClient Boolean             @default(true) @map("visible_to_client")
+  confirmedAt     DateTime?           @map("confirmed_at")
+  confirmedById   String?             @map("confirmed_by_id")
+  rejectionNote   String?             @map("rejection_note")
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  @@index([bookingId, kind])
+  @@map("booking_documents")
+}
+
+model BookingStatusHistory {
+  id          String         @id @default(cuid())
+  bookingId   String         @map("booking_id")
+  booking     Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fromStatus  BookingStatus?  @map("from_status")
+  toStatus    BookingStatus  @map("to_status")
+  changedById String?        @map("changed_by_id")
+  note        String?        @db.Text
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@index([bookingId, createdAt])
+  @@map("booking_status_history")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String           @db.Text
+  bookingId String?          @map("booking_id")
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("notifications")
 }
 
 // =====================================================

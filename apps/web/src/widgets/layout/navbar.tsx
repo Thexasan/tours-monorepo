@@ -8,6 +8,7 @@ import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
 import { CurrencySelector } from "@/src/components/shared/currency-selector";
 import { UserMenu } from "@/src/widgets/layout/user-menu";
 import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
+import { NotificationsBell } from "@/src/components/notifications/notifications-bell";
 import { cn } from "@/src/lib/utils";
 
 const T = {
@@ -91,6 +92,7 @@ export function Navbar() {
             <CurrencySelector />
           </div>
 
+          <NotificationsBell transparent={transparent} />
           <UserMenu transparent={transparent} />
         </nav>
       </PageWrapper>

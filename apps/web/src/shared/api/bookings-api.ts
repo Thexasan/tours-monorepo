@@ -1,4 +1,4 @@
-import type { Booking, BookingCreateInput, BookingStatus } from "@tours/types";
+import type { Booking, BookingCreateInput, BookingStatus, PaymentDetails } from "@tours/types";
 import { apiClient } from "./apiClient";
 
 export interface BookingsListResponse {
@@ -30,6 +30,10 @@ export const bookingsApi = {
   },
   async updateStatus(id: string, payload: { status: BookingStatus; cancelReason?: string; managerNotes?: string }): Promise<Booking> {
     const { data } = await apiClient.patch<Booking>(`/bookings/${id}/status`, payload);
+    return data;
+  },
+  async requestPayment(id: string, payload: Omit<PaymentDetails, "amount"> & { amount?: number }): Promise<Booking> {
+    const { data } = await apiClient.post<Booking>(`/bookings/${id}/request-payment`, payload);
     return data;
   },
 };

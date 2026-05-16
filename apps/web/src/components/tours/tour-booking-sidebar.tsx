@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import {
   Calendar, Users, Heart, Plus, Minus, ArrowRight,
   Shield, Award, Headphones, Sparkles, Tag, Share2, Copy, Check,
@@ -29,7 +29,20 @@ export function TourBookingSidebar({
   coverImage, country, hotelStars, durationDays, roomTypes, referralReward = 50,
 }: Props) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  // Auto-open modal after redirect back from register/login with ?book=1
+  useEffect(() => {
+    if (searchParams?.get("book") === "1") {
+      setOpen(true);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("book");
+      const newUrl = params.size > 0 ? `${pathname}?${params.toString()}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [searchParams, router, pathname]);
   const [guests, setGuests] = useState(1);
   const [departDate, setDepartDate] = useState("");
   const [wishlisted, setWishlisted] = useState(false);
@@ -177,6 +190,7 @@ export function TourBookingSidebar({
       <BookingModal
         tourId={tourId}
         tourTitle={tourTitle}
+        tourSlug={tourSlug}
         pricePerPerson={pricePerPerson}
         tourCoverImage={coverImage}
         tourCountry={country}
@@ -184,6 +198,7 @@ export function TourBookingSidebar({
         tourDurationDays={durationDays}
         tourRoomTypes={roomTypes}
         initialGuests={guests}
+        initialDate={departDate || undefined}
         open={open}
         onClose={() => setOpen(false)}
       />

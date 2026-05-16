@@ -7,6 +7,8 @@ export { PrismaClient, Prisma } from "@prisma/client";
 export {
   UserRole,
   BookingStatus,
+  BookingDocumentKind,
+  NotificationType,
   ReviewStatus,
   MealPlan,
   PartnerApplicationStatus,
@@ -19,6 +21,9 @@ export type {
   User,
   Tour,
   Booking,
+  BookingDocument,
+  BookingStatusHistory,
+  Notification,
   Review,
   Photo,
   ReferralClick,

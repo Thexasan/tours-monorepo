@@ -3,10 +3,40 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
-import { Prisma, BookingStatus, UserRole, TransactionType } from "@tours/db";
+import { NotificationsService } from "../notifications/notifications.service";
+import { Prisma, BookingStatus, UserRole, TransactionType, NotificationType } from "@tours/db";
 import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingStatusDto } from "./dto/update-booking-status.dto";
 import { ListBookingsDto } from "./dto/list-bookings.dto";
+import { RequestPaymentDto } from "./dto/request-payment.dto";
+
+const STATUS_NOTIFICATION: Partial<Record<BookingStatus, { type: NotificationType; title: string; body: (tour: string) => string }>> = {
+  [BookingStatus.IN_PROGRESS]: {
+    type: NotificationType.BOOKING_ACCEPTED,
+    title: "Заявка принята",
+    body: (tour) => `Менеджер приступил к оформлению вашей поездки «${tour}».`,
+  },
+  [BookingStatus.AWAITING_PAYMENT]: {
+    type: NotificationType.BOOKING_PAYMENT_REQUESTED,
+    title: "Выставлен счёт на оплату",
+    body: (tour) => `По заявке «${tour}» выставлен счёт. Переведите оплату и загрузите квитанцию.`,
+  },
+  [BookingStatus.PAID]: {
+    type: NotificationType.BOOKING_PAID,
+    title: "Оплата получена",
+    body: (tour) => `Оплата за тур «${tour}» подтверждена. Готовимся к поездке!`,
+  },
+  [BookingStatus.COMPLETED]: {
+    type: NotificationType.BOOKING_COMPLETED,
+    title: "Поездка завершена",
+    body: (tour) => `Ваша поездка «${tour}» завершена. Спасибо! Оставьте отзыв.`,
+  },
+  [BookingStatus.CANCELLED]: {
+    type: NotificationType.BOOKING_CANCELLED,
+    title: "Заявка отменена",
+    body: (tour) => `К сожалению, ваша заявка на тур «${tour}» была отменена.`,
+  },
+};
 
 interface BookingContext {
   userId?: string;
@@ -23,6 +53,7 @@ export class BookingsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly email: EmailService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async create(dto: CreateBookingDto, ctx: BookingContext) {
@@ -158,13 +189,40 @@ export class BookingsService {
       include: {
         tour: true,
         user: { select: { id: true, email: true, fullName: true } },
+        documents: {
+          where: requester.role === UserRole.ADMIN ? {} : { visibleToClient: true },
+          orderBy: { createdAt: "asc" },
+          select: {
+            id: true, kind: true, uploadedById: true, fileName: true,
+            sizeBytes: true, mimeType: true, description: true,
+            visibleToClient: true, confirmedAt: true, confirmedById: true,
+            rejectionNote: true, createdAt: true,
+          },
+        },
+        statusHistory: {
+          orderBy: { createdAt: "asc" },
+          select: { id: true, fromStatus: true, toStatus: true, changedById: true, note: true, createdAt: true },
+        },
       },
     });
     if (!booking) throw new NotFoundException("Booking not found");
     if (requester.role !== UserRole.ADMIN && booking.userId !== requester.id) {
       throw new ForbiddenException("Access denied");
     }
-    return { ...this.serialize(booking), tour: booking.tour, user: booking.user };
+    return {
+      ...this.serialize(booking),
+      tour: booking.tour,
+      user: booking.user,
+      documents: booking.documents.map((d) => ({
+        ...d,
+        confirmedAt: d.confirmedAt?.toISOString() ?? null,
+        createdAt: d.createdAt.toISOString(),
+      })),
+      statusHistory: booking.statusHistory.map((h) => ({
+        ...h,
+        createdAt: h.createdAt.toISOString(),
+      })),
+    };
   }
 
   async updateStatus(id: string, dto: UpdateBookingStatusDto, adminId: string) {
@@ -191,6 +249,18 @@ export class BookingsService {
       }
       const updated = await tx.booking.update({ where: { id }, data: updateData });
 
+      if (statusChanged) {
+        await tx.bookingStatusHistory.create({
+          data: {
+            bookingId: id,
+            fromStatus: booking.status,
+            toStatus: dto.status,
+            changedById: adminId,
+            note: dto.managerNotes ?? null,
+          },
+        });
+      }
+
       let rewardInfo: { type: "client" | "partner"; details: { count?: number; threshold?: number; commission?: number; freeTour?: boolean } } | null = null;
       let referrerEmail: string | null = null;
       let referrerName: string | null = null;
@@ -213,6 +283,17 @@ export class BookingsService {
       void this.email.sendBookingStatusChanged(
         booking.contactEmail, booking.contactName, tourTitleRu, dto.status,
       ).catch(() => undefined);
+
+      const notifTemplate = STATUS_NOTIFICATION[dto.status];
+      if (notifTemplate && booking.userId) {
+        void this.notifications.create({
+          userId: booking.userId,
+          type: notifTemplate.type,
+          title: notifTemplate.title,
+          body: notifTemplate.body(tourTitleRu),
+          bookingId: id,
+        });
+      }
     }
     if (result.rewardInfo && result.referrerEmail && result.referrerName) {
       void this.email.sendReferralRewarded(
@@ -221,6 +302,64 @@ export class BookingsService {
     }
 
     return this.serialize(result.booking);
+  }
+
+  async requestPayment(id: string, dto: RequestPaymentDto, adminId: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: { tour: { select: { title: true, slug: true } } },
+    });
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (booking.status !== BookingStatus.IN_PROGRESS) {
+      throw new BadRequestException("Payment can only be requested when booking is IN_PROGRESS");
+    }
+
+    const paymentDetails = {
+      bankName: dto.bankName,
+      cardNumber: dto.cardNumber,
+      instructions: dto.instructions,
+      amount: dto.amount ?? Number(booking.totalPriceUsd),
+    };
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const result = await tx.booking.update({
+        where: { id },
+        data: {
+          status: BookingStatus.AWAITING_PAYMENT,
+          statusChangedAt: new Date(),
+          managerId: adminId,
+          paymentDetails,
+        },
+      });
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId: id,
+          fromStatus: BookingStatus.IN_PROGRESS,
+          toStatus: BookingStatus.AWAITING_PAYMENT,
+          changedById: adminId,
+        },
+      });
+      return result;
+    });
+
+    const tourTitleRu = (booking.tour.title as { ru?: string }).ru ?? booking.tour.slug;
+
+    if (booking.userId) {
+      void this.notifications.create({
+        userId: booking.userId,
+        type: NotificationType.BOOKING_PAYMENT_REQUESTED,
+        title: "Выставлен счёт на оплату",
+        body: `По заявке «${tourTitleRu}» выставлен счёт на $${paymentDetails.amount}. Переведите оплату и загрузите квитанцию.`,
+        bookingId: id,
+      });
+    }
+
+    void this.email.sendBookingStatusChanged(
+      booking.contactEmail, booking.contactName, tourTitleRu, BookingStatus.AWAITING_PAYMENT,
+    ).catch(() => undefined);
+
+    this.logger.log(`Payment requested: booking=${id}, amount=${paymentDetails.amount}`);
+    return this.serialize(updated);
   }
 
   private async applyReferralReward(
@@ -313,6 +452,7 @@ export class BookingsService {
     roomType: string | null; notes: string | null;
     totalPriceUsd: Prisma.Decimal;
     status: BookingStatus;
+    paymentDetails?: Prisma.JsonValue | null;
     referrerId: string | null;
     paidAt: Date | null; completedAt: Date | null; cancelledAt: Date | null;
     createdAt: Date; updatedAt: Date;
@@ -326,6 +466,7 @@ export class BookingsService {
       notes: b.notes,
       totalPriceUsd: Number(b.totalPriceUsd),
       status: b.status,
+      paymentDetails: (b.paymentDetails ?? null) as { bankName: string; cardNumber: string; instructions: string; amount: number } | null,
       referrerId: b.referrerId,
       paidAt: b.paidAt?.toISOString() ?? null,
       completedAt: b.completedAt?.toISOString() ?? null,

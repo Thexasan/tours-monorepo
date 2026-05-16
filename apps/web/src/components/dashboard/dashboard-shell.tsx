@@ -9,17 +9,20 @@ import {
   Plane,
   Share2,
   MessageSquare,
+  Bell,
   LogOut,
   Compass,
   ChevronRight,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
+import { useNotifications } from "@/src/hooks/use-notifications";
 import { Button } from "@/src/components/ui/button";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, isHydrated } = useRequireAuth(["CLIENT"]);
   const { logout } = useAuth();
+  const { unread } = useNotifications();
   const pathname = usePathname();
   const locale = useLocale();
 
@@ -42,10 +45,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     .toUpperCase();
 
   const nav = [
-    { href: `/${locale}/dashboard/profile`, label: "Профиль", icon: User, hint: "Личные данные" },
-    { href: `/${locale}/dashboard/trips`, label: "Мои поездки", icon: Plane, hint: "История и заявки" },
-    { href: `/${locale}/dashboard/referrals`, label: "Реферальная программа", icon: Share2, hint: "Приглашай и зарабатывай" },
-    { href: `/${locale}/dashboard/reviews`, label: "Мои отзывы", icon: MessageSquare, hint: "Поделись опытом" },
+    { href: `/${locale}/dashboard/profile`, label: "Профиль", icon: User },
+    { href: `/${locale}/dashboard/trips`, label: "Мои поездки", icon: Plane },
+    { href: `/${locale}/dashboard/notifications`, label: "Уведомления", icon: Bell, badge: unread },
+    { href: `/${locale}/dashboard/referrals`, label: "Реферальная программа", icon: Share2 },
+    { href: `/${locale}/dashboard/reviews`, label: "Мои отзывы", icon: MessageSquare },
   ];
 
   const roleMeta: Record<string, { label: string; cls: string }> = {
@@ -113,6 +117,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             {nav.map((it) => {
               const active = pathname?.startsWith(it.href);
               const Icon = it.icon;
+              const badge = ("badge" in it ? it.badge : 0) ?? 0;
               return (
                 <Link
                   key={it.href}
@@ -121,13 +126,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   className="tv-nav-item group"
                 >
                   <span
-                    className={`grid place-items-center h-8 w-8 rounded-lg transition-colors ${
+                    className={`relative grid place-items-center h-8 w-8 rounded-lg transition-colors ${
                       active
                         ? "bg-teal-600 text-white shadow-[0_4px_10px_-2px_rgba(13,148,136,0.55)]"
                         : "bg-slate-100 text-slate-500 group-hover:bg-teal-50 group-hover:text-teal-700"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
+                    {badge > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                        {badge > 9 ? "9+" : badge}
+                      </span>
+                    )}
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block leading-tight">{it.label}</span>

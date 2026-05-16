@@ -10,11 +10,13 @@ import type { BookingStatus } from "@tours/types";
 import { Button } from "@/src/components/ui/button";
 
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
-  NEW:         { label: "Новая",       cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100", dot: "bg-sky-500" },
-  IN_PROGRESS: { label: "В работе",    cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", dot: "bg-amber-500" },
-  PAID:        { label: "Оплачена",    cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
-  COMPLETED:   { label: "Завершена",   cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200", dot: "bg-slate-500" },
-  CANCELLED:   { label: "Отменена",    cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", dot: "bg-rose-500" },
+  NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
+  DOCUMENTS_REQUESTED: { label: "Нужны документы",    cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
+  DOCUMENTS_SUBMITTED: { label: "На проверке",         cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100", dot: "bg-orange-500" },
+  IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
+  PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",    dot: "bg-slate-500" },
+  CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",        dot: "bg-rose-500" },
 };
 
 export function TripsList() {
@@ -70,7 +72,7 @@ export function TripsList() {
   }
 
   const order: Record<BookingStatus, number> = {
-    IN_PROGRESS: 0, NEW: 1, PAID: 2, COMPLETED: 3, CANCELLED: 4,
+    DOCUMENTS_REQUESTED: 0, DOCUMENTS_SUBMITTED: 1, IN_PROGRESS: 2, NEW: 3, PAID: 4, COMPLETED: 5, CANCELLED: 6,
   };
   const ordered = [...data.items].sort(
     (a, b) => (order[a.status] ?? 99) - (order[b.status] ?? 99),
@@ -144,15 +146,23 @@ export function TripsList() {
                 </div>
               </div>
 
-              {tour && (
+              <div className="mt-auto pt-3 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/${locale}/tours/${tour.slug}`}
-                  className="mt-auto pt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800 self-start"
+                  href={`/${locale}/dashboard/trips/${b.id}`}
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800"
                 >
-                  Подробнее о туре
+                  Открыть заявку
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
-              )}
+                {tour && (
+                  <Link
+                    href={`/${locale}/tours/${tour.slug}`}
+                    className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-slate-600"
+                  >
+                    О туре
+                  </Link>
+                )}
+              </div>
             </div>
           </article>
         );

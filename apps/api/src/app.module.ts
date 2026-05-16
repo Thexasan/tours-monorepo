@@ -17,6 +17,7 @@ import { PayoutsModule } from "./modules/payouts/payouts.module";
 import { ReviewsModule } from "./modules/reviews/reviews.module";
 import { EmailModule } from "./modules/email/email.module";
 import { UploadModule } from "./modules/upload/upload.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
 
 @Module({
@@ -37,6 +38,7 @@ import { JwtAuthGuard } from "./modules/auth/guards/jwt-auth.guard";
     PayoutsModule,
     ReviewsModule,
     UploadModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

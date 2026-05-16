@@ -7,6 +7,7 @@ import { BookingsService } from "./bookings.service";
 import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingStatusDto } from "./dto/update-booking-status.dto";
 import { ListBookingsDto } from "./dto/list-bookings.dto";
+import { RequestPaymentDto } from "./dto/request-payment.dto";
 import { Public } from "../auth/decorators/public.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
@@ -77,5 +78,17 @@ export class BookingsController {
     @CurrentUser() admin: { id: string },
   ) {
     return this.bookings.updateStatus(id, dto, admin.id);
+  }
+
+  /** Выставить счёт на оплату — только ADMIN. */
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Post(":id/request-payment")
+  async requestPayment(
+    @Param("id") id: string,
+    @Body() dto: RequestPaymentDto,
+    @CurrentUser() admin: { id: string },
+  ) {
+    return this.bookings.requestPayment(id, dto, admin.id);
   }
 }

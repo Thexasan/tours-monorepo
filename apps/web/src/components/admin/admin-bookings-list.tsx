@@ -1,29 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
-  Search, Mail, Phone, User, Briefcase, Calendar, DollarSign, Filter, AlertCircle, Check, BedDouble,
+  Search, Mail, Phone, User, Briefcase, Calendar, DollarSign, Filter, BedDouble, ArrowRight,
 } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
-import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import type { BookingStatus } from "@tours/types";
 
-const STATUS_OPTIONS: BookingStatus[] = ["NEW", "IN_PROGRESS", "PAID", "COMPLETED", "CANCELLED"];
+const STATUS_OPTIONS: BookingStatus[] = ["NEW", "DOCUMENTS_REQUESTED", "DOCUMENTS_SUBMITTED", "IN_PROGRESS", "PAID", "COMPLETED", "CANCELLED"];
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
-  NEW:         { label: "Новая",       cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100", dot: "bg-sky-500" },
-  IN_PROGRESS: { label: "В работе",    cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", dot: "bg-amber-500" },
-  PAID:        { label: "Оплачена",    cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
-  COMPLETED:   { label: "Завершена",   cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200", dot: "bg-slate-500" },
-  CANCELLED:   { label: "Отменена",    cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", dot: "bg-rose-500" },
+  NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
+  DOCUMENTS_REQUESTED: { label: "Ждём документы",      cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
+  DOCUMENTS_SUBMITTED: { label: "Документы загружены", cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",  dot: "bg-orange-500" },
+  IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
+  PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",    dot: "bg-slate-500" },
+  CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",        dot: "bg-rose-500" },
 };
 
 export function AdminBookingsList() {
-  const qc = useQueryClient();
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tj";
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "ALL">("ALL");
@@ -37,12 +38,6 @@ export function AdminBookingsList() {
       search: search || undefined,
       pageSize: 50,
     }),
-  });
-
-  const updateStatusM = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: BookingStatus }) =>
-      bookingsApi.updateStatus(id, { status }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "bookings"] }),
   });
 
   const total = data?.items.length ?? 0;
@@ -149,10 +144,14 @@ export function AdminBookingsList() {
                   ) : (
                     <div className="absolute inset-0 grid place-items-center text-slate-400 text-xs">Без фото</div>
                   )}
-                  <span className={`absolute top-2 left-2 tv-chip ${meta.cls}`}>
+                  <Link
+                    href={`/${locale}/admin/bookings/${b.id}`}
+                    className={`absolute top-2 left-2 tv-chip ${meta.cls} hover:ring-2 transition-shadow`}
+                    title="Открыть рабочее пространство"
+                  >
                     <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
                     {meta.label}
-                  </span>
+                  </Link>
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -213,27 +212,13 @@ export function AdminBookingsList() {
                       <Calendar className="h-3 w-3" />
                       {new Date(b.createdAt).toLocaleString("ru-RU")}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <select
-                        defaultValue={b.status}
-                        onChange={(e) => {
-                          const newStatus = e.target.value as BookingStatus;
-                          const nextMeta = STATUS_META[newStatus]!;
-                          if (newStatus !== b.status &&
-                              confirm(`Сменить статус "${meta.label}" → "${nextMeta.label}"?` +
-                                     (newStatus === "PAID" ? "\n\n⚡ Это запустит триггер начисления вознаграждения!" : ""))) {
-                            updateStatusM.mutate({ id: b.id, status: newStatus });
-                          } else {
-                            (e.target as HTMLSelectElement).value = b.status;
-                          }
-                        }}
-                        className="h-9 rounded-lg border border-slate-200 px-3 text-sm bg-white hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 outline-none transition-colors"
-                      >
-                        {STATUS_OPTIONS.map((s) => (
-                          <option key={s} value={s}>{STATUS_META[s]!.label}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <Link
+                      href={`/${locale}/admin/bookings/${b.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-teal-700 bg-teal-50 border border-teal-100 hover:bg-teal-100 transition-colors"
+                    >
+                      Открыть
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -242,20 +227,6 @@ export function AdminBookingsList() {
         })}
       </div>
 
-      {updateStatusM.isError && (
-        <div className="mt-3 rounded-xl bg-rose-50 border border-rose-100 p-3 text-sm text-rose-700 flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-          {extractErrorMessage(updateStatusM.error)}
-        </div>
-      )}
-      {updateStatusM.isSuccess && (
-        <div className="fixed bottom-6 right-6 rounded-xl bg-white ring-1 ring-emerald-200 px-4 py-3 text-sm text-emerald-700 shadow-xl flex items-center gap-2 z-50">
-          <span className="grid place-items-center h-6 w-6 rounded-full bg-emerald-500 text-white">
-            <Check className="h-3.5 w-3.5" />
-          </span>
-          Статус обновлён
-        </div>
-      )}
     </>
   );
 }
