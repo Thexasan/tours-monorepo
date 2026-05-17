@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -53,7 +53,7 @@ export function MyReviewsList() {
 
       {data && data.length === 0 && (
         <div className="tv-surface-elevated p-12 text-center">
-          <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-500 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(244,63,94,0.5)]">
+          <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-rose-400 to-rose-500 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(244,63,94,0.5)]">
             <MessageSquare className="h-7 w-7" />
           </div>
           <h3 className="mt-4 text-lg font-semibold text-slate-900">Отзывов пока нет</h3>

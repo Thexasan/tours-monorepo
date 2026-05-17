@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit, Archive, Star } from "lucide-react";
 import { adminToursApi } from "@/src/shared/api/admin-tours-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { TourFormModal } from "./tour-form-modal";
 import type { Tour } from "@tours/types";
@@ -21,12 +22,20 @@ export function AdminToursList() {
 
   const archiveMutation = useMutation({
     mutationFn: (id: string) => adminToursApi.archive(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "tours"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "tours"] });
+      toast.success("Тур перемещён в архив");
+    },
+    onError: (e) => toast.error("Не удалось архивировать тур", { description: extractErrorMessage(e) }),
   });
 
   const restoreMutation = useMutation({
     mutationFn: (id: string) => adminToursApi.update(id, { isActive: true }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "tours"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "tours"] });
+      toast.success("Тур восстановлен");
+    },
+    onError: (e) => toast.error("Не удалось восстановить тур", { description: extractErrorMessage(e) }),
   });
 
   return (
@@ -127,12 +136,6 @@ export function AdminToursList() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {archiveMutation.isError && (
-        <div className="mt-3 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-          {extractErrorMessage(archiveMutation.error)}
         </div>
       )}
 

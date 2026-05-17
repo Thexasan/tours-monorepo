@@ -14,6 +14,7 @@ import {
   UserCog,
   ChevronRight,
   User,
+  LayoutDashboard,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
@@ -38,6 +39,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     title: string;
     items: { href: string; label: string; icon: React.ElementType }[];
   }[] = [
+    {
+      title: "Обзор",
+      items: [
+        { href: `/${locale}/admin`, label: "Дашборд", icon: LayoutDashboard },
+      ],
+    },
     {
       title: "Контент",
       items: [
@@ -101,7 +108,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </p>
                 <div className="flex flex-col gap-0.5">
                   {group.items.map((it) => {
-                    const active = pathname?.startsWith(it.href);
+                    const active = it.href.endsWith("/admin")
+                      ? pathname === it.href || pathname === it.href + "/"
+                      : pathname?.startsWith(it.href);
                     const Icon = it.icon;
                     return (
                       <Link

@@ -1,10 +1,16 @@
-import { redirect } from "next/navigation";
+import { LayoutDashboard } from "lucide-react";
+import { DashboardHome } from "@/src/components/dashboard/dashboard-home";
+import { PageHeader } from "@/src/components/dashboard/page-header";
 
-export default async function DashboardIndex({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  redirect(`/${locale}/dashboard/profile`);
+export default function DashboardIndexPage() {
+  return (
+    <div>
+      <PageHeader
+        title="Мой кабинет"
+        description="Обзор ваших поездок, рефералов и активности"
+        icon={<LayoutDashboard className="h-5 w-5" />}
+      />
+      <DashboardHome />
+    </div>
+  );
 }

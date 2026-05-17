@@ -10,6 +10,7 @@ import { Star } from "lucide-react";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Label } from "@/src/components/ui/label";
 import { MultiImageUploader } from "@/src/components/ui/multi-image-uploader";
@@ -66,9 +67,12 @@ export function NewReviewForm() {
         text: v.text,
         photoUrls,
       });
+      toast.success("Отзыв отправлен на модерацию");
       router.push(`/${locale}/dashboard/reviews`);
     } catch (e) {
-      setError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setError(msg);
+      toast.error("Не удалось отправить отзыв", { description: msg });
     } finally {
       setSubmitting(false);
     }

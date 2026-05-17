@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -10,13 +10,14 @@ import type { BookingStatus } from "@tours/types";
 import { Button } from "@/src/components/ui/button";
 
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
-  NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
-  DOCUMENTS_REQUESTED: { label: "Нужны документы",    cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
-  DOCUMENTS_SUBMITTED: { label: "На проверке",         cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100", dot: "bg-orange-500" },
-  IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
-  PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
-  COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",    dot: "bg-slate-500" },
-  CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",        dot: "bg-rose-500" },
+  NEW:                  { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",              dot: "bg-sky-500" },
+  DOCUMENTS_REQUESTED:  { label: "Нужны документы",     cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",    dot: "bg-violet-500" },
+  DOCUMENTS_SUBMITTED:  { label: "На проверке",          cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",   dot: "bg-orange-500" },
+  IN_PROGRESS:          { label: "В работе",             cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",       dot: "bg-amber-500" },
+  AWAITING_PAYMENT:     { label: "Ожидает оплаты",      cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",             dot: "bg-sky-500" },
+  PAID:                 { label: "Оплачена",             cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:            { label: "Завершена",            cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",      dot: "bg-slate-500" },
+  CANCELLED:            { label: "Отменена",             cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",          dot: "bg-rose-500" },
 };
 
 export function TripsList() {
@@ -54,7 +55,7 @@ export function TripsList() {
   if (data.items.length === 0) {
     return (
       <div className="tv-surface-elevated p-12 text-center">
-        <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
+        <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
           <Compass className="h-7 w-7" />
         </div>
         <h3 className="mt-4 text-lg font-semibold text-slate-900">Пока ни одной поездки</h3>
@@ -72,7 +73,7 @@ export function TripsList() {
   }
 
   const order: Record<BookingStatus, number> = {
-    DOCUMENTS_REQUESTED: 0, DOCUMENTS_SUBMITTED: 1, IN_PROGRESS: 2, NEW: 3, PAID: 4, COMPLETED: 5, CANCELLED: 6,
+    AWAITING_PAYMENT: 0, DOCUMENTS_REQUESTED: 1, DOCUMENTS_SUBMITTED: 2, IN_PROGRESS: 3, NEW: 4, PAID: 5, COMPLETED: 6, CANCELLED: 7,
   };
   const ordered = [...data.items].sort(
     (a, b) => (order[a.status] ?? 99) - (order[b.status] ?? 99),

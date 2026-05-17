@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -79,7 +79,7 @@ export function ReferralsPanel() {
             </div>
             <div className="mt-3 h-3 rounded-full bg-black/25 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500 transition-[width] duration-700"
+                className="h-full rounded-full bg-linear-to-r from-amber-300 to-amber-500 transition-[width] duration-700"
                 style={{ width: `${Math.min(100, data.progressPercent)}%` }}
               />
             </div>
@@ -234,7 +234,7 @@ function StatTile({
     <div className="tv-kpi">
       <div className="relative flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</span>
-        <span className={`grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-br ${toneCls[tone]} shadow-sm`}>
+        <span className={`grid place-items-center h-8 w-8 rounded-lg bg-linear-to-br ${toneCls[tone]} shadow-sm`}>
           <Icon className="h-4 w-4" />
         </span>
       </div>

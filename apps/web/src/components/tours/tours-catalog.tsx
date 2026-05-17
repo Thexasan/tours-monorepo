@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
@@ -246,7 +246,7 @@ function CountryChips({
               onClick={() => onChange(c.value)}
               className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                 active
-                  ? "bg-gradient-to-b from-teal-500 to-teal-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]"
+                  ? "bg-linear-to-b from-teal-500 to-teal-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]"
                   : "bg-slate-50 text-slate-700 hover:bg-slate-100"
               }`}
             >
@@ -520,7 +520,7 @@ function Pagination({
         type="button"
         disabled={page * pageSize >= total}
         onClick={onNext}
-        className="inline-flex items-center gap-1 px-4 h-10 rounded-xl bg-gradient-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 transition-all"
+        className="inline-flex items-center gap-1 px-4 h-10 rounded-xl bg-linear-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 transition-all"
       >
         Вперёд
         <ChevronRight className="h-4 w-4" />
@@ -532,7 +532,7 @@ function Pagination({
 function EmptyState({ onReset }: { onReset: () => void }) {
   return (
     <div className="tv-surface-elevated p-12 text-center">
-      <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
+      <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
         <Compass className="h-7 w-7" />
       </div>
       <h3 className="mt-4 text-lg font-bold text-slate-900">Туров не найдено</h3>
@@ -542,7 +542,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_8px_18px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
+        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_8px_18px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
       >
         <ArrowUpRight className="h-4 w-4" />
         Сбросить фильтры

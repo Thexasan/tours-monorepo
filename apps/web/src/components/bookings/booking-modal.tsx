@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
@@ -120,7 +121,7 @@ function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: numbe
             {i < labels.length - 1 && (
               <div className="flex-1 h-px mt-5 relative overflow-hidden rounded-full bg-slate-200">
                 <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-teal-500 to-sky-500 transition-all duration-500"
+                  className="absolute inset-y-0 left-0 bg-linear-to-r from-teal-500 to-sky-500 transition-all duration-500"
                   style={{ width: activeIndex > i ? "100%" : "0%" }}
                 />
               </div>
@@ -409,7 +410,9 @@ export function BookingModal({
       setSuccess(true);
       reset();
     } catch (e) {
-      setError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setError(msg);
+      toast.error("Не удалось создать заявку", { description: msg });
     } finally {
       setSubmitting(false);
     }
@@ -502,7 +505,7 @@ export function BookingModal({
             <div className="py-12 text-center max-w-md mx-auto">
               <div className="relative inline-grid place-items-center mb-5">
                 <div className="absolute inset-0 rounded-full bg-emerald-100 blur-2xl opacity-60" />
-                <div className="relative h-20 w-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 grid place-items-center text-white shadow-[0_20px_40px_-12px_rgba(13,148,136,0.6)]">
+                <div className="relative h-20 w-20 rounded-full bg-linear-to-br from-emerald-400 to-teal-600 grid place-items-center text-white shadow-[0_20px_40px_-12px_rgba(13,148,136,0.6)]">
                   <Check className="h-9 w-9" strokeWidth={2.5} />
                 </div>
               </div>
@@ -669,7 +672,7 @@ export function BookingModal({
                 </FormField>
               </div>
 
-              <div className="rounded-2xl bg-gradient-to-br from-teal-50 to-sky-50 ring-1 ring-teal-100 p-4 flex gap-3">
+              <div className="rounded-2xl bg-linear-to-br from-teal-50 to-sky-50 ring-1 ring-teal-100 p-4 flex gap-3">
                 <div className="grid place-items-center h-9 w-9 rounded-xl bg-white text-teal-700 ring-1 ring-teal-100 shrink-0">
                   <Shield className="h-[18px] w-[18px]" />
                 </div>
@@ -739,7 +742,7 @@ export function BookingModal({
 
               {/* Tour preview */}
               <div className="rounded-2xl ring-1 ring-slate-200 overflow-hidden">
-                <div className="flex gap-4 p-4 bg-gradient-to-br from-slate-50 to-white">
+                <div className="flex gap-4 p-4 bg-linear-to-br from-slate-50 to-white">
                   <div className="relative w-24 h-24 rounded-xl ring-1 ring-slate-200 shrink-0 overflow-hidden bg-slate-100">
                     {tourCoverImage && (
                       <Image src={tourCoverImage} alt={tourTitle} fill className="object-cover" sizes="96px" />

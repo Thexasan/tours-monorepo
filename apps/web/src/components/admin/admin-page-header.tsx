@@ -27,7 +27,7 @@ export function AdminPageHeader({
     >
       <div className="flex items-start gap-3 min-w-0">
         {icon && (
-          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-gradient-to-br from-rose-500 to-rose-700 text-white shadow-[0_8px_18px_-8px_rgba(225,29,72,0.6)]">
+          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-linear-to-br from-rose-500 to-rose-700 text-white shadow-[0_8px_18px_-8px_rgba(225,29,72,0.6)]">
             {icon}
           </div>
         )}

@@ -7,6 +7,7 @@ import { Star, Check, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 
 const STATUS_FILTERS = [
@@ -29,14 +30,20 @@ export function AdminModerationList() {
 
   const approveM = useMutation({
     mutationFn: (id: string) => reviewsApi.moderate(id, "APPROVE"),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "reviews"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "reviews"] });
+      toast.success("Отзыв опубликован");
+    },
+    onError: (e) => toast.error("Не удалось опубликовать отзыв", { description: extractErrorMessage(e) }),
   });
   const rejectM = useMutation({
     mutationFn: (vars: { id: string; reason: string }) => reviewsApi.moderate(vars.id, "REJECT", vars.reason),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "reviews"] });
       setRejecting(null);
+      toast.success("Отзыв отклонён");
     },
+    onError: (e) => toast.error("Не удалось отклонить отзыв", { description: extractErrorMessage(e) }),
   });
 
   return (
@@ -140,11 +147,6 @@ export function AdminModerationList() {
         })}
       </div>
 
-      {(approveM.isError || rejectM.isError) && (
-        <div className="mt-3 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-          {extractErrorMessage(approveM.error || rejectM.error)}
-        </div>
-      )}
     </>
   );
 }

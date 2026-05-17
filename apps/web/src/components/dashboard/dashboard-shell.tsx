@@ -13,6 +13,7 @@ import {
   LogOut,
   Compass,
   ChevronRight,
+  LayoutDashboard,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
@@ -45,6 +46,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     .toUpperCase();
 
   const nav = [
+    { href: `/${locale}/dashboard`, label: "Обзор", icon: LayoutDashboard },
     { href: `/${locale}/dashboard/profile`, label: "Профиль", icon: User },
     { href: `/${locale}/dashboard/trips`, label: "Мои поездки", icon: Plane },
     { href: `/${locale}/dashboard/notifications`, label: "Уведомления", icon: Bell, badge: unread },
@@ -115,7 +117,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               Личный кабинет
             </p>
             {nav.map((it) => {
-              const active = pathname?.startsWith(it.href);
+              const active = it.href.endsWith("/dashboard")
+                ? pathname === it.href || pathname === it.href + "/"
+                : pathname?.startsWith(it.href);
               const Icon = it.icon;
               const badge = ("badge" in it ? it.badge : 0) ?? 0;
               return (

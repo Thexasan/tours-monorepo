@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -66,7 +66,7 @@ export function TourBookingSidebar({
       <div className="lg:sticky lg:top-24 space-y-4">
         {/* Booking card */}
         <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(13,148,136,0.35)]">
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-teal-500 via-sky-500 to-rose-500" />
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-teal-500 via-sky-500 to-rose-500" />
 
           <div className="p-6">
             <div className="flex items-end justify-between mb-2">
@@ -103,7 +103,7 @@ export function TourBookingSidebar({
               <PaxStepper label="Персон" value={guests} setValue={setGuests} min={1} max={20} />
             </div>
 
-            <div className="mt-4 rounded-xl bg-gradient-to-br from-teal-50/60 to-sky-50/60 ring-1 ring-teal-100/60 px-3.5 py-3">
+            <div className="mt-4 rounded-xl bg-linear-to-br from-teal-50/60 to-sky-50/60 ring-1 ring-teal-100/60 px-3.5 py-3">
               <div className="flex items-baseline justify-between">
                 <p className="text-xs text-slate-600">{guests} {guests === 1 ? "гость" : "гостей"}</p>
                 <p className="text-xl font-bold text-slate-900 tabular-nums">${totalEstimate.toLocaleString()}</p>

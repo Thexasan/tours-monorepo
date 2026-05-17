@@ -158,7 +158,7 @@ export default async function HomePage() {
         ))}
 
         {/* Dark gradient — bottom-heavy for text legibility */}
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/30 to-black/5" />
+        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-black/72 via-black/30 to-black/5" />
 
         {/* Subtle vignette for premium cinematic feel */}
         <div
@@ -226,7 +226,7 @@ export default async function HomePage() {
       </section>
 
       {/* ───── TRUST FEATURES ───── */}
-      <section className="border-y border-slate-100 bg-gradient-to-b from-white to-slate-50/50">
+      <section className="border-y border-slate-100 bg-linear-to-b from-white to-slate-50/50">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-10 md:py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {[
@@ -275,7 +275,7 @@ export default async function HomePage() {
                   sizes={idx === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 50vw, 33vw"}
                 />
                 {/* Bottom gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent" />
                 {/* Tag */}
                 <div className="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full bg-white/95 backdrop-blur px-2.5 py-1 text-[11px] font-bold text-slate-900 shadow-sm">
                   {dest.tag}
@@ -304,7 +304,7 @@ export default async function HomePage() {
 
       {/* ───── HOT TOURS ───── */}
       {hotTours.length > 0 && (
-        <section className="bg-gradient-to-b from-slate-50 to-white">
+        <section className="bg-linear-to-b from-slate-50 to-white">
           <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-24">
             <SectionHeader
               eyebrow={t("hotTours.title", { fallback: "Горящие туры" })}
@@ -397,7 +397,7 @@ export default async function HomePage() {
                   {step}
                 </span>
                 <div
-                  className={`relative z-10 grid place-items-center h-14 w-14 rounded-2xl bg-gradient-to-br ${grad} text-white mb-5`}
+                  className={`relative z-10 grid place-items-center h-14 w-14 rounded-2xl bg-linear-to-br ${grad} text-white mb-5`}
                   style={{ boxShadow: `0 12px 24px -8px ${glow}` }}
                 >
                   <Icon className="h-6 w-6" />
@@ -411,7 +411,7 @@ export default async function HomePage() {
       </section>
 
       {/* ───── TRIP PLANNER ───── */}
-      <section className="bg-gradient-to-b from-white to-slate-50">
+      <section className="bg-linear-to-b from-white to-slate-50">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-28">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
@@ -452,7 +452,7 @@ export default async function HomePage() {
 
               <Link
                 href={`/${locale}/tours`}
-                className="mt-9 inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-b from-teal-500 to-teal-600 text-white font-semibold shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
+                className="mt-9 inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-linear-to-b from-teal-500 to-teal-600 text-white font-semibold shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
               >
                 Подобрать маршрут
                 <ArrowRight className="h-4 w-4" />
@@ -461,7 +461,7 @@ export default async function HomePage() {
 
             {/* Right: booking preview card */}
             <div className="relative">
-              <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-teal-100 via-sky-100 to-rose-100 opacity-60 blur-2xl -z-10" aria-hidden />
+              <div className="absolute -inset-4 rounded-[2.5rem] bg-linear-to-br from-teal-100 via-sky-100 to-rose-100 opacity-60 blur-2xl -z-10" aria-hidden />
               <div className="rounded-3xl bg-white p-2 ring-1 ring-slate-100 shadow-[0_30px_60px_-20px_rgba(15,23,42,0.25)]">
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
@@ -561,7 +561,7 @@ export default async function HomePage() {
                         «{tm.text}»
                       </p>
                       <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                        <div className={`grid place-items-center h-11 w-11 rounded-full bg-gradient-to-br ${tone?.bg ?? "from-teal-400 to-sky-500"} text-white font-bold ring-2 ring-white shadow-sm`}>
+                        <div className={`grid place-items-center h-11 w-11 rounded-full bg-linear-to-br ${tone?.bg ?? "from-teal-400 to-sky-500"} text-white font-bold ring-2 ring-white shadow-sm`}>
                           {tm.name.charAt(0)}
                         </div>
                         <div className="min-w-0">
@@ -581,7 +581,7 @@ export default async function HomePage() {
       </section>
 
       {/* ───── DUAL CTA ───── */}
-      <section className="bg-gradient-to-b from-slate-50 to-white">
+      <section className="bg-linear-to-b from-slate-50 to-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Partner CTA */}
@@ -736,7 +736,7 @@ function Feature({
   };
   return (
     <div className="flex items-start gap-3">
-      <div className={`grid place-items-center h-11 w-11 rounded-2xl bg-gradient-to-br ${toneCls[tone]} text-white shadow-[0_8px_18px_-8px_rgba(15,23,42,0.25)] shrink-0`}>
+      <div className={`grid place-items-center h-11 w-11 rounded-2xl bg-linear-to-br ${toneCls[tone]} text-white shadow-[0_8px_18px_-8px_rgba(15,23,42,0.25)] shrink-0`}>
         <Icon className="h-5 w-5" />
       </div>
       <div>

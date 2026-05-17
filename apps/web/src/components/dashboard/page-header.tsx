@@ -56,7 +56,7 @@ export function PageHeader({
     >
       <div className="flex items-start gap-3 min-w-0">
         {icon && (
-          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-gradient-to-br from-teal-500 to-sky-600 text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.6)]">
+          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.6)]">
             {icon}
           </div>
         )}

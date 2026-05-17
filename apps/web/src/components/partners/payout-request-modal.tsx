@@ -10,6 +10,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 
 const schema = z.object({
   amountUsd: z.coerce.number().min(50, "Минимум $50"),
@@ -54,10 +55,13 @@ export function PayoutRequestModal({
           beneficiary: v.beneficiary,
         },
       });
+      toast.success("Заявка на выплату отправлена");
       onSuccess();
       onClose();
     } catch (e) {
-      setError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setError(msg);
+      toast.error("Не удалось отправить заявку", { description: msg });
     } finally {
       setSubmitting(false);
     }

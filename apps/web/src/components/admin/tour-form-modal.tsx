@@ -13,6 +13,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { adminToursApi } from "@/src/shared/api/admin-tours-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { cn } from "@/src/lib/utils";
 import type { Tour, RoomTypeOption } from "@tours/types";
 
@@ -157,13 +158,17 @@ export function TourFormModal({
 
       if (isEdit && tour) {
         await adminToursApi.update(tour.id, payload);
+        toast.success("Тур сохранён");
       } else {
         await adminToursApi.create(payload);
+        toast.success("Тур создан");
       }
       onSaved();
       onClose();
     } catch (e) {
-      setError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setError(msg);
+      toast.error(isEdit ? "Не удалось сохранить тур" : "Не удалось создать тур", { description: msg });
     } finally {
       setSaving(false);
     }

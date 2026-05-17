@@ -14,6 +14,7 @@ import { bookingDocumentsApi } from "@/src/shared/api/booking-documents-api";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import type { PaymentDetails } from "@tours/types";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import type { BookingStatus, BookingDocument } from "@tours/types";
 
@@ -104,12 +105,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
   const [payPending, setPayPending] = useState(false);
   const [payError, setPayError] = useState("");
 
-  const [toast, setToast] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3500);
-  };
+  const showToast = (msg: string) => toast.success(msg);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["booking", bookingId] });
 
@@ -128,7 +124,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       };
       showToast(labels[newStatus] ?? "Статус обновлён");
     } catch (e) {
-      setActionError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setActionError(msg);
+      toast.error("Не удалось обновить статус", { description: msg });
     } finally {
       setActionPending(false);
     }
@@ -152,7 +150,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       qc.invalidateQueries({ queryKey: ["admin", "bookings"] });
       showToast("Счёт выставлен, турист получил уведомление");
     } catch (e) {
-      setPayError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setPayError(msg);
+      toast.error("Не удалось выставить счёт", { description: msg });
     } finally {
       setPayPending(false);
     }
@@ -173,7 +173,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       setShowCancelModal(false);
       showToast("Заявка отменена");
     } catch (e) {
-      setCancelError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setCancelError(msg);
+      toast.error("Не удалось отменить заявку", { description: msg });
     } finally {
       setActionPending(false);
     }
@@ -188,7 +190,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       await invalidate();
       showToast("Запрос документов отправлен туристу");
     } catch (e) {
-      setReqError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setReqError(msg);
+      toast.error("Не удалось отправить запрос", { description: msg });
     } finally {
       setReqPending(false);
     }
@@ -202,7 +206,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       await invalidate();
       showToast("Документы подтверждены");
     } catch (e) {
-      setConfirmError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setConfirmError(msg);
+      toast.error("Не удалось подтвердить документы", { description: msg });
     } finally {
       setConfirmPending(false);
     }
@@ -222,7 +228,9 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
       await invalidate();
       showToast("Запрос исправлений отправлен туристу");
     } catch (e) {
-      setRejectError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setRejectError(msg);
+      toast.error("Не удалось отправить запрос исправлений", { description: msg });
     } finally {
       setRejectPending(false);
     }
@@ -735,14 +743,6 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
         </div>
       )}
 
-      {toast && (
-        <div className="fixed bottom-6 right-6 rounded-xl bg-white ring-1 ring-emerald-200 px-4 py-3 text-sm text-emerald-700 shadow-xl flex items-center gap-2 z-50 animate-in slide-in-from-bottom-4">
-          <span className="grid place-items-center h-6 w-6 rounded-full bg-emerald-500 text-white shrink-0">
-            <Check className="h-3.5 w-3.5" />
-          </span>
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

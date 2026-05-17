@@ -4,12 +4,12 @@ import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50">
+    <footer className="mt-20 border-t border-slate-200 bg-linear-to-b from-white to-slate-50">
       <PageWrapper size="wide" className="py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div className="col-span-2">
             <Link href="/ru" className="inline-flex items-center gap-2 font-bold">
-              <span className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-teal-500 to-sky-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]">
+              <span className="grid place-items-center h-10 w-10 rounded-xl bg-linear-to-br from-teal-500 to-sky-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]">
                 <Compass className="h-5 w-5" />
               </span>
               <span className="text-lg text-slate-900">

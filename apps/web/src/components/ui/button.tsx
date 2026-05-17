@@ -1,4 +1,4 @@
-import * as React from "react"
+﻿import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
 
@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-b from-teal-500 to-teal-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(13,148,136,0.55)] hover:from-teal-500 hover:to-teal-700 hover:shadow-[0_2px_4px_rgba(15,23,42,0.10),0_14px_28px_-10px_rgba(13,148,136,0.65)]",
+          "bg-linear-to-b from-teal-500 to-teal-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(13,148,136,0.55)] hover:from-teal-500 hover:to-teal-700 hover:shadow-[0_2px_4px_rgba(15,23,42,0.10),0_14px_28px_-10px_rgba(13,148,136,0.65)]",
         accent:
-          "bg-gradient-to-b from-rose-500 to-rose-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(244,63,94,0.55)] hover:from-rose-500 hover:to-rose-700",
+          "bg-linear-to-b from-rose-500 to-rose-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(244,63,94,0.55)] hover:from-rose-500 hover:to-rose-700",
         sunset:
-          "bg-gradient-to-b from-amber-400 to-amber-500 text-amber-950 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(245,158,11,0.55)] hover:from-amber-400 hover:to-amber-600",
+          "bg-linear-to-b from-amber-400 to-amber-500 text-amber-950 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(245,158,11,0.55)] hover:from-amber-400 hover:to-amber-600",
         destructive:
           "bg-red-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(220,38,38,0.45)] hover:bg-red-700",
         outline:

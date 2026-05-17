@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { Star, Quote } from "lucide-react";
@@ -27,7 +27,7 @@ export function ReviewCard({ review }: { review: Review }) {
         ))}
       </div>
 
-      <p className="text-[15px] text-slate-700 leading-relaxed line-clamp-4 flex-grow mb-5">
+      <p className="text-[15px] text-slate-700 leading-relaxed line-clamp-4 grow mb-5">
         «{review.text}»
       </p>
 
@@ -45,7 +45,7 @@ export function ReviewCard({ review }: { review: Review }) {
       )}
 
       <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-        <div className="relative w-11 h-11 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-sky-500 shrink-0 ring-2 ring-white shadow-sm">
+        <div className="relative w-11 h-11 rounded-full overflow-hidden bg-linear-to-br from-teal-400 to-sky-500 shrink-0 ring-2 ring-white shadow-sm">
           {review.author.avatarUrl ? (
             <Image
               src={review.author.avatarUrl}

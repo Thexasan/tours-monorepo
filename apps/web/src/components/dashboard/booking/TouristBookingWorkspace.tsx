@@ -12,6 +12,7 @@ import {
 import { useBooking } from "@/src/hooks/use-booking";
 import { bookingDocumentsApi } from "@/src/shared/api/booking-documents-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import type { BookingStatus, BookingDocument, BookingDocumentKind, PaymentDetails } from "@tours/types";
 
@@ -101,11 +102,8 @@ export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
   const [receiptPending, setReceiptPending] = useState(false);
   const [receiptError, setReceiptError] = useState("");
 
-  const [toast, setToast] = useState<string | null>(null);
-
   const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3500);
+    toast.success(msg);
   };
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["booking", bookingId] });
@@ -131,7 +129,9 @@ export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
       await invalidate();
       showToast("Документ загружен");
     } catch (e) {
-      setUploadError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setUploadError(msg);
+      toast.error("Ошибка загрузки документа", { description: msg });
     } finally {
       setUploadPending(false);
     }
@@ -151,7 +151,9 @@ export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
       await invalidate();
       showToast("Квитанция загружена — менеджер проверит и подтвердит оплату");
     } catch (e) {
-      setReceiptError(extractErrorMessage(e));
+      const msg = extractErrorMessage(e);
+      setReceiptError(msg);
+      toast.error("Ошибка загрузки квитанции", { description: msg });
     } finally {
       setReceiptPending(false);
     }
@@ -515,14 +517,6 @@ export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
         </div>
       )}
 
-      {toast && (
-        <div className="fixed bottom-6 right-6 rounded-xl bg-white ring-1 ring-emerald-200 px-4 py-3 text-sm text-emerald-700 shadow-xl flex items-center gap-2 z-50">
-          <span className="grid place-items-center h-6 w-6 rounded-full bg-emerald-500 text-white shrink-0">
-            <Check className="h-3.5 w-3.5" />
-          </span>
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

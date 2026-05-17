@@ -9,6 +9,7 @@ import {
   type CreatePartnerPayload,
 } from "@/src/shared/api/admin-partners-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -27,13 +28,21 @@ export function AdminPartnersList() {
 
   const resetMutation = useMutation({
     mutationFn: (id: string) => adminPartnersApi.resetPassword(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "partners"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "partners"] });
+      toast.success("Новый пароль отправлен на email партнёра");
+    },
+    onError: (e) => toast.error("Не удалось сбросить пароль", { description: extractErrorMessage(e) }),
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       adminPartnersApi.update(id, { isActive }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "partners"] }),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["admin", "partners"] });
+      toast.success(vars.isActive ? "Партнёр активирован" : "Партнёр деактивирован");
+    },
+    onError: (e) => toast.error("Не удалось обновить статус", { description: extractErrorMessage(e) }),
   });
 
   return (
@@ -157,9 +166,14 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
     mutationFn: (payload: CreatePartnerPayload) => adminPartnersApi.create(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "partners"] });
+      toast.success("Партнёр создан, временный пароль отправлен на email");
       onClose();
     },
-    onError: (err) => setError(extractErrorMessage(err)),
+    onError: (err) => {
+      const msg = extractErrorMessage(err);
+      setError(msg);
+      toast.error("Не удалось создать партнёра", { description: msg });
+    },
   });
 
   const onSubmit = (e: React.FormEvent) => {

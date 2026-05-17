@@ -26,7 +26,7 @@ export function TourCard({ tour }: { tour: Tour }) {
   return (
     <Link href={`/${locale}/tours/${tour.slug}`} className="group block h-full">
       <Card className="overflow-hidden flex flex-row md:flex-col h-full hover:-translate-y-1 transition-transform">
-        <div className="relative w-2/5 md:w-full md:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100">
+        <div className="relative w-2/5 md:w-full md:aspect-4/3 shrink-0 overflow-hidden bg-slate-100">
           <Image
             src={tour.coverImage}
             alt={titleLocalized || "Tour Image"}
@@ -35,10 +35,10 @@ export function TourCard({ tour }: { tour: Tour }) {
             sizes="(max-width: 768px) 40vw, (max-width: 1200px) 25vw, 20vw"
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 md:opacity-100" aria-hidden />
+          <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 md:opacity-100" aria-hidden />
           {tour.isHot && (
             <div className="absolute top-3 left-3 z-10">
-              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_-2px_rgba(244,63,94,0.5)]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-linear-to-r from-rose-500 to-orange-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_-2px_rgba(244,63,94,0.5)]">
                 🔥 {t("labels.hotTour", { fallback: "Горячий тур" })}
               </span>
             </div>
@@ -56,18 +56,27 @@ export function TourCard({ tour }: { tour: Tour }) {
           </div>
         </div>
 
-        <CardContent className="flex flex-col p-4 md:p-5 w-3/5 md:w-full flex-grow">
-          <div className="mb-2 flex items-center justify-between">
+        <CardContent className="flex flex-col p-4 md:p-5 w-3/5 md:w-full grow">
+          <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-3.5 w-3.5 ${
+                  className={`h-3 w-3 ${
                     i < tour.hotelStars ? "fill-amber-400 text-amber-400" : "text-slate-200"
                   }`}
                 />
               ))}
             </div>
+            {tour.avgRating > 0 && (
+              <div className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-100">
+                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                {tour.avgRating.toFixed(1)}
+                {tour.reviewsCount > 0 && (
+                  <span className="text-amber-500 font-normal ml-0.5">({tour.reviewsCount})</span>
+                )}
+              </div>
+            )}
           </div>
 
           <h3 className="line-clamp-2 text-[15px] md:text-base font-semibold text-slate-900 group-hover:text-teal-700 transition-colors mb-1.5 leading-snug">
@@ -89,6 +98,9 @@ export function TourCard({ tour }: { tour: Tour }) {
                 {formattedPrice}
               </p>
             </div>
+            <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all">
+              <ArrowUpRight className="h-4 w-4" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -99,7 +111,7 @@ export function TourCard({ tour }: { tour: Tour }) {
 export function TourCardSkeleton() {
   return (
     <Card className="flex flex-row md:flex-col h-full overflow-hidden">
-      <Skeleton className="w-2/5 md:w-full h-32 md:h-48 md:aspect-[4/3] shrink-0 rounded-none" />
+      <Skeleton className="w-2/5 md:w-full h-32 md:h-48 md:aspect-4/3 shrink-0 rounded-none" />
       <CardContent className="flex flex-col p-4 w-3/5 md:w-full">
         <Skeleton className="h-4 w-24 mb-3" />
         <Skeleton className="h-5 w-full mb-2" />

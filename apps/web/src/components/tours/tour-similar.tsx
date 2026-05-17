@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { type Tour } from "@tours/types";
 import { TourCard } from "@/src/components/tours/tour-card";
@@ -6,7 +6,7 @@ import { TourCard } from "@/src/components/tours/tour-card";
 export function TourSimilar({ tours, locale }: { tours: Tour[]; locale: string }) {
   if (!tours.length) return null;
   return (
-    <section className="bg-gradient-to-b from-white to-slate-50/50 border-t border-slate-100">
+    <section className="bg-linear-to-b from-white to-slate-50/50 border-t border-slate-100">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8 py-16 md:py-20">
         <div className="flex items-end justify-between gap-3 flex-wrap mb-8">
           <div>

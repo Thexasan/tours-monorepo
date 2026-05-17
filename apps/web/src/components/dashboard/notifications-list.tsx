@@ -12,6 +12,7 @@ const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string
   BOOKING_DOCUMENTS_REQUESTED: { icon: FileText,   dot: "bg-violet-500" },
   BOOKING_DOCUMENTS_CONFIRMED: { icon: Check,      dot: "bg-emerald-500" },
   BOOKING_DOCUMENTS_REJECTED:  { icon: FileText,   dot: "bg-amber-500" },
+  BOOKING_PAYMENT_REQUESTED:   { icon: DollarSign, dot: "bg-blue-500" },
   BOOKING_PAID:                { icon: DollarSign, dot: "bg-emerald-600" },
   BOOKING_COMPLETED:           { icon: Star,       dot: "bg-slate-500" },
   BOOKING_CANCELLED:           { icon: XCircle,    dot: "bg-rose-500" },

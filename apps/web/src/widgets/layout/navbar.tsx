@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -59,7 +59,7 @@ export function Navbar() {
           <span
             className={cn(
               "grid place-items-center h-9 w-9 rounded-xl text-white transition-transform duration-300 group-hover:rotate-[-6deg]",
-              "bg-gradient-to-br from-teal-500 to-sky-600 shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]",
+              "bg-linear-to-br from-teal-500 to-sky-600 shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]",
             )}
           >
             <Compass className="h-5 w-5" />

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -41,7 +41,7 @@ export function TourHero({
         className="object-cover"
         style={{ animation: "kenBurns 20s ease-in-out infinite alternate" }}
       />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-slate-950/5" />
+      <div aria-hidden className="absolute inset-0 bg-linear-to-t from-slate-950/85 via-slate-950/30 to-slate-950/5" />
       <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.35) 100%)" }} />
 
       <div className="relative z-10 h-full flex flex-col justify-end pb-12">

@@ -13,12 +13,13 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import type { BookingStatus } from "@tours/types";
 
-const STATUS_OPTIONS: BookingStatus[] = ["NEW", "DOCUMENTS_REQUESTED", "DOCUMENTS_SUBMITTED", "IN_PROGRESS", "PAID", "COMPLETED", "CANCELLED"];
+const STATUS_OPTIONS: BookingStatus[] = ["NEW", "DOCUMENTS_REQUESTED", "DOCUMENTS_SUBMITTED", "IN_PROGRESS", "AWAITING_PAYMENT", "PAID", "COMPLETED", "CANCELLED"];
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
   NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
   DOCUMENTS_REQUESTED: { label: "Ждём документы",      cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
   DOCUMENTS_SUBMITTED: { label: "Документы загружены", cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",  dot: "bg-orange-500" },
   IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
+  AWAITING_PAYMENT:    { label: "Ожидает оплаты",      cls: "bg-blue-50 text-blue-700 ring-1 ring-blue-100",        dot: "bg-blue-500" },
   PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
   COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",    dot: "bg-slate-500" },
   CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",        dot: "bg-rose-500" },

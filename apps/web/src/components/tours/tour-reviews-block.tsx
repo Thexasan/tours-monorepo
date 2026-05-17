@@ -1,4 +1,4 @@
-import { Star, Award } from "lucide-react";
+﻿import { Star, Award } from "lucide-react";
 import { type Review } from "@tours/types";
 import { ReviewCard } from "@/src/components/reviews/review-card";
 
@@ -17,7 +17,7 @@ export function TourReviewsBlock({
     <section>
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Что говорят туристы</h2>
 
-      <div className="mt-7 rounded-3xl bg-gradient-to-br from-slate-50 via-white to-amber-50/30 ring-1 ring-slate-100 p-6 md:p-8 grid md:grid-cols-[200px_1fr] gap-8">
+      <div className="mt-7 rounded-3xl bg-linear-to-br from-slate-50 via-white to-amber-50/30 ring-1 ring-slate-100 p-6 md:p-8 grid md:grid-cols-[200px_1fr] gap-8">
         <div className="text-center md:border-r md:border-slate-200 md:pr-8">
           <p className="text-6xl font-bold tracking-tight text-slate-900 tabular-nums">{avgRating.toFixed(2)}</p>
           <div className="mt-2 flex items-center justify-center gap-0.5">
@@ -47,7 +47,7 @@ export function TourReviewsBlock({
                 </span>
                 <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all"
+                    className="h-full bg-linear-to-r from-amber-400 to-amber-500 rounded-full transition-all"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

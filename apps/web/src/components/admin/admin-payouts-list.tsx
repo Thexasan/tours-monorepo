@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, X, Building2 } from "lucide-react";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 
@@ -35,7 +36,9 @@ export function AdminPayoutsList() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "payouts"] });
       setApproving(null);
+      toast.success("Выплата подтверждена");
     },
+    onError: (e) => toast.error("Не удалось подтвердить выплату", { description: extractErrorMessage(e) }),
   });
   const rejectM = useMutation({
     mutationFn: (vars: { id: string; reason: string }) =>
@@ -43,7 +46,9 @@ export function AdminPayoutsList() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "payouts"] });
       setRejecting(null);
+      toast.success("Запрос отклонён, средства возвращены на баланс");
     },
+    onError: (e) => toast.error("Не удалось отклонить запрос", { description: extractErrorMessage(e) }),
   });
 
   return (
@@ -172,11 +177,6 @@ export function AdminPayoutsList() {
         })}
       </div>
 
-      {(approveM.isError || rejectM.isError) && (
-        <div className="mt-3 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-          {extractErrorMessage(approveM.error || rejectM.error)}
-        </div>
-      )}
     </>
   );
 }

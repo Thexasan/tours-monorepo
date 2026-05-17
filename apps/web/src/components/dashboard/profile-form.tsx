@@ -7,6 +7,7 @@ import * as z from "zod";
 import { Check, AlertCircle, Copy, Loader2, Sparkles, UserCircle2, Camera } from "lucide-react";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { apiClient, extractErrorMessage } from "@/src/shared/api/apiClient";
+import { toast } from "sonner";
 import { authApi } from "@/src/shared/api/auth-api";
 import { uploadImage } from "@/src/shared/api/upload-api";
 import { Button } from "@/src/components/ui/button";
@@ -106,8 +107,6 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
 export function ProfileForm() {
   const { user, setUser } = useAuthStore();
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const {
@@ -128,7 +127,7 @@ export function ProfileForm() {
   }, [user, reset]);
 
   const onSubmit = async (values: Values) => {
-    setSaving(true); setError(null); setSuccess(false);
+    setSaving(true);
     try {
       await apiClient.patch("/users/me", {
         fullName: values.fullName,
@@ -137,9 +136,9 @@ export function ProfileForm() {
       });
       const fresh = await authApi.me();
       setUser(fresh);
-      setSuccess(true);
+      toast.success("Профиль сохранён");
     } catch (e) {
-      setError(extractErrorMessage(e));
+      toast.error("Не удалось сохранить", { description: extractErrorMessage(e) });
     } finally {
       setSaving(false);
     }
@@ -211,19 +210,6 @@ export function ProfileForm() {
             </div>
           </div>
         </div>
-
-        {success && (
-          <div className="flex items-start gap-2 rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-sm text-emerald-800">
-            <Check className="h-4 w-4 mt-0.5 shrink-0" />
-            <p>Профиль сохранён. Изменения уже видны.</p>
-          </div>
-        )}
-        {error && (
-          <div className="flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-100 p-3 text-sm text-rose-700">
-            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-            <p>{error}</p>
-          </div>
-        )}
 
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
           <Button type="submit" disabled={saving} size="lg">

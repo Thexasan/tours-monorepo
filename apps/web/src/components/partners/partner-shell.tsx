@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -86,7 +86,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                 >
                   {active && (
                     <span
-                      className="absolute -left-1.5 top-2 bottom-2 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-emerald-700"
+                      className="absolute -left-1.5 top-2 bottom-2 w-1 rounded-full bg-linear-to-b from-emerald-500 to-emerald-700"
                       aria-hidden
                     />
                   )}

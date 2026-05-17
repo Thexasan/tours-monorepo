@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { ChevronDown, Compass } from "lucide-react";
@@ -60,7 +60,7 @@ export function TourItinerary({
       </div>
 
       <ol className="relative">
-        <span aria-hidden className="absolute left-[19px] top-3 bottom-3 w-px bg-gradient-to-b from-teal-300 via-sky-300 to-rose-200" />
+        <span aria-hidden className="absolute left-[19px] top-3 bottom-3 w-px bg-linear-to-b from-teal-300 via-sky-300 to-rose-200" />
         {days.map((d) => {
           const open = openDays.has(d.day);
           return (
@@ -70,7 +70,7 @@ export function TourItinerary({
                   className={cn(
                     "relative grid place-items-center h-10 w-10 rounded-full transition-all",
                     open
-                      ? "bg-gradient-to-br from-teal-500 to-sky-600 text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.5)]"
+                      ? "bg-linear-to-br from-teal-500 to-sky-600 text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.5)]"
                       : "bg-white ring-1 ring-slate-200 text-slate-500",
                   )}
                 >

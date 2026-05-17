@@ -130,7 +130,7 @@ export default async function TourDetailPage({
               <p className="mt-5 text-slate-700 leading-relaxed text-[17px] max-w-3xl whitespace-pre-line">{description}</p>
 
               {tour.hotelName && (
-                <div className="mt-7 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-teal-50/40 ring-1 ring-slate-100 p-5 flex flex-wrap items-center gap-x-8 gap-y-3">
+                <div className="mt-7 rounded-2xl bg-linear-to-br from-slate-50 via-white to-teal-50/40 ring-1 ring-slate-100 p-5 flex flex-wrap items-center gap-x-8 gap-y-3">
                   <MetaItem Icon={Hotel} tone="text-teal-700" label="Отель" value={tour.hotelName} />
                   <MetaItem Icon={StarIcon} tone="text-amber-500" label="Категория" value={`${tour.hotelStars}★`} />
                   <MetaItem Icon={Utensils} tone="text-rose-500" label="Питание" value={mealLabel} />

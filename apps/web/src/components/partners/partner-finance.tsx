@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -80,7 +80,7 @@ export function PartnerFinance() {
               </div>
               <div className="h-2 rounded-full bg-black/25 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-400"
+                  className="h-full rounded-full bg-linear-to-r from-amber-300 to-amber-400"
                   style={{ width: `${earnedPct}%` }}
                 />
               </div>
