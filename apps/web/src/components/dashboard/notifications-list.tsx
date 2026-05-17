@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Bell, Check, ChevronRight, Plane, FileText, DollarSign, Star, XCircle } from "lucide-react";
+import { Bell, Check, ChevronRight, Plane, FileText, DollarSign, Star, XCircle, TrendingUp, Ban } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useNotifications } from "@/src/hooks/use-notifications";
 import type { NotificationType } from "@tours/types";
@@ -16,6 +16,9 @@ const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string
   BOOKING_PAID:                { icon: DollarSign, dot: "bg-emerald-600" },
   BOOKING_COMPLETED:           { icon: Star,       dot: "bg-slate-500" },
   BOOKING_CANCELLED:           { icon: XCircle,    dot: "bg-rose-500" },
+  COMMISSION_EARNED:           { icon: TrendingUp, dot: "bg-emerald-500" },
+  PAYOUT_PROCESSED:            { icon: Check,      dot: "bg-teal-500" },
+  PAYOUT_REJECTED:             { icon: Ban,        dot: "bg-rose-500" },
 };
 
 export function NotificationsList() {

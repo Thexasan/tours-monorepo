@@ -8,6 +8,7 @@ export interface AdminPartner {
   role: "PARTNER";
   referralCode: string;
   balance: number;
+  commissionRate: number;
   isActive: boolean;
   isPartnerApproved: boolean;
   referralsCount?: number;
@@ -25,12 +26,14 @@ export interface CreatePartnerPayload {
   email: string;
   fullName: string;
   phone?: string;
+  commissionRate?: number;
 }
 
 export interface UpdatePartnerPayload {
   fullName?: string;
   phone?: string;
   isActive?: boolean;
+  commissionRate?: number;
 }
 
 export const adminPartnersApi = {

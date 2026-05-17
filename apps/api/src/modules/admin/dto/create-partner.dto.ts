@@ -1,4 +1,5 @@
-import { IsEmail, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreatePartnerDto {
@@ -18,4 +19,12 @@ export class CreatePartnerDto {
   @IsString()
   @MaxLength(40)
   phone?: string;
+
+  @ApiPropertyOptional({ example: 0.05, description: "Ставка комиссии (от 0.01 до 1). По умолчанию 0.05 = 5%." })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0.01)
+  @Max(1)
+  commissionRate?: number;
 }

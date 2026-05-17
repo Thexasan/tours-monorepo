@@ -2,7 +2,8 @@ import {
   Injectable, BadRequestException, NotFoundException, ConflictException, Logger,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, PayoutStatus, TransactionType } from "@tours/db";
+import { NotificationsService } from "../notifications/notifications.service";
+import { Prisma, PayoutStatus, TransactionType, NotificationType } from "@tours/db";
 import { RequestPayoutDto } from "./dto/request-payout.dto";
 import { ProcessPayoutDto, PayoutDecision } from "./dto/process-payout.dto";
 
@@ -12,7 +13,10 @@ const MIN_PAYOUT_USD = 50;
 export class PayoutsService {
   private readonly logger = new Logger(PayoutsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   /** Партнёр запрашивает вывод. Атомарно: списать с balance, создать Payout + Transaction. */
   async request(userId: string, dto: RequestPayoutDto) {
@@ -105,18 +109,23 @@ export class PayoutsService {
             externalRef: dto.externalRef,
           },
         });
-        // Транзакция уже была (PAYOUT_REQUEST со списанием) — баланс не возвращаем.
-        // Создадим audit-record что выплата подтверждена.
         await tx.transaction.create({
           data: {
             userId: payout.userId,
-            type: TransactionType.PAYOUT_REQUEST, // используем тот же тип, описание помечает завершение
+            type: TransactionType.PAYOUT_REQUEST,
             amountUsd: 0,
             increment: 0,
             payoutId: payout.id,
             performedBy: adminId,
             description: `Выплата подтверждена админом${dto.externalRef ? ` (ref: ${dto.externalRef})` : ""}`,
           },
+        });
+
+        void this.notifications.create({
+          userId: payout.userId,
+          type: NotificationType.PAYOUT_PROCESSED,
+          title: "Выплата подтверждена",
+          body: `Ваш запрос на вывод $${Number(payout.amountUsd).toFixed(2)} подтверждён и отправлен на ваши реквизиты.`,
         });
 
         this.logger.log(`Payout APPROVED: ${payoutId} by admin=${adminId}`);
@@ -142,12 +151,19 @@ export class PayoutsService {
           data: {
             userId: payout.userId,
             type: TransactionType.PAYOUT_REJECTED,
-            amountUsd: payout.amountUsd, // положительная — возврат
+            amountUsd: payout.amountUsd,
             increment: 0,
             payoutId: payout.id,
             performedBy: adminId,
             description: `Возврат вывода (${dto.rejectReason ?? "без причины"})`,
           },
+        });
+
+        void this.notifications.create({
+          userId: payout.userId,
+          type: NotificationType.PAYOUT_REJECTED,
+          title: "Заявка на вывод отклонена",
+          body: `Ваш запрос на вывод $${Number(payout.amountUsd).toFixed(2)} отклонён.${dto.rejectReason ? ` Причина: ${dto.rejectReason}` : ""} Средства возвращены на ваш баланс.`,
         });
 
         this.logger.log(`Payout REJECTED: ${payoutId} by admin=${adminId}, $${payout.amountUsd} returned`);

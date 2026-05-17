@@ -40,7 +40,7 @@ export function AdminDashboard() {
 
   const { data: allBookings, isLoading: loadingBookings } = useQuery({
     queryKey: ["admin", "bookings", "all", "dashboard"],
-    queryFn: () => bookingsApi.listAll({ pageSize: 200 }),
+    queryFn: () => bookingsApi.listAll({ pageSize: 100 }),
     staleTime: 30_000,
   });
 

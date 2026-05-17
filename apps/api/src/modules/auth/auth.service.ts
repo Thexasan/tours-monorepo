@@ -193,11 +193,11 @@ export class AuthService {
       select: {
         id: true, email: true, fullName: true, avatarUrl: true, role: true,
         referralCode: true, referralCount: true, freeToursAvailable: true,
-        balance: true, isPartnerApproved: true,
+        balance: true, commissionRate: true, isPartnerApproved: true,
       },
     });
     if (!user) throw new NotFoundException("User not found");
-    return { ...user, balance: Number(user.balance) };
+    return { ...user, balance: Number(user.balance), commissionRate: Number(user.commissionRate) };
   }
 
   private async issueTokens(userId: string, email: string, role: UserRole): Promise<AuthTokens> {

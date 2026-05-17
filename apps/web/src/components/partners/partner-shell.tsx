@@ -12,6 +12,8 @@ import {
   Sparkles,
   TrendingUp,
   User,
+  Plane,
+  MessageSquare,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
@@ -35,6 +37,8 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
   const nav = [
     { href: `/${locale}/partner/dashboard`, label: "Дашборд", icon: BarChart3, hint: "Статистика и графики" },
     { href: `/${locale}/partner/finance`, label: "Финансы", icon: Wallet, hint: "Баланс и выплаты" },
+    { href: `/${locale}/partner/trips`, label: "Мои туры", icon: Plane, hint: "Мои бронирования" },
+    { href: `/${locale}/partner/reviews`, label: "Мои отзывы", icon: MessageSquare, hint: "Отзывы о турах" },
     { href: `/${locale}/partner/profile`, label: "Мой профиль", icon: User, hint: "Личные данные" },
   ];
 
@@ -123,7 +127,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-900">Минимум для вывода — $50</p>
               <p className="text-xs text-slate-500 mt-0.5">
-                Комиссия партнёра — 5% с каждого оплаченного бронирования.
+                Ваша комиссия — {((user.commissionRate ?? 0.05) * 100).toFixed(0)}% с каждого оплаченного бронирования.
               </p>
             </div>
           </div>

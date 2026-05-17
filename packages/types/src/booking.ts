@@ -105,7 +105,10 @@ export type NotificationType =
   | "BOOKING_PAYMENT_REQUESTED"
   | "BOOKING_PAID"
   | "BOOKING_COMPLETED"
-  | "BOOKING_CANCELLED";
+  | "BOOKING_CANCELLED"
+  | "COMMISSION_EARNED"
+  | "PAYOUT_PROCESSED"
+  | "PAYOUT_REJECTED";
 
 export interface Notification {
   id: string;

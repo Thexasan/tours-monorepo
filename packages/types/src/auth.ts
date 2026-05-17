@@ -13,6 +13,7 @@ export interface AuthUser {
   referralCount: number;
   freeToursAvailable: number;
   balance: number;
+  commissionRate: number;
   isPartnerApproved: boolean;
 }
 

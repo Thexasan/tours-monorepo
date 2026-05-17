@@ -44,7 +44,7 @@ interface BookingContext {
   ip?: string;
 }
 
-const PARTNER_COMMISSION_RATE = 0.05;
+const DEFAULT_COMMISSION_RATE = 0.05;
 
 @Injectable()
 export class BookingsService {
@@ -372,7 +372,7 @@ export class BookingsService {
   ): Promise<{ type: "client" | "partner"; details: { count?: number; threshold?: number; commission?: number; freeTour?: boolean } } | null> {
     const referrer = await tx.user.findUnique({
       where: { id: referrerId },
-      select: { id: true, role: true, referralCount: true, isActive: true },
+      select: { id: true, role: true, referralCount: true, isActive: true, commissionRate: true },
     });
     if (!referrer || !referrer.isActive) {
       this.logger.warn(`Reward skipped: referrer ${referrerId} not found or inactive`);
@@ -421,7 +421,8 @@ export class BookingsService {
     }
 
     if (referrer.role === UserRole.PARTNER) {
-      const commission = totalPriceUsd.mul(PARTNER_COMMISSION_RATE);
+      const rate = referrer.commissionRate ? Number(referrer.commissionRate) : DEFAULT_COMMISSION_RATE;
+      const commission = totalPriceUsd.mul(rate);
       await tx.user.update({
         where: { id: referrerId },
         data: { balance: { increment: commission } },
@@ -434,10 +435,16 @@ export class BookingsService {
           increment: 0,
           bookingId,
           performedBy: adminId,
-          description: `Комиссия 5% с заявки $${totalPriceUsd}`,
+          description: `Комиссия ${(rate * 100).toFixed(0)}% с заявки $${totalPriceUsd}`,
         },
       });
-      this.logger.log(`Reward (PARTNER): user=${referrerId}, +$${commission}`);
+      void this.notifications.create({
+        userId: referrerId,
+        type: NotificationType.COMMISSION_EARNED,
+        title: "Комиссия начислена",
+        body: `На ваш баланс начислено $${Number(commission).toFixed(2)} (${(rate * 100).toFixed(0)}% от заявки $${totalPriceUsd}).`,
+      });
+      this.logger.log(`Reward (PARTNER): user=${referrerId}, +$${commission} (rate=${rate})`);
       return { type: "partner", details: { commission: Number(commission) } };
     }
 

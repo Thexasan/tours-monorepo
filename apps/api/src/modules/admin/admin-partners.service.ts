@@ -44,10 +44,11 @@ export class AdminPartnersService {
         isPartnerApproved: true,
         referralCode,
         emailVerifiedAt: new Date(),
+        ...(dto.commissionRate !== undefined ? { commissionRate: dto.commissionRate } : {}),
       },
       select: {
         id: true, email: true, fullName: true, phone: true,
-        role: true, referralCode: true, balance: true,
+        role: true, referralCode: true, balance: true, commissionRate: true,
         isActive: true, isPartnerApproved: true, createdAt: true,
       },
     });
@@ -59,7 +60,7 @@ export class AdminPartnersService {
 
     this.logger.log(`Partner created by admin: ${partner.email} (id=${partner.id})`);
 
-    return { ...partner, balance: Number(partner.balance) };
+    return { ...partner, balance: Number(partner.balance), commissionRate: Number(partner.commissionRate) };
   }
 
   /** Список всех партнёров с метриками. */
@@ -84,7 +85,7 @@ export class AdminPartnersService {
         take: pageSize,
         select: {
           id: true, email: true, fullName: true, phone: true,
-          referralCode: true, balance: true,
+          referralCode: true, balance: true, commissionRate: true,
           isActive: true, isPartnerApproved: true, createdAt: true,
           _count: { select: { referrals: true } }, // сколько привёл пользователей
         },
@@ -96,6 +97,7 @@ export class AdminPartnersService {
       items: items.map((u) => ({
         ...u,
         balance: Number(u.balance),
+        commissionRate: Number(u.commissionRate),
         referralsCount: u._count.referrals,
       })),
       total,
@@ -118,19 +120,20 @@ export class AdminPartnersService {
     if (dto.fullName !== undefined) data.fullName = dto.fullName.trim();
     if (dto.phone !== undefined) data.phone = dto.phone.trim();
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
+    if (dto.commissionRate !== undefined) data.commissionRate = dto.commissionRate;
 
     const updated = await this.prisma.user.update({
       where: { id },
       data,
       select: {
         id: true, email: true, fullName: true, phone: true,
-        role: true, referralCode: true, balance: true,
+        role: true, referralCode: true, balance: true, commissionRate: true,
         isActive: true, isPartnerApproved: true, createdAt: true,
       },
     });
 
     this.logger.log(`Partner updated: ${updated.email} (id=${id})`);
-    return { ...updated, balance: Number(updated.balance) };
+    return { ...updated, balance: Number(updated.balance), commissionRate: Number(updated.commissionRate) };
   }
 
   /** Сгенерировать новый временный пароль и отправить партнёру на email. */

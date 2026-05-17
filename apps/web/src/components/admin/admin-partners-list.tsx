@@ -63,6 +63,7 @@ export function AdminPartnersList() {
               <tr>
                 <th className="text-left px-4 py-3 font-semibold">Партнёр</th>
                 <th className="text-left px-4 py-3 font-semibold">Реф-код</th>
+                <th className="text-left px-4 py-3 font-semibold">Комиссия</th>
                 <th className="text-left px-4 py-3 font-semibold">Баланс</th>
                 <th className="text-left px-4 py-3 font-semibold">Рефералы</th>
                 <th className="text-left px-4 py-3 font-semibold">Статус</th>
@@ -71,11 +72,11 @@ export function AdminPartnersList() {
             </thead>
             <tbody>
               {isLoading && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Загрузка...</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Загрузка...</td></tr>
               )}
               {data && data.items.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-slate-500">
+                  <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
                     Партнёров пока нет. Нажмите «Добавить партнёра», чтобы создать первого.
                   </td>
                 </tr>
@@ -120,6 +121,7 @@ function PartnerRow({
         </div>
       </td>
       <td className="px-4 py-3 font-mono text-xs text-slate-700">{partner.referralCode}</td>
+      <td className="px-4 py-3 tabular-nums font-semibold text-emerald-700">{((partner.commissionRate ?? 0.05) * 100).toFixed(0)}%</td>
       <td className="px-4 py-3 tabular-nums">${partner.balance.toFixed(2)}</td>
       <td className="px-4 py-3 tabular-nums">{partner.referralsCount ?? 0}</td>
       <td className="px-4 py-3">
@@ -160,6 +162,7 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [commissionRate, setCommissionRate] = useState("5");
   const [error, setError] = useState<string | null>(null);
 
   const createMutation = useMutation({
@@ -179,10 +182,12 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const rateNum = parseFloat(commissionRate);
     createMutation.mutate({
       email: email.trim(),
       fullName: fullName.trim(),
       phone: phone.trim() || undefined,
+      commissionRate: !isNaN(rateNum) ? rateNum / 100 : undefined,
     });
   };
 
@@ -219,6 +224,16 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+992900000000"
             />
+          </div>
+          <div>
+            <Label htmlFor="p-rate">Ставка комиссии (%)</Label>
+            <Input
+              id="p-rate" type="number" min="1" max="100" step="0.5"
+              value={commissionRate}
+              onChange={(e) => setCommissionRate(e.target.value)}
+              placeholder="5"
+            />
+            <p className="text-xs text-slate-500 mt-1">По умолчанию 5%. Например, 7 = 7% с каждой оплаченной заявки.</p>
           </div>
           {error && <p className="text-sm text-rose-600">{error}</p>}
           <DialogFooter>

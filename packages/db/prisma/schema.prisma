@@ -89,6 +89,9 @@ enum NotificationType {
   BOOKING_PAID
   BOOKING_COMPLETED
   BOOKING_CANCELLED
+  COMMISSION_EARNED            // Партнёру начислена комиссия
+  PAYOUT_PROCESSED             // Выплата партнёру подтверждена
+  PAYOUT_REJECTED              // Заявка на вывод отклонена
 }
 
 // =====================================================
@@ -116,6 +119,7 @@ model User {
 
   // Партнёр (B2B)
   balance             Decimal  @default(0) @db.Decimal(12, 2)            // В USD
+  commissionRate      Decimal  @default(0.05) @db.Decimal(5, 4) @map("commission_rate") // Ставка комиссии, напр. 0.05 = 5%
   isPartnerApproved   Boolean  @default(false) @map("is_partner_approved")
 
   // Метаданные
