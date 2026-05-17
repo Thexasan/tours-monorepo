@@ -43,8 +43,11 @@ export function TourBookingSidebar({
       router.replace(newUrl, { scroll: false });
     }
   }, [searchParams, router, pathname]);
-  const [guests, setGuests] = useState(1);
-  const [departDate, setDepartDate] = useState("");
+  const [guests, setGuests] = useState(() => {
+    const g = searchParams?.get("guests");
+    return g ? Math.max(1, Math.min(20, parseInt(g, 10) || 1)) : 1;
+  });
+  const [departDate, setDepartDate] = useState(() => searchParams?.get("date") ?? "");
   const [wishlisted, setWishlisted] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 

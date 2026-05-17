@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { TourHero } from "./tour-hero";
 import { BookingModal } from "@/src/components/bookings/booking-modal";
 import type { RoomTypeOption } from "@tours/types";
@@ -25,6 +26,13 @@ interface Props {
 
 export function TourDetailHeroWithModal(props: Props) {
   const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const initialDate = searchParams?.get("date") ?? undefined;
+  const initialGuests = (() => {
+    const g = searchParams?.get("guests");
+    return g ? Math.max(1, Math.min(20, parseInt(g, 10) || 1)) : 1;
+  })();
+
   return (
     <>
       <TourHero {...props} onBook={() => setOpen(true)} />
@@ -37,6 +45,8 @@ export function TourDetailHeroWithModal(props: Props) {
         tourHotelStars={props.hotelStars}
         tourDurationDays={props.durationDays}
         tourRoomTypes={props.roomTypes}
+        initialDate={initialDate}
+        initialGuests={initialGuests}
         open={open}
         onClose={() => setOpen(false)}
       />

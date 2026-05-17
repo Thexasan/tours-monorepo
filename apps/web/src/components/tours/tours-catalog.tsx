@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -68,7 +69,21 @@ const MEAL_OPTIONS = [
 
 export function ToursCatalog() {
   const locale = useLocale();
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const searchParams = useSearchParams();
+  const urlCountry = searchParams.get("country") ?? "";
+  const urlLabel = searchParams.get("q") ?? "";
+
+  // Booking intent params — carried from homepage search to tour page
+  const bookingParams = new URLSearchParams();
+  const urlDate = searchParams.get("date") ?? "";
+  const urlGuests = searchParams.get("guests") ?? "";
+  if (urlDate) bookingParams.set("date", urlDate);
+  if (urlGuests) bookingParams.set("guests", urlGuests);
+  const bookingQuery = bookingParams.toString();
+  const [filters, setFilters] = useState<Filters>({
+    ...DEFAULT_FILTERS,
+    country: urlCountry,
+  });
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -125,6 +140,24 @@ export function ToursCatalog() {
           />
 
           <div className="min-w-0">
+            {urlLabel && filters.country && (
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-sm text-slate-500">Поиск:</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-sm font-semibold ring-1 ring-teal-200">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {urlLabel}
+                  <button
+                    type="button"
+                    aria-label="Сбросить поиск"
+                    onClick={() => update("country", "")}
+                    className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-teal-200 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              </div>
+            )}
+
             <ResultsBar
               total={data?.total}
               isLoading={isLoading}
@@ -150,7 +183,7 @@ export function ToursCatalog() {
             ) : data && data.items.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {data.items.map((t) => <TourCard key={t.id} tour={t} />)}
+                  {data.items.map((t) => <TourCard key={t.id} tour={t} extraQuery={bookingQuery} />)}
                 </div>
 
                 {data.total > data.pageSize && (
@@ -413,7 +446,7 @@ function FiltersPanel({
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-5 pb-5 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0">
-      <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-2.5">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2.5">
         {label}
       </p>
       {children}

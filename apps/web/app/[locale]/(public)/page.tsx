@@ -183,7 +183,7 @@ export default async function HomePage() {
 
             {/* Subtitle */}
             <p className="mt-5 text-base md:text-lg text-white/75 max-w-lg leading-relaxed">
-              Бронируй лучшие туры, путешествуй бесплатно по реферальной программе или зарабатывай 5% как партнёр.
+              Лучшие туры по честным ценам — и реальный шанс путешествовать бесплатно. Тысячи туристов уже в пути.
             </p>
 
             {/* Stats */}
@@ -195,8 +195,8 @@ export default async function HomePage() {
               <span>12 000+ путешественников</span>
             </div>
 
-            {/* Search — glass wrapper */}
-            <div className="mt-7 md:mt-8 rounded-2xl bg-white/90 backdrop-blur-xl ring-1 ring-white/30 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)] p-1.5">
+            {/* Search */}
+            <div className="mt-7 md:mt-8">
               <SearchForm />
             </div>
 

@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useCurrencyStore } from "@/src/shared/store/currency-store";
 
-export function TourCard({ tour }: { tour: Tour }) {
+export function TourCard({ tour, extraQuery }: { tour: Tour; extraQuery?: string }) {
   const t = useTranslations("tours");
   const locale = useLocale() as "ru" | "en" | "tj";
   const { currency, convert } = useCurrencyStore();
@@ -24,7 +24,7 @@ export function TourCard({ tour }: { tour: Tour }) {
   const titleLocalized = tour.title[locale] ?? tour.title.ru;
 
   return (
-    <Link href={`/${locale}/tours/${tour.slug}`} className="group block h-full">
+    <Link href={`/${locale}/tours/${tour.slug}${extraQuery ? `?${extraQuery}` : ""}`} className="group block h-full">
       <Card className="overflow-hidden flex flex-row md:flex-col h-full hover:-translate-y-1 transition-transform">
         <div className="relative w-2/5 md:w-full md:aspect-4/3 shrink-0 overflow-hidden bg-slate-100">
           <Image

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Hotel, Star as StarIcon, Utensils, Wifi } from "lucide-react";
 import { type Tour, type Review } from "@tours/types";
 import { TourDetailHeroWithModal } from "@/src/components/tours/tour-detail-shell";
@@ -92,22 +93,24 @@ export default async function TourDetailPage({
   return (
     <main className="min-h-screen text-slate-900">
       {/* Hero — owns booking modal trigger */}
-      <TourDetailHeroWithModal
-        tourId={tour.id}
-        title={title}
-        country={tour.country}
-        city={tour.city ?? null}
-        region={region}
-        coverImage={tour.coverImage}
-        priceUsd={Number(tour.priceUsd)}
-        avgRating={tour.avgRating}
-        reviewsCount={tour.reviewsCount}
-        isHot={tour.isHot}
-        hotelStars={tour.hotelStars}
-        durationDays={tour.durationDays}
-        roomTypes={tour.roomTypes}
-        locale={locale}
-      />
+      <Suspense fallback={null}>
+        <TourDetailHeroWithModal
+          tourId={tour.id}
+          title={title}
+          country={tour.country}
+          city={tour.city ?? null}
+          region={region}
+          coverImage={tour.coverImage}
+          priceUsd={Number(tour.priceUsd)}
+          avgRating={tour.avgRating}
+          reviewsCount={tour.reviewsCount}
+          isHot={tour.isHot}
+          hotelStars={tour.hotelStars}
+          durationDays={tour.durationDays}
+          roomTypes={tour.roomTypes}
+          locale={locale}
+        />
+      </Suspense>
 
       <TourHighlightsBar
         region={tour.city ?? tour.country}
@@ -165,18 +168,20 @@ export default async function TourDetailPage({
 
           {/* Right column — sticky sidebar */}
           <aside>
-            <TourBookingSidebar
-              tourId={tour.id}
-              tourTitle={title}
-              tourSlug={tour.slug}
-              pricePerPerson={Number(tour.priceUsd)}
-              coverImage={tour.coverImage}
-              country={tour.country}
-              hotelStars={tour.hotelStars}
-              durationDays={tour.durationDays}
-              roomTypes={tour.roomTypes}
-              referralReward={50}
-            />
+            <Suspense fallback={<div className="h-96 rounded-3xl bg-slate-100 animate-pulse" />}>
+              <TourBookingSidebar
+                tourId={tour.id}
+                tourTitle={title}
+                tourSlug={tour.slug}
+                pricePerPerson={Number(tour.priceUsd)}
+                coverImage={tour.coverImage}
+                country={tour.country}
+                hotelStars={tour.hotelStars}
+                durationDays={tour.durationDays}
+                roomTypes={tour.roomTypes}
+                referralReward={50}
+              />
+            </Suspense>
           </aside>
         </div>
       </section>
