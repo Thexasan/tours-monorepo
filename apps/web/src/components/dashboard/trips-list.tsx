@@ -20,7 +20,7 @@ const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: stri
   CANCELLED:            { label: "Отменена",             cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",          dot: "bg-rose-500" },
 };
 
-export function TripsList() {
+export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tj";
 
@@ -149,7 +149,7 @@ export function TripsList() {
 
               <div className="mt-auto pt-3 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/${locale}/dashboard/trips/${b.id}`}
+                  href={`/${locale}/${basePath}/trips/${b.id}`}
                   className="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800"
                 >
                   Открыть заявку

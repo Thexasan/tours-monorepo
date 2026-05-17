@@ -21,7 +21,7 @@ const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string
   PAYOUT_REJECTED:             { icon: Ban,        dot: "bg-rose-500" },
 };
 
-export function NotificationsList() {
+export function NotificationsList({ basePath = "dashboard" }: { basePath?: string }) {
   const { notifications, unread, isLoading, markRead, markAllRead } = useNotifications();
   const router = useRouter();
   const locale = useLocale();
@@ -82,7 +82,7 @@ export function NotificationsList() {
                 className="tv-surface-elevated p-4 flex gap-3 cursor-pointer hover:bg-teal-50/40 transition-colors rounded-2xl ring-2 ring-teal-500/20"
                 onClick={() => {
                   markRead(n.id);
-                  if (n.bookingId) router.push(`/${locale}/dashboard/trips/${n.bookingId}`);
+                  if (n.bookingId) router.push(`/${locale}/${basePath}/trips/${n.bookingId}`);
                 }}
               >
                 <div className={`h-9 w-9 rounded-full ${meta.dot} bg-opacity-15 grid place-items-center shrink-0`}>
@@ -122,7 +122,7 @@ export function NotificationsList() {
                 key={n.id}
                 className={`tv-surface p-4 flex gap-3 transition-colors rounded-2xl ${n.bookingId ? "cursor-pointer hover:bg-slate-50" : ""}`}
                 onClick={() => {
-                  if (n.bookingId) router.push(`/${locale}/dashboard/trips/${n.bookingId}`);
+                  if (n.bookingId) router.push(`/${locale}/${basePath}/trips/${n.bookingId}`);
                 }}
               >
                 <div className="h-9 w-9 rounded-full bg-slate-100 grid place-items-center shrink-0">

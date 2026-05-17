@@ -11,7 +11,7 @@ export default function PartnerReviewsPage() {
         description="Расскажите о впечатлениях — это помогает другим путешественникам."
         icon={<MessageSquare className="h-5 w-5" />}
       />
-      <MyReviewsList />
+      <MyReviewsList basePath="partner" />
     </div>
   );
 }

@@ -14,7 +14,7 @@ const STATUS_META: Record<string, { label: string; cls: string; icon: React.Elem
   REJECTED: { label: "Отклонён",     cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", icon: X },
 };
 
-export function MyReviewsList() {
+export function MyReviewsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tj";
 
@@ -32,7 +32,7 @@ export function MyReviewsList() {
             {data ? `Всего: ${data.length}` : "Загрузка…"}
           </span>
         </div>
-        <Link href={`/${locale}/dashboard/reviews/new`}>
+        <Link href={`/${locale}/${basePath}/reviews/new`}>
           <Button>
             <Plus className="w-4 h-4" /> Написать отзыв
           </Button>

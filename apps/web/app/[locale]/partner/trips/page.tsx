@@ -11,7 +11,7 @@ export default function PartnerTripsPage() {
         description="Все ваши заявки на туры — статусы, документы, детали поездок."
         icon={<Plane className="h-5 w-5" />}
       />
-      <TripsList />
+      <TripsList basePath="partner" />
     </div>
   );
 }

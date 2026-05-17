@@ -16,7 +16,7 @@ export default async function PartnerTripDetailPage({ params }: Props) {
         description="Детали заявки, статус документов и история изменений."
         icon={<Plane className="h-5 w-5" />}
       />
-      <TouristBookingWorkspace bookingId={id} />
+      <TouristBookingWorkspace bookingId={id} backPath="partner/trips" />
     </div>
   );
 }

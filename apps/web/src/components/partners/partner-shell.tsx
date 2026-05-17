@@ -14,7 +14,9 @@ import {
   User,
   Plane,
   MessageSquare,
+  Bell,
 } from "lucide-react";
+import { useNotifications } from "@/src/hooks/use-notifications";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
@@ -22,6 +24,7 @@ import { Button } from "@/src/components/ui/button";
 export function PartnerShell({ children }: { children: React.ReactNode }) {
   const { user, isHydrated } = useRequireAuth(["PARTNER"]);
   const { logout } = useAuth();
+  const { unread } = useNotifications();
   const pathname = usePathname();
   const locale = useLocale();
 
@@ -35,11 +38,12 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
   }
 
   const nav = [
-    { href: `/${locale}/partner/dashboard`, label: "Дашборд", icon: BarChart3, hint: "Статистика и графики" },
-    { href: `/${locale}/partner/finance`, label: "Финансы", icon: Wallet, hint: "Баланс и выплаты" },
-    { href: `/${locale}/partner/trips`, label: "Мои туры", icon: Plane, hint: "Мои бронирования" },
-    { href: `/${locale}/partner/reviews`, label: "Мои отзывы", icon: MessageSquare, hint: "Отзывы о турах" },
-    { href: `/${locale}/partner/profile`, label: "Мой профиль", icon: User, hint: "Личные данные" },
+    { href: `/${locale}/partner/dashboard`, label: "Дашборд", icon: BarChart3 },
+    { href: `/${locale}/partner/finance`, label: "Финансы", icon: Wallet },
+    { href: `/${locale}/partner/trips`, label: "Мои туры", icon: Plane },
+    { href: `/${locale}/partner/reviews`, label: "Мои отзывы", icon: MessageSquare },
+    { href: `/${locale}/partner/notifications`, label: "Уведомления", icon: Bell, badge: unread > 0 ? unread : undefined },
+    { href: `/${locale}/partner/profile`, label: "Мой профиль", icon: User },
   ];
 
   return (
@@ -95,13 +99,18 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                     />
                   )}
                   <span
-                    className={`grid place-items-center h-8 w-8 rounded-lg transition-colors ${
+                    className={`relative grid place-items-center h-8 w-8 rounded-lg transition-colors ${
                       active
                         ? "bg-emerald-600 text-white shadow-[0_4px_10px_-2px_rgba(5,150,105,0.55)]"
                         : "bg-slate-100 text-slate-500 group-hover:bg-emerald-50 group-hover:text-emerald-700"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
+                    {"badge" in it && it.badge !== undefined && (
+                      <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center px-0.5">
+                        {it.badge > 9 ? "9+" : it.badge}
+                      </span>
+                    )}
                   </span>
                   <span className="flex-1 min-w-0">{it.label}</span>
                   {active && <ChevronRight className="h-4 w-4 text-emerald-600" />}

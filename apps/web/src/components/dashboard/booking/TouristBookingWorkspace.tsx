@@ -83,7 +83,7 @@ function DocRow({ doc }: { doc: BookingDocument }) {
   );
 }
 
-export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
+export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips" }: { bookingId: string; backPath?: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tj";
   const qc = useQueryClient();
@@ -192,7 +192,7 @@ export function TouristBookingWorkspace({ bookingId }: { bookingId: string }) {
   return (
     <div className="space-y-5">
       <Link
-        href={`/${locale}/dashboard/trips`}
+        href={`/${locale}/${backPath}`}
         className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
