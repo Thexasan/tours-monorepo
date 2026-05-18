@@ -7,6 +7,7 @@ import type { AuthTokens } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { SendOtpDto } from "./dto/send-otp.dto";
+import { VerifyOtpDto } from "./dto/verify-otp.dto";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
@@ -28,6 +29,14 @@ export class AuthController {
   async sendOtp(@Body() dto: SendOtpDto): Promise<{ ok: boolean; devCode?: string }> {
     const result = await this.auth.sendOtp(dto.email);
     return { ok: true, devCode: result.devCode };
+  }
+
+  @Public()
+  @HttpCode(200)
+  @Post("otp/verify")
+  async verifyOtp(@Body() dto: VerifyOtpDto): Promise<{ ok: boolean }> {
+    await this.auth.peekOtpCode(dto.email, dto.otp);
+    return { ok: true };
   }
 
   @Public()

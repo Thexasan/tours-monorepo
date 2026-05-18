@@ -167,6 +167,7 @@ export function RegisterForm() {
   const [otp,            setOtp]            = useState("");
   const [otpError,       setOtpError]       = useState<string | null>(null);
   const [sendingOtp,     setSendingOtp]     = useState(false);
+  const [verifyingOtp,   setVerifyingOtp]   = useState(false);
   const [cooldown,       setCooldown]       = useState(0);
   const [devCode,        setDevCode]        = useState<string | undefined>();
   const [serverError,    setServerError]    = useState<string | null>(null);
@@ -242,12 +243,21 @@ export function RegisterForm() {
     setOtpError(null);
   }
 
-  function handleOtpContinue() {
+  async function handleOtpContinue() {
     if (otp.length !== 6) {
       setOtpError("Введите все 6 цифр кода");
       return;
     }
-    setStep("details");
+    setVerifyingOtp(true);
+    setOtpError(null);
+    try {
+      await authApi.verifyOtp(confirmedEmail, otp);
+      setStep("details");
+    } catch (e) {
+      setOtpError(extractErrorMessage(e));
+    } finally {
+      setVerifyingOtp(false);
+    }
   }
 
   async function handleRegister(values: DetailsValues) {
@@ -370,12 +380,16 @@ export function RegisterForm() {
           <Button
             type="button"
             onClick={handleOtpContinue}
-            disabled={otp.length !== 6}
+            disabled={otp.length !== 6 || verifyingOtp}
             className="w-full"
           >
-            <span className="flex items-center gap-2">
-              Продолжить <ArrowRight className="h-4 w-4" />
-            </span>
+            {verifyingOtp ? (
+              "Проверяем код…"
+            ) : (
+              <span className="flex items-center gap-2">
+                Продолжить <ArrowRight className="h-4 w-4" />
+              </span>
+            )}
           </Button>
 
           <div className="flex items-center justify-between text-sm">

@@ -9,6 +9,10 @@ export const authApi = {
     return { devCode: data.devCode };
   },
 
+  async verifyOtp(email: string, otp: string): Promise<void> {
+    await apiClient.post("/auth/otp/verify", { email, otp });
+  },
+
   async register(payload: RegisterRequest): Promise<AuthUser> {
     const { data } = await apiClient.post<{ user: AuthUser }>("/auth/register", payload);
     return data.user;

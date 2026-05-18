@@ -36,6 +36,11 @@ export class AuthService {
   async sendOtp(email: string): Promise<{ devCode?: string }> {
     const normalizedEmail = this.normalizeEmail(email);
 
+    const existing = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail }, select: { id: true },
+    });
+    if (existing) throw new ConflictException("Этот email уже зарегистрирован. Войдите в аккаунт.");
+
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     const recentCount = await this.prisma.otpCode.count({
       where: { email: normalizedEmail, createdAt: { gte: tenMinutesAgo } },
@@ -62,6 +67,14 @@ export class AuthService {
 
     this.logger.log(`OTP sent to ${normalizedEmail}`);
     return {};
+  }
+
+  async peekOtpCode(email: string, code: string): Promise<void> {
+    const otp = await this.prisma.otpCode.findFirst({
+      where: { email: this.normalizeEmail(email), code, usedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!otp) throw new BadRequestException("Неверный или просроченный код подтверждения");
   }
 
   private async verifyOtpCode(email: string, code: string): Promise<void> {

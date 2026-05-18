@@ -6,8 +6,10 @@ import { useLocale } from "next-intl";
 import { Bell } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { useNotifications } from "@/src/hooks/use-notifications";
+import { useAuthStore } from "@/src/shared/store/auth-store";
 
 export function NotificationsBell({ transparent }: { transparent?: boolean }) {
+  const { user, isHydrated } = useAuthStore();
   const { notifications, unread, markRead, markAllRead } = useNotifications();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -21,6 +23,9 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
     if (open) document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
+
+  // All hooks above — early return only after all hooks
+  if (!isHydrated || !user) return null;
 
   return (
     <div ref={ref} className="relative">
