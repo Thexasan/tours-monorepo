@@ -44,7 +44,7 @@ export function TourHero({
       <div aria-hidden className="absolute inset-0 bg-linear-to-t from-slate-950/85 via-slate-950/30 to-slate-950/5" />
       <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.35) 100%)" }} />
 
-      <div className="relative z-10 h-full flex flex-col justify-end pb-12">
+      <div className="relative z-10 h-full flex flex-col justify-end pb-24 md:pb-28">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8">
           <nav className="flex items-center gap-1.5 text-xs text-white/70 mb-5">
             <a href={`/${locale}`} className="hover:text-white transition-colors">Главная</a>

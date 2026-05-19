@@ -7,6 +7,7 @@ import {
   Star, Shield, Award,
   Sparkles, ArrowRight, CheckCircle2,
   Heart, Headphones, ChevronDown,
+  MessageCircle, Send, Clock, Flame,
 } from "lucide-react";
 import Link from "next/link";
 import { SearchForm } from "@/src/components/search/search-form";
@@ -62,6 +63,7 @@ const DESTINATIONS = [
   {
     name: "Бали",
     country: "Индонезия",
+    countryEn: "Bali",
     tours: 12,
     tag: "Популярное",
     image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80&auto=format&fit=crop",
@@ -69,6 +71,7 @@ const DESTINATIONS = [
   {
     name: "Турция",
     country: "Анталия",
+    countryEn: "Turkey",
     tours: 18,
     tag: "Хит сезона",
     image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=800&q=80&auto=format&fit=crop",
@@ -76,6 +79,7 @@ const DESTINATIONS = [
   {
     name: "Дубай",
     country: "ОАЭ",
+    countryEn: "UAE",
     tours: 9,
     tag: "Роскошь",
     image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80&auto=format&fit=crop",
@@ -83,6 +87,7 @@ const DESTINATIONS = [
   {
     name: "Мальдивы",
     country: "Индийский океан",
+    countryEn: "Maldives",
     tours: 7,
     tag: "Эксклюзив",
     image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80&auto=format&fit=crop",
@@ -90,6 +95,7 @@ const DESTINATIONS = [
   {
     name: "Таиланд",
     country: "Бангкок · Пхукет",
+    countryEn: "Thailand",
     tours: 14,
     tag: "Экзотика",
     image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&q=80&auto=format&fit=crop",
@@ -97,6 +103,7 @@ const DESTINATIONS = [
   {
     name: "Египет",
     country: "Хургада · Шарм",
+    countryEn: "Egypt",
     tours: 11,
     tag: "Пляж",
     image: "https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=800&q=80&auto=format&fit=crop",
@@ -206,7 +213,7 @@ export default async function HomePage() {
               {["Бали", "Турция", "Дубай", "Мальдивы", "Таиланд", "Египет"].map((dest) => (
                 <Link
                   key={dest}
-                  href={`/${locale}/tours?search=${dest}`}
+                  href={`/${locale}/tours?country=${DESTINATIONS.find(d => d.name === dest)?.countryEn ?? dest}&q=${encodeURIComponent(dest)}`}
                   className="px-3 py-1.5 rounded-full text-xs text-white/80 bg-white/10 ring-1 ring-white/20 hover:bg-white/20 hover:text-white transition-all"
                 >
                   {dest}
@@ -226,16 +233,40 @@ export default async function HomePage() {
       </section>
 
       {/* ───── TRUST FEATURES ───── */}
-      <section className="border-y border-slate-100 bg-linear-to-b from-white to-slate-50/50">
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-10 md:py-14">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {[
-              { icon: Shield, title: "Безопасные платежи", text: "Защищённые транзакции и возврат", tone: "teal" },
-              { icon: Headphones, title: "24/7 поддержка", text: "Менеджер всегда на связи", tone: "rose" },
-              { icon: Award, title: "Лучшие цены", text: "Без скрытых комиссий", tone: "amber" },
-              { icon: Heart, title: "12 000+ клиентов", text: "Доверяют нам с 2020 года", tone: "sky" },
-            ].map((it) => (
-              <Feature key={it.title} {...(it as { icon: React.ElementType; title: string; text: string; tone: "teal" | "rose" | "amber" | "sky" })} />
+      <section className="bg-white border-y border-slate-100">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-12 md:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {([
+              {
+                icon: Shield,
+                title: "Ваши деньги в безопасности",
+                text: "Защищённые платежи и полный возврат при отмене. Мы несём ответственность за каждую транзакцию.",
+                stat: "Возврат без вопросов",
+                tone: "teal",
+              },
+              {
+                icon: Headphones,
+                title: "Всегда рядом — 24/7",
+                text: "Менеджер ответит в WhatsApp, Telegram или по телефону в любое время суток.",
+                stat: "Ответ за 20 минут",
+                tone: "rose",
+              },
+              {
+                icon: Award,
+                title: "Гарантия лучшей цены",
+                text: "Нашли дешевле? Снизим цену или вернём разницу. Ноль скрытых комиссий и сборов.",
+                stat: "0 скрытых платежей",
+                tone: "amber",
+              },
+              {
+                icon: Heart,
+                title: "12 000+ счастливых клиентов",
+                text: "С 2020 года создаём поездки мечты. Каждый второй клиент возвращается снова.",
+                stat: "Рейтинг 4.9 из 5",
+                tone: "sky",
+              },
+            ] as const).map((it) => (
+              <Feature key={it.title} {...it} />
             ))}
           </div>
         </div>
@@ -262,7 +293,7 @@ export default async function HomePage() {
             {DESTINATIONS.map((dest, idx) => (
               <Link
                 key={dest.name}
-                href={`/${locale}/tours?search=${dest.name}`}
+                href={`/${locale}/tours?country=${dest.countryEn}&q=${encodeURIComponent(dest.name)}`}
                 className={`group relative overflow-hidden rounded-3xl ring-1 ring-slate-100 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_-20px_rgba(15,23,42,0.25)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.05),0_24px_50px_-12px_rgba(15,23,42,0.3)] transition-all duration-300 hover:-translate-y-1 ${
                   idx === 0 ? "md:col-span-2 md:row-span-2 md:aspect-auto aspect-[4/3]" : "aspect-[4/3]"
                 }`}
@@ -304,7 +335,7 @@ export default async function HomePage() {
 
       {/* ───── HOT TOURS ───── */}
       {hotTours.length > 0 && (
-        <section className="bg-linear-to-b from-slate-50 to-white">
+        <section className="bg-white">
           <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-24">
             <SectionHeader
               eyebrow={t("hotTours.title", { fallback: "Горящие туры" })}
@@ -321,11 +352,32 @@ export default async function HomePage() {
               }
             />
 
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {hotTours.slice(0, 8).map((tour) => (
-                <TourCard key={tour.id} tour={tour} />
+            {/* ── Bento top row: 1 hero + 2 stacked ── */}
+            <div
+              className="mt-10 grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-5"
+              style={{ gridTemplateRows: "repeat(2, 220px)" }}
+            >
+              {/* Hero card — spans 2 cols × 2 rows */}
+              <div className="md:col-span-2 md:row-span-2 h-[320px] md:h-auto">
+                <TourCard tour={hotTours[0]} variant="overlay" featured />
+              </div>
+
+              {/* Two small overlay cards stacked in right column */}
+              {hotTours.slice(1, 3).map((tour) => (
+                <div key={tour.id} className="h-[220px] md:h-auto">
+                  <TourCard tour={tour} variant="overlay" />
+                </div>
               ))}
             </div>
+
+            {/* ── Bottom row: regular default cards ── */}
+            {hotTours.length > 3 && (
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {hotTours.slice(3, 6).map((tour) => (
+                  <TourCard key={tour.id} tour={tour} />
+                ))}
+              </div>
+            )}
 
             <div className="mt-8 flex justify-center md:hidden">
               <Link
@@ -533,45 +585,55 @@ export default async function HomePage() {
       <section className="bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-28">
           <SectionHeader
-            eyebrow={t("reviews.title", { fallback: "Отзывы" })}
+            eyebrow={t("reviews.title", { fallback: "Последние отзывы" })}
             title="Что говорят наши клиенты"
             description="Более 12 000 путешественников уже выбрали нас"
             center
             accent="amber"
           />
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestReviews.length > 0
-              ? latestReviews.slice(0, 4).map((review) => (
+              ? latestReviews.slice(0, 3).map((review) => (
                   <ReviewCard key={review.id} review={review} />
                 ))
-              : STATIC_TESTIMONIALS.map((tm) => {
+              : STATIC_TESTIMONIALS.slice(0, 3).map((tm) => {
                   const tone = TESTIMONIAL_TONES[tm.tone];
                   return (
                     <article
                       key={tm.name}
-                      className="relative h-full flex flex-col rounded-2xl bg-white p-6 ring-1 ring-slate-100 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-16px_rgba(15,23,42,0.18)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.05),0_18px_36px_-12px_rgba(15,23,42,0.22)] hover:-translate-y-1 transition-all duration-300"
+                      className="relative h-full flex flex-col rounded-2xl bg-white p-6 ring-1 ring-slate-100 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_10px_28px_-14px_rgba(15,23,42,0.14)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.04),0_20px_44px_-12px_rgba(13,148,136,0.16)] hover:-translate-y-1.5 transition-all duration-300"
                     >
-                      <div className="flex items-center gap-1 mb-3">
-                        {Array.from({ length: tm.rating }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        ))}
+                      {/* Decorative quote */}
+                      <span aria-hidden className="absolute top-3 right-4 text-[80px] font-black leading-none select-none pointer-events-none text-teal-100">"</span>
+
+                      {/* Stars */}
+                      <div className="flex items-center gap-1.5 mb-4 relative z-10">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={`h-4 w-4 ${i < tm.rating ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-200"}`} />
+                          ))}
+                        </div>
+                        <span className="text-[12px] font-bold text-amber-600 ml-0.5">{tm.rating}.0</span>
                       </div>
-                      <p className="text-[15px] text-slate-700 leading-relaxed flex-grow mb-5">
+
+                      {/* Text */}
+                      <p className="text-[15px] italic text-slate-700 leading-[1.75] flex-grow mb-5 relative z-10">
                         «{tm.text}»
                       </p>
+
+                      {/* Author */}
                       <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                        <div className={`grid place-items-center h-11 w-11 rounded-full bg-linear-to-br ${tone?.bg ?? "from-teal-400 to-sky-500"} text-white font-bold ring-2 ring-white shadow-sm`}>
+                        <div className={`grid place-items-center h-10 w-10 rounded-full bg-linear-to-br ${tone?.bg ?? "from-teal-400 to-sky-500"} text-white font-bold text-sm ring-2 ring-teal-100 shadow-sm shrink-0`}>
                           {tm.name.charAt(0)}
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-sm text-slate-900 truncate">{tm.name}</p>
-                          <p className="text-xs text-slate-500 truncate">{tm.city}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-[13px] text-slate-900 truncate">{tm.name}</p>
+                          <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5 truncate">
+                            <MapPin className="h-3 w-3 text-teal-500 shrink-0" />
+                            {tm.tour}
+                          </p>
                         </div>
-                      </div>
-                      <div className={`mt-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold w-fit bg-slate-50 ${tone?.text ?? "text-teal-700"}`}>
-                        <MapPin className="h-3 w-3" />
-                        {tm.tour}
                       </div>
                     </article>
                   );
@@ -583,70 +645,134 @@ export default async function HomePage() {
       {/* ───── DUAL CTA ───── */}
       <section className="bg-linear-to-b from-slate-50 to-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-20 md:py-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Partner CTA */}
-            <div className="relative overflow-hidden rounded-3xl p-8 md:p-10 text-white"
-              style={{
-                background: "linear-gradient(135deg, #f97316 0%, #f43f5e 100%)",
-                boxShadow: "0 30px 60px -20px rgba(244,63,94,0.45)",
-              }}
-            >
-              <div
-                aria-hidden
-                className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/15 blur-3xl"
-              />
-              <div className="relative">
-                <div className="grid place-items-center h-12 w-12 rounded-2xl bg-white/20 ring-1 ring-white/30 backdrop-blur">
-                  <Award className="h-6 w-6 text-white" />
-                </div>
-                <p className="mt-5 text-xs uppercase tracking-[0.14em] font-bold text-white/90">
-                  Для блогеров и агентов
-                </p>
-                <h3 className="mt-2 text-3xl md:text-4xl font-bold leading-tight tracking-tight">
-                  Партнёрская программа
-                </h3>
-                <p className="mt-3 text-white/90 leading-relaxed max-w-md">
-                  Зарабатывайте 5% с каждой продажи по вашей ссылке. Партнёров мы приглашаем индивидуально — напишите нам, расскажите о себе и своей аудитории.
-                </p>
-                <a
-                  href="mailto:support@traveling-tours.local?subject=Заявка%20на%20партнёрство"
-                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-rose-600 font-bold text-sm hover:-translate-y-0.5 transition-all"
-                >
-                  Связаться с нами
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
+          <div
+            className="relative overflow-hidden rounded-3xl ring-1 ring-teal-100"
+            style={{
+              background: "linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 45%, #fef9ee 100%)",
+              boxShadow: "0 20px 60px -16px rgba(13,148,136,0.14), 0 4px 12px -4px rgba(15,23,42,0.06)",
+            }}
+          >
+            {/* Soft glow accents */}
+            <div aria-hidden className="absolute -top-20 -left-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
+              style={{ background: "radial-gradient(circle, rgba(13,148,136,0.12), transparent 70%)" }} />
+            <div aria-hidden className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
+              style={{ background: "radial-gradient(circle, rgba(245,158,11,0.10), transparent 70%)" }} />
 
-            {/* Free tour CTA */}
-            <div className="relative overflow-hidden rounded-3xl p-8 md:p-10 text-white"
-              style={{
-                background: "linear-gradient(135deg, #0d9488 0%, #0284c7 60%, #1e3a8a 100%)",
-                boxShadow: "0 30px 60px -20px rgba(13,148,136,0.45)",
-              }}
-            >
-              <div
-                aria-hidden
-                className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl"
-              />
-              <div className="relative">
-                <div className="grid place-items-center h-12 w-12 rounded-2xl bg-white/20 ring-1 ring-white/30 backdrop-blur">
+            <div className="relative grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-teal-100">
+
+              {/* ── Left: Chat CTA ── */}
+              <div className="p-8 md:p-10 lg:p-12 flex flex-col">
+                <div
+                  className="self-start grid place-items-center h-12 w-12 rounded-2xl mb-5"
+                  style={{ background: "linear-gradient(135deg, #f59e0b, #f97316)", boxShadow: "0 8px 24px -8px rgba(245,158,11,0.45)" }}
+                >
+                  <MessageCircle className="h-6 w-6 text-white" />
+                </div>
+
+                <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full bg-white/80 ring-1 ring-teal-200 text-slate-600 text-xs font-semibold mb-4 shadow-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative h-2 w-2 rounded-full bg-green-500" />
+                  </span>
+                  Онлайн · ответим за 20 мин
+                </div>
+
+                <h3 className="text-3xl md:text-4xl font-bold leading-tight tracking-tight text-slate-900">
+                  Подберём тур
+                  <br />прямо в чате
+                </h3>
+                <p className="mt-3 text-slate-500 leading-relaxed text-[15px]">
+                  Напишите — менеджер найдёт лучшее предложение под ваш бюджет и даты без форм и ожидания.
+                </p>
+
+                {/* Mini chat */}
+                <div className="mt-6 space-y-2.5 p-4 rounded-2xl bg-white/70 ring-1 ring-slate-100 shadow-sm">
+                  <div className="flex justify-end">
+                    <div className="rounded-2xl rounded-tr-sm px-3.5 py-2 max-w-[85%]"
+                      style={{ background: "linear-gradient(135deg, #f59e0b, #f97316)" }}>
+                      <p className="text-white text-[13px] font-medium leading-snug">Хочу на Бали, бюджет $1500 на двоих 🌴</p>
+                    </div>
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <div className="h-7 w-7 rounded-full bg-teal-100 grid place-items-center shrink-0">
+                      <Headphones className="h-3.5 w-3.5 text-teal-600" />
+                    </div>
+                    <div className="rounded-2xl rounded-bl-sm px-3.5 py-2.5 max-w-[80%] bg-slate-100 ring-1 ring-slate-200">
+                      <p className="text-slate-700 text-[13px] leading-snug">Нашла 3 варианта! Лучший — 10 ночей от $1 340 ✈️</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-center pt-0.5">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                      <Clock className="h-3 w-3" />
+                      ответ за 4 минуты
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href="https://wa.me/992000000000"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm text-white hover:-translate-y-0.5 transition-all"
+                    style={{ background: "linear-gradient(135deg, #f59e0b, #f97316)", boxShadow: "0 8px 20px -6px rgba(245,158,11,0.4)" }}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </a>
+                  <a
+                    href="https://t.me/traveling_tours"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white ring-1 ring-slate-200 text-slate-700 font-bold text-sm hover:ring-teal-300 hover:text-teal-700 transition-all shadow-sm"
+                  >
+                    <Send className="h-4 w-4" />
+                    Telegram
+                  </a>
+                </div>
+              </div>
+
+              {/* ── Right: Free tour CTA ── */}
+              <div className="p-8 md:p-10 lg:p-12 flex flex-col">
+                <div
+                  className="self-start grid place-items-center h-12 w-12 rounded-2xl mb-5"
+                  style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)", boxShadow: "0 8px 24px -8px rgba(13,148,136,0.45)" }}
+                >
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
-                <p className="mt-5 text-xs uppercase tracking-[0.14em] font-bold text-white/90">
+
+                <p className="text-xs uppercase tracking-[0.14em] font-bold text-teal-600 mb-4">
                   Для путешественников
                 </p>
-                <h3 className="mt-2 text-3xl md:text-4xl font-bold leading-tight tracking-tight">
+
+                <h3 className="text-3xl md:text-4xl font-bold leading-tight tracking-tight text-slate-900">
                   Бесплатный тур
                 </h3>
-                <p className="mt-3 text-white/90 leading-relaxed max-w-md">
+                <p className="mt-3 text-slate-500 leading-relaxed text-[15px]">
                   Пригласите 50 друзей по реферальной ссылке и выберите любой тур из каталога совершенно бесплатно.
                 </p>
+
+                <ul className="mt-7 space-y-3.5 flex-1">
+                  {([
+                    { icon: Share2,     text: "Получите персональную реферальную ссылку", bg: "bg-amber-50  ring-amber-100",  ic: "text-amber-500" },
+                    { icon: Users,      text: "Друзья бронируют туры по вашей ссылке",    bg: "bg-teal-50  ring-teal-100",   ic: "text-teal-600"  },
+                    { icon: TrendingUp, text: "50 рефералов — любой тур бесплатно",       bg: "bg-sky-50   ring-sky-100",    ic: "text-sky-600"   },
+                  ] as const).map(({ icon: Icon, text, bg, ic }) => (
+                    <li key={text} className="flex items-center gap-3.5">
+                      <div className={`h-9 w-9 rounded-xl grid place-items-center shrink-0 ring-1 ${bg}`}>
+                        <Icon className={`h-4 w-4 ${ic}`} />
+                      </div>
+                      <span className="text-[14px] text-slate-600 leading-snug">{text}</span>
+                    </li>
+                  ))}
+                </ul>
+
                 <Link
                   href={`/${locale}/dashboard/referrals`}
-                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-teal-700 font-bold text-sm hover:-translate-y-0.5 transition-all"
+                  className="mt-8 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5"
+                  style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)", boxShadow: "0 8px 24px -8px rgba(13,148,136,0.45)" }}
                 >
-                  Получить ссылку
+                  Получить реферальную ссылку
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -656,59 +782,197 @@ export default async function HomePage() {
       </section>
 
       {/* ───── FINAL CTA ───── */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-24 md:py-32">
-          <div className="relative rounded-[2rem] overflow-hidden ring-1 ring-slate-100 shadow-[0_30px_60px_-20px_rgba(15,23,42,0.3)]">
-            <Image
-              src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&q=85&auto=format&fit=crop"
-              alt="Travel"
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(13,148,136,0.92) 0%, rgba(2,132,199,0.88) 50%, rgba(30,58,138,0.92) 100%)",
-              }}
-            />
+      <section className="relative overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&q=85&auto=format&fit=crop"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          aria-hidden
+        />
+        {/* Dark overlay — heavier on left for text, fades right so photo breathes */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(105deg, rgba(10,18,35,0.88) 0%, rgba(10,18,35,0.72) 45%, rgba(10,18,35,0.45) 100%)",
+          }}
+        />
+        {/* Subtle teal tint only at left edge */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(13,148,136,0.22) 0%, transparent 55%)",
+          }}
+        />
+        {/* Soft edge to dark footer */}
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-slate-900/50 to-transparent pointer-events-none" />
 
-            <div className="relative z-10 px-8 md:px-16 py-20 md:py-28 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/80">
-                Начни сейчас
-              </p>
-              <h2 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight text-white">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-28 md:py-36">
+          <div className="grid lg:grid-cols-[1fr_400px] gap-14 lg:gap-20 items-center">
+
+            {/* ── Left: Content ── */}
+            <div>
+              {/* Social proof row */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex -space-x-2.5">
+                  {[
+                    { l: "А", g: "from-teal-400 to-teal-600" },
+                    { l: "Д", g: "from-sky-400 to-sky-600" },
+                    { l: "З", g: "from-amber-400 to-orange-500" },
+                    { l: "М", g: "from-rose-400 to-rose-600" },
+                  ].map(({ l, g }, i) => (
+                    <div
+                      key={l}
+                      className={`h-10 w-10 rounded-full ring-[2.5px] ring-white/60 grid place-items-center text-white font-bold text-sm bg-linear-to-br ${g}`}
+                      style={{ zIndex: 4 - i }}
+                    >
+                      {l}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                    <span className="ml-1.5 text-white font-bold text-sm">4.9</span>
+                  </div>
+                  <p className="text-white/50 text-[13px] mt-0.5">12 000+ довольных путешественников</p>
+                </div>
+              </div>
+
+              <h2
+                className="font-black text-white leading-[0.88] tracking-[-0.03em]"
+                style={{ fontSize: "clamp(44px, 6.5vw, 84px)" }}
+              >
                 Твоё следующее
                 <br />
                 <span
                   style={{
-                    background: "linear-gradient(135deg, #fde68a, #fb923c, #f43f5e)",
+                    background: "linear-gradient(135deg, #fde68a 0%, #fb923c 50%, #f43f5e 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
                   }}
                 >
-                  приключение ждёт
+                  приключение
                 </span>
+                <br />
+                ждёт тебя.
               </h2>
-              <p className="mt-5 text-lg text-white/85 max-w-xl mx-auto leading-relaxed">
-                Более 12 000 путешественников уже выбрали нас. Зарегистрируйтесь и начните зарабатывать реферальные баллы с первой же поездки.
+
+              <p className="mt-6 text-white/65 text-lg leading-relaxed max-w-lg">
+                Зарегистрируйся и начни зарабатывать реферальные баллы с первой же поездки. Бесплатные туры — реальнее, чем кажется.
               </p>
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link
                   href={`/${locale}/register`}
-                  className="px-7 py-4 rounded-xl font-bold text-base bg-white text-teal-700 hover:-translate-y-0.5 transition-all shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)]"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-bold text-base bg-white text-teal-700 hover:-translate-y-0.5 transition-all shadow-[0_16px_40px_-8px_rgba(0,0,0,0.35)]"
                 >
                   Зарегистрироваться бесплатно
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href={`/${locale}/tours`}
-                  className="px-7 py-4 rounded-xl font-bold text-base text-white bg-white/10 backdrop-blur ring-1 ring-white/30 hover:bg-white/20 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-bold text-base text-white bg-white/10 ring-1 ring-white/25 hover:bg-white/18 transition-all"
                 >
                   Смотреть туры
                 </Link>
+              </div>
+
+              {/* Trust badges */}
+              <div className="mt-8 flex flex-wrap gap-x-7 gap-y-2.5">
+                {([
+                  { icon: Shield,      text: "Без скрытых комиссий" },
+                  { icon: CheckCircle2,text: "Гарантия возврата" },
+                  { icon: Headphones,  text: "24/7 поддержка" },
+                ] as const).map(({ icon: Icon, text }) => (
+                  <span key={text} className="inline-flex items-center gap-1.5 text-[13px] text-white/50">
+                    <Icon className="h-4 w-4 text-teal-300 shrink-0" />
+                    {text}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Right: Floating cards ── */}
+            <div className="relative hidden lg:block h-[460px]">
+
+              {/* Glass stats card — center */}
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] rounded-3xl p-6"
+                style={{
+                  background: "rgba(255,255,255,0.09)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.16)",
+                  boxShadow: "0 32px 64px -16px rgba(0,0,0,0.35)",
+                }}
+              >
+                <p className="text-white/45 text-[11px] uppercase tracking-wider font-semibold">Сэкономлено клиентами</p>
+                <p className="text-white font-black text-4xl mt-1 tabular-nums">$284 000</p>
+                <div className="mt-4 h-1.5 rounded-full bg-white/10">
+                  <div
+                    className="h-1.5 rounded-full"
+                    style={{ width: "75%", background: "linear-gradient(90deg, #2dd4bf, #38bdf8)" }}
+                  />
+                </div>
+                <p className="text-white/30 text-[11px] mt-1.5">75% к цели — $400 000</p>
+                <div className="mt-5 pt-4 border-t border-white/10 grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-white font-bold text-xl tabular-nums">12K+</p>
+                    <p className="text-white/35 text-[11px] mt-0.5">клиентов</p>
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-xl tabular-nums">50+</p>
+                    <p className="text-white/35 text-[11px] mt-0.5">стран</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top-right: success story */}
+              <div className="absolute top-0 right-0 bg-white rounded-2xl p-4 w-[210px] shadow-[0_20px_48px_-12px_rgba(0,0,0,0.35)]">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="h-9 w-9 rounded-full grid place-items-center text-white font-bold text-sm shrink-0"
+                    style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                  >
+                    А
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 text-[13px] leading-none truncate">Алина Коваль</p>
+                    <p className="text-slate-400 text-[11px] mt-0.5">Бали · 10 ночей</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-[11px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full ring-1 ring-green-100">
+                    Бесплатно ✓
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom-left: live notification */}
+              <div className="absolute bottom-6 left-0 bg-white rounded-2xl p-3.5 w-[200px] shadow-[0_16px_40px_-10px_rgba(0,0,0,0.28)] flex items-center gap-3">
+                <div className="relative shrink-0">
+                  <div className="h-9 w-9 rounded-xl bg-rose-50 grid place-items-center ring-1 ring-rose-100">
+                    <Flame className="h-4 w-4 text-rose-500" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-rose-500 border-2 border-white animate-pulse" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-slate-900 text-[12px] font-bold leading-none">Новое бронирование</p>
+                  <p className="text-slate-400 text-[11px] mt-0.5 truncate">Дмитрий → Мальдивы</p>
+                </div>
               </div>
             </div>
           </div>
@@ -721,27 +985,52 @@ export default async function HomePage() {
 /* ───────── Helpers ───────── */
 
 function Feature({
-  icon: Icon, title, text, tone,
+  icon: Icon, title, text, stat, tone,
 }: {
   icon: React.ElementType;
   title: string;
   text: string;
+  stat: string;
   tone: "teal" | "rose" | "amber" | "sky";
 }) {
-  const toneCls: Record<typeof tone, string> = {
-    teal: "from-teal-500 to-teal-600",
-    rose: "from-rose-500 to-rose-600",
-    amber: "from-amber-400 to-amber-500",
-    sky: "from-sky-500 to-sky-600",
-  };
+  const palette = {
+    teal:  { grad: "from-teal-500 to-teal-600",    soft: "bg-teal-50  ring-teal-100",  chip: "bg-teal-50  text-teal-700  ring-teal-200",  glow: "rgba(13,148,136,0.35)"  },
+    rose:  { grad: "from-rose-500 to-rose-600",    soft: "bg-rose-50  ring-rose-100",  chip: "bg-rose-50  text-rose-700  ring-rose-200",  glow: "rgba(244,63,94,0.32)"   },
+    amber: { grad: "from-amber-400 to-orange-500", soft: "bg-amber-50 ring-amber-100", chip: "bg-amber-50 text-amber-700 ring-amber-200", glow: "rgba(245,158,11,0.32)"  },
+    sky:   { grad: "from-sky-500 to-sky-600",      soft: "bg-sky-50   ring-sky-100",   chip: "bg-sky-50   text-sky-700   ring-sky-200",   glow: "rgba(14,165,233,0.32)"  },
+  } as const;
+  const p = palette[tone];
+
   return (
-    <div className="flex items-start gap-3">
-      <div className={`grid place-items-center h-11 w-11 rounded-2xl bg-linear-to-br ${toneCls[tone]} text-white shadow-[0_8px_18px_-8px_rgba(15,23,42,0.25)] shrink-0`}>
-        <Icon className="h-5 w-5" />
+    <div className="group relative flex flex-col gap-4 rounded-2xl bg-white p-6 ring-1 ring-slate-100 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.10)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.05),0_20px_40px_-12px_rgba(15,23,42,0.14)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+
+      {/* Subtle background glow on hover */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl ${p.soft}`} style={{ opacity: 0 }} aria-hidden />
+
+      {/* Top accent line */}
+      <div
+        aria-hidden
+        className={`absolute top-0 left-6 right-6 h-[2px] rounded-full bg-linear-to-r ${p.grad} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+      />
+
+      {/* Icon */}
+      <div
+        className={`relative z-10 grid place-items-center h-14 w-14 rounded-2xl bg-linear-to-br ${p.grad} text-white shrink-0`}
+        style={{ boxShadow: `0 12px 28px -8px ${p.glow}` }}
+      >
+        <Icon className="h-6 w-6" />
       </div>
-      <div>
-        <p className="font-semibold text-slate-900 text-[15px]">{title}</p>
-        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{text}</p>
+
+      {/* Text */}
+      <div className="relative z-10 flex-1">
+        <p className="font-bold text-slate-900 text-[15px] leading-snug">{title}</p>
+        <p className="text-[13px] text-slate-500 mt-2 leading-relaxed">{text}</p>
+      </div>
+
+      {/* Stat chip */}
+      <div className={`relative z-10 self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ring-1 text-[11px] font-bold ${p.chip}`}>
+        <CheckCircle2 className="h-3 w-3 shrink-0" />
+        {stat}
       </div>
     </div>
   );

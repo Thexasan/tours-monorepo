@@ -9,6 +9,7 @@ import { useLocale } from "next-intl";
 import {
   Search, Filter, Star, ChevronLeft, ChevronRight,
   MapPin, X, SlidersHorizontal, ArrowUpRight, Sparkles, Compass,
+  Shield, Award, Headphones,
 } from "lucide-react";
 import type { Tour } from "@tours/types";
 import { apiClient } from "@/src/shared/api/apiClient";
@@ -118,7 +119,7 @@ export function ToursCatalog() {
     (filters.mealPlan ? 1 : 0);
 
   return (
-    <div className="bg-white">
+    <div className="-mt-16 bg-white">
       <CatalogHero locale={locale} />
 
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 -mt-12 md:-mt-16 relative z-10">
@@ -208,42 +209,61 @@ export function ToursCatalog() {
 
 function CatalogHero({ locale }: { locale: string }) {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden" style={{ minHeight: 500 }}>
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=2000&q=85&auto=format&fit=crop"
           alt=""
           fill
           priority
-          className="object-cover"
+          className="object-cover object-center"
           sizes="100vw"
         />
+        {/* Dark neutral base — photo shows through beautifully */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(135deg, rgba(13,148,136,0.88) 0%, rgba(2,132,199,0.82) 50%, rgba(30,58,138,0.92) 100%)",
+              "linear-gradient(160deg, rgba(8,16,32,0.74) 0%, rgba(8,16,32,0.52) 48%, rgba(8,16,32,0.68) 100%)",
           }}
+        />
+        {/* Subtle teal wash — left/text side only */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to right, rgba(13,148,136,0.30) 0%, transparent 55%)",
+          }}
+        />
+        {/* Bottom dark fade so chip bar floats in cleanly */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-0 right-0 h-36"
+          style={{ background: "linear-gradient(to top, rgba(8,16,32,0.65) 0%, transparent 100%)" }}
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 pt-16 md:pt-24 pb-24 md:pb-32 text-white">
-        <nav className="flex items-center gap-1.5 text-xs text-white/80 mb-5">
-          <Link href={`/${locale}`} className="hover:text-white">Главная</Link>
+      <div className="relative mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 pt-28 md:pt-40 pb-28 md:pb-36 text-white">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs text-white/60 mb-6">
+          <Link href={`/${locale}`} className="hover:text-white transition-colors">Главная</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-white font-semibold">Каталог туров</span>
+          <span className="text-white/90 font-medium">Каталог туров</span>
         </nav>
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-          <Sparkles className="h-3 w-3" />
+
+        {/* Badge */}
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-white mb-6">
+          <Sparkles className="h-3 w-3 text-amber-300" />
           50+ направлений по всему миру
         </div>
-        <h1 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] leading-[1.05] max-w-3xl">
-          Найди свой
-          <br />
+
+        {/* Headline */}
+        <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-extrabold tracking-[-0.03em] leading-[1.02] max-w-2xl mb-5">
+          Найди свой<br />
           <span
             style={{
-              background: "linear-gradient(135deg, #fde68a, #fb923c, #f43f5e)",
+              background: "linear-gradient(135deg, #fde68a 0%, #fb923c 55%, #f43f5e 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -252,9 +272,27 @@ function CatalogHero({ locale }: { locale: string }) {
             идеальный тур
           </span>
         </h1>
-        <p className="mt-4 text-lg text-white/85 max-w-2xl leading-relaxed">
-          Выбирай из десятков направлений — горящие предложения, проверенные отели, прозрачные цены.
+
+        <p className="text-[15px] md:text-[17px] text-white/72 max-w-lg leading-relaxed mb-8">
+          Горящие предложения, проверенные отели, прозрачные цены — всё в одном месте.
         </p>
+
+        {/* Trust chips */}
+        <div className="flex flex-wrap gap-2">
+          {[
+            { icon: Shield, text: "Защищённые платежи" },
+            { icon: Award, text: "Гарантия лучшей цены" },
+            { icon: Headphones, text: "Поддержка 24/7" },
+          ].map(({ icon: Icon, text }) => (
+            <span
+              key={text}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-white/85"
+            >
+              <Icon className="h-3.5 w-3.5 text-teal-300 shrink-0" />
+              {text}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -268,8 +306,11 @@ function CountryChips({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-3 ring-1 ring-slate-100 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.18)]">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 scroll-px-4">
+    <div className="rounded-2xl bg-white p-2 ring-1 ring-slate-100 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.22),0_4px_16px_-4px_rgba(15,23,42,0.08)]">
+      <div
+        className="flex items-center gap-1 overflow-x-auto"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+      >
         {POPULAR_COUNTRIES.map((c) => {
           const active = value === c.value;
           return (
@@ -277,10 +318,10 @@ function CountryChips({
               key={c.label}
               type="button"
               onClick={() => onChange(c.value)}
-              className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+              className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 active
-                  ? "bg-linear-to-b from-teal-500 to-teal-600 text-white shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]"
-                  : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  ? "bg-linear-to-br from-teal-500 to-teal-600 text-white shadow-[0_4px_16px_-4px_rgba(13,148,136,0.65)] scale-[1.02]"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
               {c.label}
@@ -414,7 +455,7 @@ function FiltersPanel({
   return (
     <>
       <aside className="hidden lg:block">
-        <div className="tv-surface-elevated p-6 lg:sticky lg:top-20">
+        <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-[0_1px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.10)] p-6 lg:sticky lg:top-20">
           {content}
         </div>
       </aside>
@@ -536,24 +577,31 @@ function Pagination({
 }) {
   const totalPages = Math.ceil(total / pageSize);
   return (
-    <div className="flex items-center justify-center gap-2 mt-10">
+    <div className="flex items-center justify-center gap-2 mt-12">
       <button
         type="button"
         disabled={page === 1}
         onClick={onPrev}
-        className="inline-flex items-center gap-1 px-4 h-10 rounded-xl bg-white ring-1 ring-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl bg-white ring-1 ring-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       >
         <ChevronLeft className="h-4 w-4" />
         Назад
       </button>
-      <span className="px-4 h-10 inline-flex items-center text-sm font-semibold text-slate-700">
-        Стр. <strong className="mx-1 tabular-nums">{page}</strong> из <strong className="ml-1 tabular-nums">{totalPages}</strong>
-      </span>
+
+      <div className="flex items-center gap-1">
+        <span className="px-4 h-11 inline-flex items-center text-sm font-semibold text-slate-500">
+          <strong className="text-slate-900 tabular-nums mr-1">{page}</strong>
+          из
+          <strong className="text-slate-900 tabular-nums ml-1">{totalPages}</strong>
+        </span>
+      </div>
+
       <button
         type="button"
         disabled={page * pageSize >= total}
         onClick={onNext}
-        className="inline-flex items-center gap-1 px-4 h-10 rounded-xl bg-linear-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 transition-all"
+        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
+        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
       >
         Вперёд
         <ChevronRight className="h-4 w-4" />
@@ -564,18 +612,22 @@ function Pagination({
 
 function EmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <div className="tv-surface-elevated p-12 text-center">
-      <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
+    <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-14 text-center">
+      <div
+        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(13,148,136,0.50)]"
+        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+      >
         <Compass className="h-7 w-7" />
       </div>
-      <h3 className="mt-4 text-lg font-bold text-slate-900">Туров не найдено</h3>
-      <p className="mt-1 text-slate-500 max-w-md mx-auto">
+      <h3 className="mt-5 text-lg font-bold text-slate-900">Туров не найдено</h3>
+      <p className="mt-2 text-slate-500 text-sm max-w-xs mx-auto leading-relaxed">
         Попробуйте сменить страну, цену или сбросить все фильтры.
       </p>
       <button
         type="button"
         onClick={onReset}
-        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-b from-teal-500 to-teal-600 text-white text-sm font-semibold shadow-[0_8px_18px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
+        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
+        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
       >
         <ArrowUpRight className="h-4 w-4" />
         Сбросить фильтры

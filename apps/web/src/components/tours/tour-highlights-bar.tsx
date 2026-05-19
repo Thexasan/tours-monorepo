@@ -25,7 +25,7 @@ export function TourHighlightsBar({
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-[0_20px_40px_-20px_rgba(15,23,42,0.25)]">
           {items.map((h, i) => (
-            <div key={i} className="bg-white px-5 py-5 flex items-center gap-4">
+            <div key={i} className="bg-white px-6 py-6 flex items-center gap-4">
               <div className={`grid place-items-center h-11 w-11 rounded-2xl bg-slate-50 ring-1 ring-slate-100 ${h.tone} shrink-0`}>
                 <h.Ic className="h-5 w-5" />
               </div>

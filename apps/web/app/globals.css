@@ -109,7 +109,6 @@
    ============================================================ */
 html, body {
   background: var(--gradient-page);
-  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Inter", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;

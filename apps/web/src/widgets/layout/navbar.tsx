@@ -22,7 +22,8 @@ export function Navbar() {
   // Pages where navbar overlaps a full-bleed hero image
   const isHomePage = /^\/[a-z]{2}\/?$/.test(pathname ?? "");
   const isTourDetail = /^\/[a-z]{2}\/tours\/[^/]+\/?$/.test(pathname ?? "");
-  const isHeroPage = isHomePage || isTourDetail;
+  const isToursPage = /^\/[a-z]{2}\/tours\/?$/.test(pathname ?? "");
+  const isHeroPage = isHomePage || isTourDetail || isToursPage;
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -44,7 +45,7 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-500",
         transparent
-          ? "bg-transparent border-transparent shadow-none"
+          ? "bg-linear-to-b from-black/45 to-transparent border-transparent shadow-none"
           : [
               "border-b border-slate-200/60",
               "bg-white/85 backdrop-blur-xl",
