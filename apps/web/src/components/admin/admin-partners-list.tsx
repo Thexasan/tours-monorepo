@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, KeyRound, UserMinus, UserCheck, Mail } from "lucide-react";
+import { Plus, KeyRound, UserMinus, UserCheck, Mail, Search, RefreshCw, Inbox, ShieldAlert } from "lucide-react";
 import {
   adminPartnersApi,
   type AdminPartner,
@@ -20,6 +21,7 @@ import {
 export function AdminPartnersList() {
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "partners"],
@@ -45,115 +47,165 @@ export function AdminPartnersList() {
     onError: (e) => toast.error("Не удалось обновить статус", { description: extractErrorMessage(e) }),
   });
 
+  // Client-side search filtering
+  const filteredPartners = useMemo(() => {
+    if (!data?.items) return [];
+    return data.items.filter((p) => {
+      return (
+        p.fullName.toLowerCase().includes(search.toLowerCase()) ||
+        p.email.toLowerCase().includes(search.toLowerCase()) ||
+        p.referralCode.toLowerCase().includes(search.toLowerCase())
+      );
+    });
+  }, [data, search]);
+
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-slate-600">
-          {data ? `${data.total} ${pluralize(data.total, "партнёр", "партнёра", "партнёров")}` : "Загрузка..."}
-        </p>
-        <Button onClick={() => setCreating(true)}>
-          <Plus className="w-4 h-4 mr-2" /> Добавить партнёра
+    <div className="space-y-6 animate-fade-in-up">
+      {/* ── Page Actions ────────────────────────────────────────── */}
+      <div className="flex justify-end">
+        <Button
+          onClick={() => setCreating(true)}
+          className="bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md shadow-orange-500/20 transition-all shrink-0 hover:scale-103 duration-150 border-0"
+        >
+          <Plus className="w-5 h-5 mr-1.5" /> Добавить партнёра
         </Button>
       </div>
 
-      <div className="tv-surface-elevated overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
-              <tr>
-                <th className="text-left px-4 py-3 font-semibold">Партнёр</th>
-                <th className="text-left px-4 py-3 font-semibold">Реф-код</th>
-                <th className="text-left px-4 py-3 font-semibold">Комиссия</th>
-                <th className="text-left px-4 py-3 font-semibold">Баланс</th>
-                <th className="text-left px-4 py-3 font-semibold">Рефералы</th>
-                <th className="text-left px-4 py-3 font-semibold">Статус</th>
-                <th className="text-right px-4 py-3 font-semibold">Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Загрузка...</td></tr>
-              )}
-              {data && data.items.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
-                    Партнёров пока нет. Нажмите «Добавить партнёра», чтобы создать первого.
-                  </td>
-                </tr>
-              )}
-              {data?.items.map((p) => (
-                <PartnerRow
-                  key={p.id}
-                  partner={p}
-                  onResetPassword={() => {
-                    if (confirm(`Сбросить пароль партнёру ${p.email}? Новый временный пароль уйдёт ему на email.`)) {
-                      resetMutation.mutate(p.id);
-                    }
-                  }}
-                  onToggleActive={() =>
-                    toggleMutation.mutate({ id: p.id, isActive: !p.isActive })
-                  }
-                />
-              ))}
-            </tbody>
-          </table>
+      {/* ── Toolbar Card ────────────────────────────────────────── */}
+      <div className="tv-surface-elevated p-4 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          {data && (
+            <div className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200/40 select-none">
+              Всего: <strong className="text-slate-800 font-bold font-mono">{data.total}</strong> {pluralize(data.total, "партнёр", "партнёра", "партнёров")}
+            </div>
+          )}
+
+          <div className="relative flex-1 sm:max-w-xs sm:ml-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Поиск по имени, email, коду..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 pr-4 py-2 bg-slate-50/50 hover:bg-white hover:border-slate-300 focus:bg-white rounded-xl text-xs font-medium border-slate-200/60 shadow-3xs transition-all w-full"
+            />
+          </div>
         </div>
       </div>
 
-      {creating && <CreatePartnerModal onClose={() => setCreating(false)} />}
-    </>
-  );
-}
+      {/* ── Loading indicator ───────────────────────────────────── */}
+      {isLoading && (
+        <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3 select-none">
+          <RefreshCw className="h-6 w-6 text-orange-500 animate-spin" />
+          <p className="text-sm font-semibold">Загружаем список партнёров...</p>
+        </div>
+      )}
 
-function PartnerRow({
-  partner, onResetPassword, onToggleActive,
-}: {
-  partner: AdminPartner;
-  onResetPassword: () => void;
-  onToggleActive: () => void;
-}) {
-  return (
-    <tr className="border-t border-slate-100 hover:bg-slate-50/50">
-      <td className="px-4 py-3">
-        <div className="font-medium text-slate-900">{partner.fullName}</div>
-        <div className="text-xs text-slate-500 flex items-center gap-1">
-          <Mail className="h-3 w-3" /> {partner.email}
+      {/* ── Empty state ─────────────────────────────────────────── */}
+      {!isLoading && filteredPartners.length === 0 && (
+        <div className="tv-surface-elevated p-16 text-center text-slate-400 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] select-none">
+          <Inbox className="h-10 w-10 text-slate-300 mx-auto mb-3.5" />
+          <p className="text-sm font-bold text-slate-800">Партнёры не найдены</p>
+          <p className="text-xs text-slate-400 mt-1">Попробуйте ввести другие критерии поиска или добавьте партнёра.</p>
         </div>
-      </td>
-      <td className="px-4 py-3 font-mono text-xs text-slate-700">{partner.referralCode}</td>
-      <td className="px-4 py-3 tabular-nums font-semibold text-emerald-700">{((partner.commissionRate ?? 0.05) * 100).toFixed(0)}%</td>
-      <td className="px-4 py-3 tabular-nums">${partner.balance.toFixed(2)}</td>
-      <td className="px-4 py-3 tabular-nums">{partner.referralsCount ?? 0}</td>
-      <td className="px-4 py-3">
-        {partner.isActive ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-            Активен
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-            Деактивирован
-          </span>
-        )}
-      </td>
-      <td className="px-4 py-3 text-right">
-        <div className="inline-flex gap-1">
-          <button
-            onClick={onResetPassword}
-            title="Сбросить пароль (отправит новый на email)"
-            className="p-2 rounded-lg hover:bg-amber-50 text-amber-700 transition-colors"
-          >
-            <KeyRound className="h-4 w-4" />
-          </button>
-          <button
-            onClick={onToggleActive}
-            title={partner.isActive ? "Деактивировать" : "Активировать"}
-            className="p-2 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors"
-          >
-            {partner.isActive ? <UserMinus className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-          </button>
+      )}
+
+      {/* ── Partners Spreadsheet ────────────────────────────────── */}
+      {!isLoading && filteredPartners.length > 0 && (
+        <div className="tv-surface-elevated overflow-hidden bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] select-none">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50/70 border-b border-slate-200/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr>
+                  <th className="text-left px-5 py-4 font-bold">Партнёр</th>
+                  <th className="text-left px-5 py-4 font-bold">Реф-код</th>
+                  <th className="text-left px-5 py-4 font-bold">Комиссия</th>
+                  <th className="text-left px-5 py-4 font-bold">Баланс</th>
+                  <th className="text-left px-5 py-4 font-bold">Привлечено</th>
+                  <th className="text-left px-5 py-4 font-bold">Статус</th>
+                  <th className="text-right px-5 py-4 font-bold">Действия</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredPartners.map((p) => (
+                  <tr key={p.id} className="hover:bg-slate-50/40 transition-colors group">
+                    {/* Name & Mail */}
+                    <td className="px-5 py-3.5">
+                      <div className="font-bold text-slate-800 group-hover:text-orange-600 duration-150 text-sm leading-snug">{p.fullName}</div>
+                      <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1 mt-1 font-mono select-all">
+                        <Mail className="h-3 w-3 text-slate-400" /> {p.email}
+                      </div>
+                    </td>
+
+                    {/* Referral code */}
+                    <td className="px-5 py-3.5">
+                      <span className="font-mono text-xs text-slate-500 font-bold bg-slate-50 border border-slate-200/40 px-2.5 py-1 rounded-lg select-all">{p.referralCode}</span>
+                    </td>
+
+                    {/* Commission Rate */}
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center font-extrabold text-emerald-600 font-mono bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 text-xs">
+                        {((p.commissionRate ?? 0.05) * 100).toFixed(0)}%
+                      </span>
+                    </td>
+
+                    {/* Balance */}
+                    <td className="px-5 py-3.5 text-slate-900 font-bold font-mono text-sm">${p.balance.toFixed(2)}</td>
+
+                    {/* Referrals Count */}
+                    <td className="px-5 py-3.5 font-bold text-slate-600 font-mono text-xs">{p.referralsCount ?? 0} чел.</td>
+
+                    {/* Status */}
+                    <td className="px-5 py-3.5">
+                      {p.isActive ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/15">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-subtle" />
+                          Активен
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 border border-rose-500/15">
+                          Деактивирован
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-5 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            if (confirm(`Сбросить пароль партнёру ${p.email}? Новый временный пароль уйдёт ему на email.`)) {
+                              resetMutation.mutate(p.id);
+                            }
+                          }}
+                          title="Сбросить пароль (отправит новый на email)"
+                          className="p-2 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 rounded-xl border border-slate-200/30 hover:border-amber-200/40 transition-all hover:scale-105 duration-150 cursor-pointer"
+                        >
+                          <KeyRound className="h-4 w-4" />
+                        </button>
+                        
+                        <button
+                          onClick={() => toggleMutation.mutate({ id: p.id, isActive: !p.isActive })}
+                          title={p.isActive ? "Деактивировать" : "Активировать"}
+                          className={`p-2 bg-slate-50 rounded-xl border border-slate-200/30 transition-all hover:scale-105 duration-150 cursor-pointer ${
+                            p.isActive 
+                              ? "hover:bg-rose-50 text-slate-500 hover:text-rose-600 hover:border-rose-200/40" 
+                              : "hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 hover:border-emerald-200/40"
+                          }`}
+                        >
+                          {p.isActive ? <UserMinus className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </td>
-    </tr>
+      )}
+
+      {creating && <CreatePartnerModal onClose={() => setCreating(false)} />}
+    </div>
   );
 }
 
@@ -193,52 +245,77 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Добавить партнёра</DialogTitle>
-          <DialogDescription>
-            Партнёр получит на email временный пароль для входа. После входа он сменит пароль в личном кабинете.
+      <DialogContent className="max-w-md bg-white rounded-3xl border border-slate-200 p-6 select-none animate-fade-in-up">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-bold text-slate-900">Добавить нового партнёра</DialogTitle>
+          <DialogDescription className="text-xs text-slate-500 mt-1">
+            Партнёр автоматически получит на свой указанный email временные реквизиты доступа в партнёрский кабинет.
           </DialogDescription>
         </DialogHeader>
+        
         <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="p-email">Email</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="p-email" className="text-xs font-bold text-slate-600">Электронная почта (Email)</Label>
             <Input
               id="p-email" type="email" required value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="blogger@example.com"
+              placeholder="partner@example.com"
+              className="bg-slate-50 border-slate-200/60 rounded-xl focus:bg-white text-xs font-medium"
             />
           </div>
-          <div>
-            <Label htmlFor="p-name">Полное имя</Label>
+          
+          <div className="space-y-1.5">
+            <Label htmlFor="p-name" className="text-xs font-bold text-slate-600">Полное имя</Label>
             <Input
               id="p-name" required value={fullName} minLength={2}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Иван Петров"
+              placeholder="Евгений Романов"
+              className="bg-slate-50 border-slate-200/60 rounded-xl focus:bg-white text-xs font-medium"
             />
           </div>
-          <div>
-            <Label htmlFor="p-phone">Телефон (опционально)</Label>
+          
+          <div className="space-y-1.5">
+            <Label htmlFor="p-phone" className="text-xs font-bold text-slate-600">Номер телефона (необязательно)</Label>
             <Input
               id="p-phone" value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+992900000000"
+              placeholder="+79998887766"
+              className="bg-slate-50 border-slate-200/60 rounded-xl focus:bg-white text-xs font-medium"
             />
           </div>
-          <div>
-            <Label htmlFor="p-rate">Ставка комиссии (%)</Label>
+          
+          <div className="space-y-1.5">
+            <Label htmlFor="p-rate" className="text-xs font-bold text-slate-600">Комиссия партнёра (%)</Label>
             <Input
               id="p-rate" type="number" min="1" max="100" step="0.5"
               value={commissionRate}
               onChange={(e) => setCommissionRate(e.target.value)}
               placeholder="5"
+              className="bg-slate-50 border-slate-200/60 rounded-xl focus:bg-white text-xs font-medium"
             />
-            <p className="text-xs text-slate-500 mt-1">По умолчанию 5%. Например, 7 = 7% с каждой оплаченной заявки.</p>
+            <p className="text-[10px] text-slate-400 leading-snug">
+              Укажите процент отчислений от стоимости тура. По умолчанию 5%. Например: 7 = 7% с каждого проданного места.
+            </p>
           </div>
-          {error && <p className="text-sm text-rose-600">{error}</p>}
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Отмена</Button>
-            <Button type="submit" disabled={createMutation.isPending}>
+          
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-bold select-text">
+              <ShieldAlert className="h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+          
+          <DialogFooter className="flex gap-2 pt-4 border-t border-slate-100 mt-5">
+            <Button
+              type="button" variant="outline" onClick={onClose}
+              className="rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer"
+            >
+              Отмена
+            </Button>
+            <Button
+              type="submit" disabled={createMutation.isPending}
+              className="bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer border-0"
+            >
               {createMutation.isPending ? "Создание..." : "Создать партнёра"}
             </Button>
           </DialogFooter>

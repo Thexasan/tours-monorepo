@@ -1,10 +1,15 @@
-﻿import { Star, Award } from "lucide-react";
+"use client";
+
+import { Star, Award } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type Review } from "@tours/types";
 import { ReviewCard } from "@/src/components/reviews/review-card";
 
 export function TourReviewsBlock({
   reviews, avgRating, reviewsCount,
 }: { reviews: Review[]; avgRating: number; reviewsCount: number }) {
+  const t = useTranslations("tours");
+
   if (!reviews.length) return null;
 
   const dist = [5, 4, 3, 2, 1].map(stars => ({
@@ -15,7 +20,7 @@ export function TourReviewsBlock({
 
   return (
     <section>
-      <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Что говорят туристы</h2>
+      <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t("detail.reviewsTitle")}</h2>
 
       <div className="mt-7 rounded-3xl bg-linear-to-br from-slate-50 via-white to-amber-50/30 ring-1 ring-slate-100 p-6 md:p-8 grid md:grid-cols-[200px_1fr] gap-8">
         <div className="text-center md:border-r md:border-slate-200 md:pr-8">
@@ -28,7 +33,7 @@ export function TourReviewsBlock({
               />
             ))}
           </div>
-          <p className="mt-1 text-sm text-slate-500">{reviewsCount} отзывов</p>
+          <p className="mt-1 text-sm text-slate-500">{reviewsCount} {t("detail.reviewsCount")}</p>
           {avgRating >= 4.5 && (
             <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold ring-1 ring-emerald-100">
               <Award className="h-3 w-3" />

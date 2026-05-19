@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { ChevronDown, Compass } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/src/lib/utils";
 
 export interface ItineraryDay {
@@ -19,6 +20,7 @@ export function TourItinerary({
   durationDays: number;
   durationNights: number;
 }) {
+  const t = useTranslations("tours");
   const [openDays, setOpenDays] = useState(new Set<number>([1, 2]));
 
   function toggle(day: number) {
@@ -36,9 +38,9 @@ export function TourItinerary({
     <section>
       <div className="flex items-end justify-between gap-3 flex-wrap mb-7">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Маршрут</h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t("detail.itinerary.title")}</h2>
           <p className="mt-2 text-slate-600">
-            {durationDays} дней, {durationNights} ночей · насыщенная программа с балансом активностей и релакса
+            {durationDays} {t("detail.days")}, {durationNights} {t("detail.nights")} · {t("detail.itinerary.subtitle")}
           </p>
         </div>
         <div className="flex gap-2">
@@ -47,14 +49,14 @@ export function TourItinerary({
             onClick={() => setOpenDays(new Set(days.map(d => d.day)))}
             className="text-xs font-semibold text-orange-700 px-3 py-1.5 rounded-full ring-1 ring-orange-100 hover:bg-orange-50 transition"
           >
-            Раскрыть все
+            {t("detail.itinerary.expandAll")}
           </button>
           <button
             type="button"
             onClick={() => setOpenDays(new Set())}
             className="text-xs font-semibold text-slate-500 px-3 py-1.5 rounded-full ring-1 ring-slate-200 hover:bg-slate-50 transition"
           >
-            Свернуть
+            {t("detail.itinerary.collapseAll")}
           </button>
         </div>
       </div>
@@ -92,7 +94,7 @@ export function TourItinerary({
                       open ? "bg-orange-50 text-orange-700" : "bg-slate-100 text-slate-600",
                     )}
                   >
-                    День {String(d.day).padStart(2, "0")}
+                    {t("detail.itinerary.dayLabel")} {String(d.day).padStart(2, "0")}
                   </span>
                   <p className="font-bold text-slate-900 text-[15px] truncate flex-1">{d.title}</p>
                   <ChevronDown className={cn("h-[18px] w-[18px] text-slate-400 transition-transform shrink-0", open && "rotate-180 text-orange-700")} />

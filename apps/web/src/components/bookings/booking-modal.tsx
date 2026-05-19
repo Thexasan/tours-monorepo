@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Check, X, ChevronLeft, ChevronRight, Plus, Minus,
   User, Mail, Phone, BookMarked, Calendar, Users, Hotel,
@@ -20,9 +20,9 @@ import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
 
 const schema = z.object({
-  contactName: z.string().min(2, "Минимум 2 символа").max(100),
-  contactEmail: z.string().email("Некорректный email"),
-  contactPhone: z.string().regex(/^\+?[0-9\s\-()]{6,20}$/, "Некорректный телефон"),
+  contactName: z.string().min(2).max(100),
+  contactEmail: z.string().email(),
+  contactPhone: z.string().regex(/^\+?[0-9\s\-()]{6,20}$/),
   guestsCount: z.coerce.number().int().min(1).max(20),
   preferredDate: z.string().optional(),
   notes: z.string().max(2000).optional(),
@@ -52,7 +52,6 @@ interface BookingModalProps {
   tourDurationDays?: number;
   tourRoomTypes?: RoomTypeOption[];
   initialGuests?: number;
-  /** ISO date string "YYYY-MM-DD" pre-selected from sidebar date picker */
   initialDate?: string;
   open: boolean;
   onClose: () => void;
@@ -64,7 +63,7 @@ function parseIsoDate(iso: string): CalDate {
   const parts = iso.split("-").map(Number);
   const y = parts[0], m = parts[1], d = parts[2];
   if (!y || !m || !d) return null;
-  return { y, m: m - 1, day: d }; // month is 0-indexed
+  return { y, m: m - 1, day: d };
 }
 
 function toIso(d: CalDate): string | undefined {
@@ -74,19 +73,13 @@ function toIso(d: CalDate): string | undefined {
   return `${d.y}-${mm}-${dd}`;
 }
 
-function fmtDate(d: CalDate): string {
-  if (!d) return "—";
-  const months = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
-  return `${d.day} ${months[d.m]} ${d.y}`;
-}
-
 function plusDays(d: CalDate, n: number): CalDate {
   if (!d) return null;
   const dd = new Date(d.y, d.m, d.day + n);
   return { y: dd.getFullYear(), m: dd.getMonth(), day: dd.getDate() };
 }
 
-/* ─── Stepper — generic, labels + visual active index ──────────── */
+/* ─── Stepper ─────────────────────────────────────────────────────── */
 function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: number }) {
   return (
     <div className="px-6 sm:px-10 pt-6 pb-2">
@@ -133,10 +126,14 @@ function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: numbe
   );
 }
 
-/* ─── Counter ───────────────────────────────────────────────────── */
+/* ─── Counter ─────────────────────────────────────────────────────── */
 function Counter({
-  value, onChange, min = 0, max = 9,
-}: { value: number; onChange: (v: number) => void; min?: number; max?: number }) {
+  value, onChange, min = 0, max = 9, labelDecrease, labelIncrease,
+}: {
+  value: number; onChange: (v: number) => void;
+  min?: number; max?: number;
+  labelDecrease: string; labelIncrease: string;
+}) {
   return (
     <div className="inline-flex items-center gap-3">
       <button
@@ -144,7 +141,7 @@ function Counter({
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
         className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-orange-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-        aria-label="Уменьшить"
+        aria-label={labelDecrease}
       >
         <Minus className="h-4 w-4" strokeWidth={2.5} />
       </button>
@@ -154,7 +151,7 @@ function Counter({
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
         className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-orange-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-        aria-label="Увеличить"
+        aria-label={labelIncrease}
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
       </button>
@@ -162,12 +159,12 @@ function Counter({
   );
 }
 
-/* ─── Room card ─────────────────────────────────────────────────── */
+/* ─── Room card ───────────────────────────────────────────────────── */
 function RoomCard({
-  id, selected, onSelect, title, desc, priceMod,
+  id, selected, onSelect, title, desc, priceMod, includedLabel,
 }: {
   id: string; selected: boolean; onSelect: (id: string) => void;
-  title: string; desc: string; priceMod: number;
+  title: string; desc: string; priceMod: number; includedLabel: string;
 }) {
   return (
     <button
@@ -186,7 +183,7 @@ function RoomCard({
           <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{desc}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-xs text-slate-500">{priceMod === 0 ? "включено" : `+$${priceMod}`}</p>
+          <p className="text-xs text-slate-500">{priceMod === 0 ? includedLabel : `+$${priceMod}`}</p>
           <div
             className={cn(
               "mt-1 grid place-items-center h-5 w-5 rounded-full ring-2 transition-all ml-auto",
@@ -201,10 +198,18 @@ function RoomCard({
   );
 }
 
-/* ─── Mini calendar (2 months) ──────────────────────────────────── */
+/* ─── Mini calendar ───────────────────────────────────────────────── */
 function MiniCalendar({
-  value, onChange,
-}: { value: CalDate; onChange: (d: CalDate) => void }) {
+  value, onChange, monthNames, shortMonthNames, dayLabels, navBackLabel, navForwardLabel,
+}: {
+  value: CalDate;
+  onChange: (d: CalDate) => void;
+  monthNames: string[];
+  shortMonthNames: string[];
+  dayLabels: string[];
+  navBackLabel: string;
+  navForwardLabel: string;
+}) {
   const [view, setView] = useState(() => {
     const d = new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
@@ -215,27 +220,24 @@ function MiniCalendar({
     return { y: d.getFullYear(), m: d.getMonth() };
   }
   const months = [view, addMonths(view, 1)];
-  const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-  const dayLabels = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
   const sel = value ? `${value.y}-${value.m}-${value.day}` : "";
 
   function isPast(d: { y: number; m: number; day: number }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    // Block today and past — earliest bookable day is tomorrow
     return new Date(d.y, d.m, d.day) <= today;
   }
 
   return (
     <div className="rounded-2xl ring-1 ring-slate-200 bg-white p-4">
       <div className="flex items-center justify-between mb-3">
-        <button type="button" onClick={() => setView(v => addMonths(v, -1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label="Назад">
+        <button type="button" onClick={() => setView(v => addMonths(v, -1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label={navBackLabel}>
           <ChevronLeft className="h-4 w-4" />
         </button>
         <p className="text-sm font-semibold text-slate-900 tracking-tight">
           {monthNames[view.m]!} {view.y} <span className="text-slate-300 mx-1">→</span> {monthNames[months[1]!.m]!} {months[1]!.y}
         </p>
-        <button type="button" onClick={() => setView(v => addMonths(v, 1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label="Вперёд">
+        <button type="button" onClick={() => setView(v => addMonths(v, 1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label={navForwardLabel}>
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -289,7 +291,7 @@ function MiniCalendar({
   );
 }
 
-/* ─── FormField ─────────────────────────────────────────────────── */
+/* ─── FormField ───────────────────────────────────────────────────── */
 function FormField({
   label, icon: Icon, error, children,
 }: {
@@ -312,7 +314,7 @@ function FormField({
   );
 }
 
-/* ─── Main modal ────────────────────────────────────────────────── */
+/* ─── Main modal ──────────────────────────────────────────────────── */
 export function BookingModal({
   tourId,
   tourTitle,
@@ -329,6 +331,7 @@ export function BookingModal({
   onClose,
 }: BookingModalProps) {
   const locale = useLocale();
+  const t = useTranslations("tours");
   const { user, isAuthenticated } = useAuth();
 
   const [submitting, setSubmitting] = useState(false);
@@ -367,7 +370,6 @@ export function BookingModal({
     defaultValues: { guestsCount: 1, contactName: "", contactEmail: "", contactPhone: "", notes: "" },
   });
 
-  // Auto-fill name + email from profile for authenticated users
   useEffect(() => {
     if (user && open) {
       setValue("contactName", user.fullName, { shouldValidate: false });
@@ -375,7 +377,6 @@ export function BookingModal({
     }
   }, [user, open, setValue]);
 
-  // Restore booking intent from sessionStorage after redirect back from register/login
   useEffect(() => {
     if (!open || !isAuthenticated) return;
     try {
@@ -412,7 +413,7 @@ export function BookingModal({
     } catch (e) {
       const msg = extractErrorMessage(e);
       setError(msg);
-      toast.error("Не удалось создать заявку", { description: msg });
+      toast.error(t("booking.error"), { description: msg });
     } finally {
       setSubmitting(false);
     }
@@ -428,15 +429,37 @@ export function BookingModal({
   const watchedName = watch("contactName") ?? "";
   const watchedEmail = watch("contactEmail") ?? "";
   const watchedPhone = watch("contactPhone") ?? "";
-
   const canStep1 = watchedName.length >= 2 && watchedEmail.includes("@") && watchedPhone.length >= 6
     && !errors.contactName && !errors.contactEmail && !errors.contactPhone;
 
-  // Stepper config: authenticated = 2 steps, guests = 3 steps
   const stepperLabels = isAuthenticated
-    ? ["Опции", "Подтверждение"]
-    : ["Опции", "Путешественники", "Подтверждение"];
+    ? [t("booking.stepper.options"), t("booking.stepper.confirm")]
+    : [t("booking.stepper.options"), t("booking.stepper.travelers"), t("booking.stepper.confirm")];
   const stepperActiveIndex = isAuthenticated ? (step === 0 ? 0 : 1) : step;
+
+  // Build calendar arrays from translations
+  const monthNames = [
+    t("booking.calendar.jan"), t("booking.calendar.feb"), t("booking.calendar.mar"),
+    t("booking.calendar.apr"), t("booking.calendar.may"), t("booking.calendar.jun"),
+    t("booking.calendar.jul"), t("booking.calendar.aug"), t("booking.calendar.sep"),
+    t("booking.calendar.oct"), t("booking.calendar.nov"), t("booking.calendar.dec"),
+  ];
+  const shortMonthNames = [
+    t("booking.calendar.janShort"), t("booking.calendar.febShort"), t("booking.calendar.marShort"),
+    t("booking.calendar.aprShort"), t("booking.calendar.mayShort"), t("booking.calendar.junShort"),
+    t("booking.calendar.julShort"), t("booking.calendar.augShort"), t("booking.calendar.sepShort"),
+    t("booking.calendar.octShort"), t("booking.calendar.novShort"), t("booking.calendar.decShort"),
+  ];
+  const dayLabels = [
+    t("booking.calendar.mon"), t("booking.calendar.tue"), t("booking.calendar.wed"),
+    t("booking.calendar.thu"), t("booking.calendar.fri"), t("booking.calendar.sat"),
+    t("booking.calendar.sun"),
+  ];
+
+  function fmtDate(d: CalDate): string {
+    if (!d) return "—";
+    return `${d.day} ${shortMonthNames[d.m]} ${d.y}`;
+  }
 
   function handleClose() {
     setSuccess(false);
@@ -455,7 +478,6 @@ export function BookingModal({
       if (isAuthenticated) {
         setStep(2);
       } else {
-        // Save intent to sessionStorage before showing auth gate
         if (tourSlug) {
           try {
             const intent: BookingIntent = { tourId, tourSlug, locale, date, guests, roomId: room };
@@ -470,7 +492,6 @@ export function BookingModal({
   }
 
   function handleBack() {
-    // Auth users jump from step 0 to step 2, so back from step 2 returns to step 0
     setStep(isAuthenticated && step === 2 ? 0 : (step - 1) as 0 | 1 | 2);
   }
 
@@ -491,7 +512,7 @@ export function BookingModal({
           type="button"
           onClick={handleClose}
           className="absolute top-4 right-4 z-10 grid place-items-center h-9 w-9 rounded-full bg-white/90 backdrop-blur ring-1 ring-slate-200 text-slate-500 hover:text-slate-900 hover:bg-white transition"
-          aria-label="Закрыть"
+          aria-label={t("booking.close")}
         >
           <X className="h-[18px] w-[18px]" />
         </button>
@@ -500,7 +521,7 @@ export function BookingModal({
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto px-6 sm:px-10 pb-6 flex flex-col">
 
-          {/* ── SUCCESS ─────────────────────────────────────────────── */}
+          {/* ── SUCCESS ──────────────────────────────────────────── */}
           {success ? (
             <div className="py-12 text-center max-w-md mx-auto">
               <div className="relative inline-grid place-items-center mb-5">
@@ -509,13 +530,11 @@ export function BookingModal({
                   <Check className="h-9 w-9" strokeWidth={2.5} />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Заявка отправлена!</h3>
-              <p className="mt-2 text-slate-600 leading-relaxed">
-                Менеджер свяжется с вами в течение часа на указанный email.
-              </p>
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{t("booking.success.title")}</h3>
+              <p className="mt-2 text-slate-600 leading-relaxed">{t("booking.success.desc")}</p>
               <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold ring-1 ring-amber-100">
                 <Sparkles className="h-3.5 w-3.5" />
-                +1 реферал засчитается после оплаты
+                {t("booking.success.referralNote")}
               </div>
               <div className="mt-7 space-y-3">
                 {isAuthenticated ? (
@@ -525,7 +544,7 @@ export function BookingModal({
                     className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
                     style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                   >
-                    Перейти в мои заявки
+                    {t("booking.success.myBookings")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : (
@@ -537,7 +556,7 @@ export function BookingModal({
                       style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                     >
                       <UserPlus className="h-4 w-4" />
-                      Зарегистрируйтесь, чтобы следить за заявкой
+                      {t("booking.success.register")}
                     </Link>
                     <Link
                       href={`/${locale}/login?next=${encodeURIComponent(`/${locale}/dashboard/trips`)}`}
@@ -545,7 +564,7 @@ export function BookingModal({
                       className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 transition"
                     >
                       <LogIn className="h-4 w-4" />
-                      Уже есть аккаунт — войти
+                      {t("booking.success.hasAccount")}
                     </Link>
                   </>
                 )}
@@ -554,22 +573,20 @@ export function BookingModal({
                   onClick={handleClose}
                   className="block w-full text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
                 >
-                  Закрыть
+                  {t("booking.success.close")}
                 </button>
               </div>
             </div>
 
-          /* ── AUTH GATE (guests only) ─────────────────────────────── */
+          /* ── AUTH GATE ───────────────────────────────────────── */
           ) : showAuthGate ? (
             <div className="py-10 flex flex-col items-center gap-6 max-w-sm mx-auto text-center mt-3">
               <div className="grid place-items-center h-16 w-16 rounded-2xl bg-orange-50 ring-1 ring-orange-100 text-orange-600">
                 <Lock className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900">Нужен аккаунт для бронирования</h3>
-                <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                  Войдите или зарегистрируйтесь — ваши даты и параметры сохранятся автоматически.
-                </p>
+                <h3 className="text-xl font-bold text-slate-900">{t("booking.authGate.title")}</h3>
+                <p className="mt-2 text-sm text-slate-500 leading-relaxed">{t("booking.authGate.desc")}</p>
               </div>
               <div className="w-full space-y-3">
                 <Link
@@ -578,75 +595,99 @@ export function BookingModal({
                   style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                 >
                   <UserPlus className="h-4 w-4" />
-                  Зарегистрироваться
+                  {t("booking.authGate.register")}
                 </Link>
                 <Link
                   href={`/${locale}/login`}
                   className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 transition"
                 >
                   <LogIn className="h-4 w-4" />
-                  Уже есть аккаунт — войти
+                  {t("booking.authGate.hasAccount")}
                 </Link>
                 <button
                   type="button"
                   onClick={() => setShowAuthGate(false)}
                   className="block w-full text-xs text-slate-400 hover:text-slate-600 transition-colors py-1"
                 >
-                  ← Назад к выбору дат
+                  {t("booking.authGate.back")}
                 </button>
               </div>
             </div>
 
-          /* ── STEP 0: OPTIONS ─────────────────────────────────────── */
+          /* ── STEP 0: OPTIONS ─────────────────────────────────── */
           ) : step === 0 ? (
             <div className="space-y-5 mt-3">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Выберите даты и состав группы</h3>
-                <p className="text-sm text-slate-500 mt-0.5">Длительность фиксированная — {tourDurationDays} дней / {Math.max(1, tourDurationDays - 1)} ночей</p>
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">{t("booking.step0.title")}</h3>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  {t("booking.step0.durationPrefix")} {tourDurationDays} {t("booking.step0.durationDays")} / {Math.max(1, tourDurationDays - 1)} {t("booking.step0.durationNights")}
+                </p>
               </div>
 
-              <MiniCalendar value={date} onChange={setDate} />
+              <MiniCalendar
+                value={date}
+                onChange={setDate}
+                monthNames={monthNames}
+                shortMonthNames={shortMonthNames}
+                dayLabels={dayLabels}
+                navBackLabel={t("booking.calendar.navBack")}
+                navForwardLabel={t("booking.calendar.navForward")}
+              />
 
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">Путешественники</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">{t("booking.step0.travelers")}</p>
                 <div className="rounded-2xl ring-1 ring-slate-200 bg-white">
                   <div className="flex items-center justify-between px-4 py-3.5">
                     <div>
-                      <p className="font-semibold text-slate-900 text-sm">Количество персон</p>
-                      <p className="text-xs text-slate-500">${pricePerPerson} за человека</p>
+                      <p className="font-semibold text-slate-900 text-sm">{t("booking.step0.persons")}</p>
+                      <p className="text-xs text-slate-500">${pricePerPerson} {t("booking.step0.perPersonPrefix")}</p>
                     </div>
-                    <Counter value={guests} onChange={setGuests} min={1} max={20} />
+                    <Counter
+                      value={guests}
+                      onChange={setGuests}
+                      min={1}
+                      max={20}
+                      labelDecrease={t("booking.decrease")}
+                      labelIncrease={t("booking.increase")}
+                    />
                   </div>
                 </div>
               </div>
 
               {rooms.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">Тип размещения</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-3">{t("booking.step0.roomType")}</p>
                   <div className="grid sm:grid-cols-3 gap-3">
                     {rooms.map(r => (
-                      <RoomCard key={r.id} {...r} selected={room === r.id} onSelect={setRoom} priceMod={r.mod} />
+                      <RoomCard
+                        key={r.id}
+                        {...r}
+                        selected={room === r.id}
+                        onSelect={setRoom}
+                        priceMod={r.mod}
+                        includedLabel={t("booking.step0.included")}
+                      />
                     ))}
                   </div>
                 </div>
               )}
             </div>
 
-          /* ── STEP 1: TRAVELER DETAILS (guests only) ─────────────── */
+          /* ── STEP 1: TRAVELER DETAILS ─────────────────────────── */
           ) : step === 1 ? (
             <div className="space-y-4 mt-3">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Данные путешественника</h3>
-                <p className="text-sm text-slate-500 mt-0.5">Имя и фамилия как в загранпаспорте — латиницей</p>
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">{t("booking.step1.title")}</h3>
+                <p className="text-sm text-slate-500 mt-0.5">{t("booking.step1.subtitle")}</p>
               </div>
-              <FormField label="Имя и фамилия" icon={User} error={errors.contactName?.message}>
+              <FormField label={t("booking.step1.nameField")} icon={User} error={errors.contactName?.message}>
                 <input
                   {...register("contactName")}
                   placeholder="ALINA KOVAL"
                   className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-300 outline-none"
                 />
               </FormField>
-              <FormField label="Номер загранпаспорта (опц.)" icon={BookMarked}>
+              <FormField label={t("booking.step1.passport")} icon={BookMarked}>
                 <input
                   {...register("notes")}
                   placeholder="N1234567"
@@ -654,7 +695,7 @@ export function BookingModal({
                 />
               </FormField>
               <div className="grid sm:grid-cols-2 gap-3">
-                <FormField label="Телефон" icon={Phone} error={errors.contactPhone?.message}>
+                <FormField label={t("booking.step1.phone")} icon={Phone} error={errors.contactPhone?.message}>
                   <input
                     {...register("contactPhone")}
                     type="tel"
@@ -662,7 +703,7 @@ export function BookingModal({
                     className="w-full bg-transparent text-[15px] font-medium text-slate-900 placeholder:text-slate-300 outline-none"
                   />
                 </FormField>
-                <FormField label="Email" icon={Mail} error={errors.contactEmail?.message}>
+                <FormField label={t("booking.step1.email")} icon={Mail} error={errors.contactEmail?.message}>
                   <input
                     {...register("contactEmail")}
                     type="email"
@@ -677,10 +718,8 @@ export function BookingModal({
                   <Shield className="h-[18px] w-[18px]" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Ваши данные защищены</p>
-                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                    Передача данных шифруется TLS 1.3. Паспортные данные используются только для оформления тура.
-                  </p>
+                  <p className="text-sm font-semibold text-slate-900">{t("booking.step1.protected")}</p>
+                  <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{t("booking.step1.protectedDesc")}</p>
                 </div>
               </div>
 
@@ -690,9 +729,9 @@ export function BookingModal({
                     <Users className="h-[18px] w-[18px]" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Данные остальных путешественников</p>
+                    <p className="text-sm font-semibold text-slate-900">{t("booking.step1.otherTravelers")}</p>
                     <p className="text-xs text-slate-600 mt-0.5">
-                      После подтверждения брони мы пришлём анкеты для остальных {guests - 1} гостей на email.
+                      {t("booking.step1.otherTravelersDesc1")} {guests - 1} {t("booking.step1.otherTravelersDesc2")}
                     </p>
                   </div>
                 </div>
@@ -702,19 +741,18 @@ export function BookingModal({
               <input type="hidden" {...register("preferredDate")} />
             </div>
 
-          /* ── STEP 2: CONFIRMATION ────────────────────────────────── */
+          /* ── STEP 2: CONFIRMATION ─────────────────────────────── */
           ) : (
             <div className="space-y-4 mt-3">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">Проверьте детали бронирования</h3>
-                <p className="text-sm text-slate-500 mt-0.5">Оплата после подтверждения менеджером</p>
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">{t("booking.step2.title")}</h3>
+                <p className="text-sm text-slate-500 mt-0.5">{t("booking.step2.subtitle")}</p>
               </div>
 
-              {/* Auth users: show profile read-only card + phone input */}
               {isAuthenticated && (
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-orange-50/50 ring-1 ring-orange-100 p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-orange-600 mb-3">Данные из профиля</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-orange-600 mb-3">{t("booking.step2.profileData")}</p>
                     <div className="grid sm:grid-cols-2 gap-2 text-sm">
                       <div className="flex items-center gap-2 text-slate-700">
                         <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -726,7 +764,7 @@ export function BookingModal({
                       </div>
                     </div>
                   </div>
-                  <FormField label="Контактный телефон" icon={Phone} error={errors.contactPhone?.message}>
+                  <FormField label={t("booking.step2.contactPhone")} icon={Phone} error={errors.contactPhone?.message}>
                     <input
                       {...register("contactPhone")}
                       type="tel"
@@ -756,10 +794,18 @@ export function BookingModal({
                 </div>
                 <div className="divide-y divide-slate-100 text-sm">
                   {[
-                    { k: "Заезд / Выезд", v: `${fmtDate(date)} → ${fmtDate(plusDays(date, tourDurationDays))}`, Ic: Calendar },
-                    { k: "Гостей", v: `${guests} ${guests === 1 ? "персона" : "персон"}`, Ic: Users },
-                    ...(selectedRoom ? [{ k: "Размещение", v: selectedRoom.title, Ic: Hotel }] : []),
-                    ...(!isAuthenticated ? [{ k: "На имя", v: watchedName || "—", Ic: User }] : []),
+                    {
+                      k: t("booking.step2.checkIn"),
+                      v: `${fmtDate(date)} → ${fmtDate(plusDays(date, tourDurationDays))}`,
+                      Ic: Calendar,
+                    },
+                    {
+                      k: t("booking.step2.guests"),
+                      v: `${guests} ${guests === 1 ? t("booking.step2.personOne") : t("booking.step2.personsMany")}`,
+                      Ic: Users,
+                    },
+                    ...(selectedRoom ? [{ k: t("booking.step2.room"), v: selectedRoom.title, Ic: Hotel }] : []),
+                    ...(!isAuthenticated ? [{ k: t("booking.step2.guestName"), v: watchedName || "—", Ic: User }] : []),
                   ].map(({ k, v, Ic }) => (
                     <div key={k} className="flex items-center justify-between px-4 py-3">
                       <span className="flex items-center gap-2 text-slate-500">
@@ -775,24 +821,24 @@ export function BookingModal({
               {/* Price breakdown */}
               <div className="rounded-2xl ring-1 ring-slate-200 p-4 text-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-600">
-                  <span>Персон × {guests}</span>
+                  <span>{t("booking.step2.subtotalPrefix")} {guests}</span>
                   <span className="tabular-nums">${(pricePerPerson * guests).toLocaleString()}</span>
                 </div>
                 {roomTotal > 0 && (
                   <div className="flex items-center justify-between text-slate-600">
-                    <span>Доплата за номер</span>
+                    <span>{t("booking.step2.roomUpgrade")}</span>
                     <span className="tabular-nums">${roomTotal.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex items-center justify-between text-slate-600">
-                  <span>Налоги и сборы</span>
+                  <span>{t("booking.step2.taxes")}</span>
                   <span className="tabular-nums">${taxes.toLocaleString()}</span>
                 </div>
                 <div className="h-px bg-slate-100 my-1" />
                 <div className="flex items-end justify-between pt-1">
                   <div>
-                    <p className="text-xs text-slate-500">Итого к оплате</p>
-                    <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">включая страховку и трансфер</p>
+                    <p className="text-xs text-slate-500">{t("booking.step2.total")}</p>
+                    <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">{t("booking.step2.totalNote")}</p>
                   </div>
                   <p className="text-3xl font-bold text-slate-900 tabular-nums tracking-tight">${total.toLocaleString()}</p>
                 </div>
@@ -820,21 +866,21 @@ export function BookingModal({
                   {agreed && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                 </div>
                 <span className="text-xs text-slate-600 leading-relaxed">
-                  Соглашаюсь с{" "}
-                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">условиями бронирования</a>
-                  {" "}и{" "}
-                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">политикой конфиденциальности</a>.
-                  {" "}Оплата производится после подтверждения брони менеджером.
+                  {t("booking.step2.agree")}{" "}
+                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.terms")}</a>
+                  {" "}{t("booking.step2.and")}{" "}
+                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.privacy")}</a>.
+                  {" "}{t("booking.step2.agreeNote")}
                 </span>
               </label>
             </div>
           )}
 
-          {/* ── BOTTOM BAR ──────────────────────────────────────────── */}
+          {/* ── BOTTOM BAR ──────────────────────────────────────── */}
           {!success && !showAuthGate && (
             <div className="mt-6 -mx-6 sm:-mx-10 px-6 sm:px-10 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Сумма</p>
+                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">{t("booking.bottom.amount")}</p>
                 <p className="text-lg font-bold text-slate-900 tabular-nums leading-tight">${total.toLocaleString()}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -845,7 +891,7 @@ export function BookingModal({
                     className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-slate-700 text-sm font-semibold ring-1 ring-slate-200 hover:bg-slate-50 transition"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Назад
+                    {t("booking.bottom.back")}
                   </button>
                 )}
                 {step < 2 ? (
@@ -856,7 +902,7 @@ export function BookingModal({
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #f97316, #f43f5e)" }}
                   >
-                    Продолжить
+                    {t("booking.bottom.continue")}
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 ) : (
@@ -866,7 +912,7 @@ export function BookingModal({
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                   >
-                    {submitting ? "Отправляем…" : "Подтвердить и забронировать"}
+                    {submitting ? t("booking.bottom.submitting") : t("booking.bottom.submit")}
                     {!submitting && <Check className="h-4 w-4" strokeWidth={2.5} />}
                   </button>
                 )}

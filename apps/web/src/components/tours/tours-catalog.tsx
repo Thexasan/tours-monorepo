@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Search, Filter, Star, ChevronLeft, ChevronRight,
   MapPin, X, SlidersHorizontal, ArrowUpRight, Sparkles, Compass,
@@ -40,51 +40,24 @@ const DEFAULT_FILTERS: Filters = {
   sort: "newest",
 };
 
-const POPULAR_COUNTRIES = [
-  { label: "Все", value: "" },
-  { label: "Турция", value: "Turkey" },
-  { label: "Греция", value: "Greece" },
-  { label: "Япония", value: "Japan" },
-  { label: "Грузия", value: "Georgia" },
-  { label: "Италия", value: "Italy" },
-  { label: "ОАЭ", value: "UAE" },
-  { label: "Мальдивы", value: "Maldives" },
-  { label: "Таиланд", value: "Thailand" },
-  { label: "Египет", value: "Egypt" },
-];
-
-const SORT_OPTIONS: { value: Filters["sort"]; label: string }[] = [
-  { value: "newest", label: "Сначала новые" },
-  { value: "price_asc", label: "Дешевле" },
-  { value: "price_desc", label: "Дороже" },
-  { value: "popular", label: "Популярные" },
-];
-
-const MEAL_OPTIONS = [
-  { value: "", label: "Любое" },
-  { value: "ALL_INCLUSIVE", label: "Всё включено" },
-  { value: "HALF_BOARD", label: "Полупансион" },
-  { value: "BREAKFAST", label: "Завтраки" },
-  { value: "NO_MEALS", label: "Без питания" },
-];
+const COUNTRY_VALUES = ["", "Turkey", "Greece", "Japan", "Georgia", "Italy", "UAE", "Maldives", "Thailand", "Egypt"] as const;
+const SORT_VALUES = ["newest", "price_asc", "price_desc", "popular"] as const;
 
 export function ToursCatalog() {
   const locale = useLocale();
+  const t = useTranslations("tours");
   const searchParams = useSearchParams();
   const urlCountry = searchParams.get("country") ?? "";
   const urlLabel = searchParams.get("q") ?? "";
 
-  // Booking intent params — carried from homepage search to tour page
   const bookingParams = new URLSearchParams();
   const urlDate = searchParams.get("date") ?? "";
   const urlGuests = searchParams.get("guests") ?? "";
   if (urlDate) bookingParams.set("date", urlDate);
   if (urlGuests) bookingParams.set("guests", urlGuests);
   const bookingQuery = bookingParams.toString();
-  const [filters, setFilters] = useState<Filters>({
-    ...DEFAULT_FILTERS,
-    country: urlCountry,
-  });
+
+  const [filters, setFilters] = useState<Filters>({ ...DEFAULT_FILTERS, country: urlCountry });
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -118,14 +91,33 @@ export function ToursCatalog() {
     (filters.hotelStars ? 1 : 0) +
     (filters.mealPlan ? 1 : 0);
 
+  const popularCountries = COUNTRY_VALUES.map((v) => ({
+    value: v,
+    label: v === "" ? t("catalog.countries.all") : t(`catalog.countries.${v}`),
+  }));
+
+  const sortOptions = SORT_VALUES.map((v) => ({
+    value: v,
+    label: t(`catalog.sort.${v}`),
+  }));
+
+  const mealOptions = [
+    { value: "", label: t("catalog.filters.mealAny") },
+    { value: "ALL_INCLUSIVE", label: t("mealPlan.ALL_INCLUSIVE") },
+    { value: "HALF_BOARD", label: t("mealPlan.HALF_BOARD") },
+    { value: "BREAKFAST", label: t("mealPlan.BREAKFAST") },
+    { value: "NO_MEALS", label: t("mealPlan.NO_MEALS") },
+  ];
+
   return (
     <div className="-mt-16 bg-white">
-      <CatalogHero locale={locale} />
+      <CatalogHero t={t} />
 
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 -mt-12 md:-mt-16 relative z-10">
         <CountryChips
           value={filters.country}
           onChange={(v) => update("country", v)}
+          countries={popularCountries}
         />
       </div>
 
@@ -138,18 +130,20 @@ export function ToursCatalog() {
             activeCount={activeFiltersCount}
             mobileOpen={mobileFiltersOpen}
             setMobileOpen={setMobileFiltersOpen}
+            mealOptions={mealOptions}
+            t={t}
           />
 
           <div className="min-w-0">
             {urlLabel && filters.country && (
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-sm text-slate-500">Поиск:</span>
+                <span className="text-sm text-slate-500">{t("catalog.search")}</span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-sm font-semibold ring-1 ring-orange-200">
                   <MapPin className="h-3.5 w-3.5" />
                   {urlLabel}
                   <button
                     type="button"
-                    aria-label="Сбросить поиск"
+                    aria-label={t("catalog.searchReset")}
                     onClick={() => update("country", "")}
                     className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-orange-200 transition-colors"
                   >
@@ -166,12 +160,14 @@ export function ToursCatalog() {
               update={update}
               openMobileFilters={() => setMobileFiltersOpen(true)}
               activeCount={activeFiltersCount}
+              sortOptions={sortOptions}
+              t={t}
             />
 
             {isError && (
               <div className="rounded-2xl bg-rose-50 border border-rose-100 p-4 text-rose-700 text-sm flex items-start gap-2">
                 <X className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>Не удалось загрузить туры. Проверьте, запущен ли API.</span>
+                <span>{t("catalog.error")}</span>
               </div>
             )}
 
@@ -184,7 +180,7 @@ export function ToursCatalog() {
             ) : data && data.items.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {data.items.map((t) => <TourCard key={t.id} tour={t} extraQuery={bookingQuery} />)}
+                  {data.items.map((tour) => <TourCard key={tour.id} tour={tour} extraQuery={bookingQuery} />)}
                 </div>
 
                 {data.total > data.pageSize && (
@@ -194,11 +190,12 @@ export function ToursCatalog() {
                     total={data.total}
                     onPrev={() => setPage((p) => Math.max(1, p - 1))}
                     onNext={() => setPage((p) => p + 1)}
+                    t={t}
                   />
                 )}
               </>
             ) : (
-              <EmptyState onReset={() => setFilters(DEFAULT_FILTERS)} />
+              <EmptyState onReset={() => setFilters(DEFAULT_FILTERS)} t={t} />
             )}
           </div>
         </div>
@@ -207,7 +204,9 @@ export function ToursCatalog() {
   );
 }
 
-function CatalogHero({ locale }: { locale: string }) {
+type TFunc = ReturnType<typeof useTranslations<"tours">>;
+
+function CatalogHero({ t }: { t: TFunc }) {
   return (
     <section className="pt-20 pb-4 px-4 md:px-6 lg:px-8 max-w-[1600px] mx-auto relative z-0">
       <div className="relative w-full h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl">
@@ -219,29 +218,21 @@ function CatalogHero({ locale }: { locale: string }) {
           className="object-cover transition-transform duration-1000 hover:scale-105"
           sizes="100vw"
         />
-        
-        {/* Dark neutral base — photo shows through beautifully */}
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-[#0B0F19]/30 to-transparent"
         />
-        
         <div className="absolute inset-0 p-8 md:p-16 flex flex-col justify-end">
           <div className="max-w-4xl">
-             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white mb-6 shadow-sm">
-                <Sparkles className="h-3.5 w-3.5 text-amber-300" /> 50+ направлений по всему миру
-             </div>
-             
-             <h1 className="text-5xl md:text-6xl lg:text-[80px] font-black text-white tracking-tight leading-[1.05] mb-6 drop-shadow-lg">
-               Найди свой <br/>
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400">
-                 идеальный тур.
-               </span>
-             </h1>
-             
-             <p className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed drop-shadow">
-                Горящие предложения, проверенные отели и прозрачные цены. Начните свое незабываемое путешествие прямо сейчас.
-             </p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white mb-6 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" /> {t("catalog.hero.badge")}
+            </div>
+            <h1 className="text-5xl md:text-6xl lg:text-[80px] font-black text-white tracking-tight leading-[1.05] mb-6 drop-shadow-lg">
+              {t("catalog.hero.title")}
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed drop-shadow">
+              {t("catalog.hero.subtitle")}
+            </p>
           </div>
         </div>
       </div>
@@ -252,18 +243,20 @@ function CatalogHero({ locale }: { locale: string }) {
 function CountryChips({
   value,
   onChange,
+  countries,
 }: {
   value: string;
   onChange: (v: string) => void;
+  countries: { value: string; label: string }[];
 }) {
   return (
     <div className="flex justify-center -mt-14 md:-mt-16 relative z-20 pb-12 px-4">
       <div className="rounded-[2.5rem] bg-white/70 backdrop-blur-2xl p-2 md:p-2.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] ring-1 ring-slate-200/50 flex items-center max-w-full overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-        {POPULAR_COUNTRIES.map((c) => {
+        {countries.map((c) => {
           const active = value === c.value;
           return (
             <button
-              key={c.label}
+              key={c.value}
               type="button"
               onClick={() => onChange(c.value)}
               className={`shrink-0 px-5 md:px-6 py-3 rounded-[2rem] text-[13px] md:text-sm font-bold transition-all duration-300 ${
@@ -282,7 +275,7 @@ function CountryChips({
 }
 
 function FiltersPanel({
-  filters, update, reset, activeCount, mobileOpen, setMobileOpen,
+  filters, update, reset, activeCount, mobileOpen, setMobileOpen, mealOptions, t,
 }: {
   filters: Filters;
   update: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
@@ -290,13 +283,15 @@ function FiltersPanel({
   activeCount: number;
   mobileOpen: boolean;
   setMobileOpen: (v: boolean) => void;
+  mealOptions: { value: string; label: string }[];
+  t: TFunc;
 }) {
   const content = (
     <>
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
           <SlidersHorizontal className="h-4 w-4 text-orange-600" />
-          Фильтры
+          {t("catalog.filters.title")}
           {activeCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-600 text-white">
               {activeCount}
@@ -309,25 +304,25 @@ function FiltersPanel({
             onClick={reset}
             className="text-xs font-semibold text-rose-600 hover:text-rose-700"
           >
-            Сбросить
+            {t("catalog.filters.reset")}
           </button>
         )}
       </div>
 
-      <FilterGroup label="Страна">
+      <FilterGroup label={t("catalog.filters.country")}>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="text"
             value={filters.country}
             onChange={(e) => update("country", e.target.value)}
-            placeholder="Например: Турция"
+            placeholder={t("catalog.filters.countryPlaceholder")}
             className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
           />
         </div>
       </FilterGroup>
 
-      <FilterGroup label="Цена, $">
+      <FilterGroup label={t("catalog.filters.price")}>
         <div className="grid grid-cols-2 gap-2">
           <input
             type="number"
@@ -348,10 +343,10 @@ function FiltersPanel({
         </div>
       </FilterGroup>
 
-      <FilterGroup label="Звёздность отеля">
+      <FilterGroup label={t("catalog.filters.stars")}>
         <div className="flex flex-wrap gap-1.5">
           {[
-            { v: "", label: "Любая" },
+            { v: "", label: t("catalog.filters.starsAny") },
             { v: "3", label: "3" },
             { v: "4", label: "4" },
             { v: "5", label: "5" },
@@ -376,9 +371,9 @@ function FiltersPanel({
         </div>
       </FilterGroup>
 
-      <FilterGroup label="Питание">
+      <FilterGroup label={t("catalog.filters.meal")}>
         <div className="flex flex-col gap-1.5">
-          {MEAL_OPTIONS.map((m) => {
+          {mealOptions.map((m) => {
             const active = filters.mealPlan === m.value;
             return (
               <button
@@ -420,7 +415,7 @@ function FiltersPanel({
               type="button"
               onClick={() => setMobileOpen(false)}
               className="absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600"
-              aria-label="Закрыть"
+              aria-label={t("catalog.filters.close")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -444,7 +439,7 @@ function FilterGroup({ label, children }: { label: string; children: React.React
 }
 
 function ResultsBar({
-  total, isLoading, filters, update, openMobileFilters, activeCount,
+  total, isLoading, filters, update, openMobileFilters, activeCount, sortOptions, t,
 }: {
   total: number | undefined;
   isLoading: boolean;
@@ -452,6 +447,8 @@ function ResultsBar({
   update: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
   openMobileFilters: () => void;
   activeCount: number;
+  sortOptions: { value: string; label: string }[];
+  t: TFunc;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
@@ -462,7 +459,7 @@ function ResultsBar({
           className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
         >
           <Filter className="h-4 w-4" />
-          Фильтры
+          {t("catalog.filters.filters")}
           {activeCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-orange-600 text-white">
               {activeCount}
@@ -473,22 +470,22 @@ function ResultsBar({
           {isLoading ? (
             <span className="inline-flex items-center gap-1.5">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
-              Загрузка…
+              {t("catalog.results.loading")}
             </span>
           ) : (
-            <>Найдено: <strong className="text-slate-900 tabular-nums">{total ?? 0}</strong></>
+            <>{t("catalog.results.found")} <strong className="text-slate-900 tabular-nums">{total ?? 0}</strong></>
           )}
         </p>
       </div>
 
       <div className="hidden md:flex items-center gap-1 p-1 rounded-xl bg-slate-100">
-        {SORT_OPTIONS.map((s) => {
+        {sortOptions.map((s) => {
           const active = filters.sort === s.value;
           return (
             <button
               key={s.value}
               type="button"
-              onClick={() => update("sort", s.value)}
+              onClick={() => update("sort", s.value as Filters["sort"])}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 active
                   ? "bg-white text-slate-900 shadow-sm"
@@ -506,7 +503,7 @@ function ResultsBar({
         onChange={(e) => update("sort", e.target.value as Filters["sort"])}
         className="md:hidden h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800 outline-none"
       >
-        {SORT_OPTIONS.map((s) => (
+        {sortOptions.map((s) => (
           <option key={s.value} value={s.value}>{s.label}</option>
         ))}
       </select>
@@ -515,13 +512,14 @@ function ResultsBar({
 }
 
 function Pagination({
-  page, pageSize, total, onPrev, onNext,
+  page, pageSize, total, onPrev, onNext, t,
 }: {
   page: number;
   pageSize: number;
   total: number;
   onPrev: () => void;
   onNext: () => void;
+  t: TFunc;
 }) {
   const totalPages = Math.ceil(total / pageSize);
   return (
@@ -533,13 +531,13 @@ function Pagination({
         className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl bg-white ring-1 ring-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       >
         <ChevronLeft className="h-4 w-4" />
-        Назад
+        {t("catalog.pagination.prev")}
       </button>
 
       <div className="flex items-center gap-1">
         <span className="px-4 h-11 inline-flex items-center text-sm font-semibold text-slate-500">
           <strong className="text-slate-900 tabular-nums mr-1">{page}</strong>
-          из
+          {t("catalog.pagination.of")}
           <strong className="text-slate-900 tabular-nums ml-1">{totalPages}</strong>
         </span>
       </div>
@@ -551,14 +549,14 @@ function Pagination({
         className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(249,115,22,0.55)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
         style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
       >
-        Вперёд
+        {t("catalog.pagination.next")}
         <ChevronRight className="h-4 w-4" />
       </button>
     </div>
   );
 }
 
-function EmptyState({ onReset }: { onReset: () => void }) {
+function EmptyState({ onReset, t }: { onReset: () => void; t: TFunc }) {
   return (
     <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-14 text-center">
       <div
@@ -567,9 +565,9 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       >
         <Compass className="h-7 w-7" />
       </div>
-      <h3 className="mt-5 text-lg font-bold text-slate-900">Туров не найдено</h3>
+      <h3 className="mt-5 text-lg font-bold text-slate-900">{t("catalog.empty.title")}</h3>
       <p className="mt-2 text-slate-500 text-sm max-w-xs mx-auto leading-relaxed">
-        Попробуйте сменить страну, цену или сбросить все фильтры.
+        {t("catalog.empty.desc")}
       </p>
       <button
         type="button"
@@ -578,7 +576,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
         style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
       >
         <ArrowUpRight className="h-4 w-4" />
-        Сбросить фильтры
+        {t("catalog.empty.reset")}
       </button>
     </div>
   );

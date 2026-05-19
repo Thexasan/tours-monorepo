@@ -8,7 +8,16 @@
   "home": {
     "hero": {
       "title": "Discover the World With Us",
-      "subtitle": "Best tours at the best prices with a cashback reward system"
+      "subtitle": "Best tours at the best prices with a cashback reward system",
+      "badge": "Travel without limits",
+      "headingLine1": "Discover the world",
+      "headingAccent": "like never before.",
+      "description": "Luxury tours at honest prices. Book premium holidays or travel absolutely free through our unique referral programme.",
+      "touristsCount": "12,000+",
+      "touristsLabel": "Happy travellers",
+      "rating": "4.9/5 rating",
+      "searchTitle": "Where are we going?",
+      "popularLabel": "Popular searches"
     },
     "search": {
       "destination": "Where are we going?",
@@ -16,30 +25,99 @@
       "dateFrom": "Date from",
       "dateTo": "Date to",
       "guests": "Guests",
-      "button": "Search"
+      "button": "Search",
+      "destinationLabel": "Destination",
+      "dateLabel": "Departure date",
+      "datePlaceholder": "Select",
+      "guestsLabel": "Guests",
+      "searchResults": "Search results",
+      "popularDestinations": "Popular destinations",
+      "noResults": "Destination not found",
+      "noResultsHint": "Try a different search",
+      "buttonSearch": "Find a tour",
+      "clearAriaLabel": "Clear",
+      "decreaseAriaLabel": "Decrease",
+      "increaseAriaLabel": "Increase"
+    },
+    "trust": {
+      "security": { "title": "100% Secure", "text": "Secure payments and refund guarantee" },
+      "support": { "title": "24/7 Support", "text": "Your personal manager is always available" },
+      "price": { "title": "Best Prices", "text": "No hidden fees or markups" },
+      "free": { "title": "Free Tours", "text": "Earn free tours by inviting friends" }
+    },
+    "destinations": {
+      "eyebrow": "Explore the world",
+      "title": "Top destinations",
+      "description": "Iconic resorts, exotic islands and the world's best beaches await you.",
+      "viewAll": "View all",
+      "toursCount": "tours available",
+      "bali": { "name": "Bali", "country": "Indonesia", "tag": "Popular" },
+      "turkey": { "name": "Turkey", "country": "Antalya", "tag": "Season hit" },
+      "dubai": { "name": "Dubai", "country": "UAE", "tag": "Luxury" },
+      "maldives": { "name": "Maldives", "country": "Indian Ocean", "tag": "Exclusive" },
+      "thailand": { "name": "Thailand", "country": "Bangkok · Phuket", "tag": "Exotic" },
+      "egypt": { "name": "Egypt", "country": "Hurghada · Sharm", "tag": "Beach" }
     },
     "hotTours": {
-      "title": "Hot Tours",
-      "empty": "No hot tours available right now"
+      "title": "Hot tours",
+      "empty": "No hot tours available right now",
+      "viewAll": "View all",
+      "costLabel": "Price",
+      "perPerson": "/pax"
     },
     "howItWorks": {
       "title": "How to travel for free?",
-      "step1": {
-        "title": "1. Share your link",
-        "desc": "Send your referral link to friends and acquaintances."
-      },
-      "step2": {
-        "title": "2. They book a tour",
-        "desc": "Your friend books a tour on our platform."
-      },
-      "step3": {
-        "title": "3. Get a free tour",
-        "desc": "Accumulate points and travel for free!"
-      }
+      "badge": "Loyalty programme",
+      "heading": "Travel",
+      "headingAccent": "on us",
+      "description": "Share experiences and earn points towards real trips. No hidden conditions — everything is crystal clear.",
+      "cta": "Get your link",
+      "step1": { "title": "Share your link", "desc": "Create an account and send your unique referral link to friends." },
+      "step2": { "title": "Friends book", "desc": "For every paid booking from a friend you earn bonuses directly to your account." },
+      "step3": { "title": "Head to the beach", "desc": "Accumulate points and choose any tour from our catalogue absolutely free." }
     },
     "reviews": {
       "title": "Latest Reviews",
       "empty": "No reviews yet"
+    },
+    "testimonials": {
+      "eyebrow": "Customer reviews",
+      "title": "Moments",
+      "titleAccent": "beyond priceless",
+      "subtitle": "Hear from those who have already discovered a new level of travel. Over 12,000 happy travellers trust us with their holidays.",
+      "cta": "All destinations",
+      "item0name": "Alina Koval",
+      "item0city": "Almaty → Bali",
+      "item0text": "I spent 10 days in Bali — everything was organised impeccably. The manager answered all my questions within 20 minutes. Already planning my next trip!",
+      "item0tour": "Bali, Indonesia",
+      "item1name": "Dmitry Petrov",
+      "item1city": "Moscow → Maldives",
+      "item1text": "Thanks to the referral programme I accumulated points and got a trip to the Maldives for free. It's simply incredible — I recommend it to everyone!",
+      "item1tour": "Maldives",
+      "item2name": "Zarina Begmatova",
+      "item2city": "Tashkent → Dubai",
+      "item2text": "A travel agency with real prices and no hidden fees. The manager is available around the clock. I'll definitely be coming back.",
+      "item2tour": "Dubai, UAE",
+      "item3name": "Marat Isakov",
+      "item3city": "Bishkek → Turkey",
+      "item3text": "The holiday in Turkey exceeded all expectations. 5-star hotel, all inclusive, transfers perfectly arranged. Thanks to the whole team!",
+      "item3tour": "Antalya, Turkey"
+    },
+    "chat": {
+      "badge": "We're online",
+      "title": "Personalised tour selection",
+      "subtitle": "No long searching. Just tell us where you want to go and we'll arrange everything in 15 minutes.",
+      "msg1": "We'd love Bali for two, budget $2000 🌴",
+      "msg2": "Great choice! I found 3 stunning villas. Sending the options now ✈️",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "loyalty": {
+      "badge": "Travellers' Club",
+      "title": "Travel",
+      "titleAccent": "for free",
+      "subtitle": "Invite friends via your personal link and earn bonuses from their bookings. Accumulate enough bonuses and head to the beach on us!",
+      "cta": "Join the club"
     }
   }
 }

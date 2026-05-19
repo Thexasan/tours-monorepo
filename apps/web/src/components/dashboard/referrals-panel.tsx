@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -52,48 +52,53 @@ export function ReferralsPanel() {
   return (
     <div className="space-y-6">
       {/* Hero header */}
-      <header className="tv-hero p-7 md:p-9">
-        <div className="flex flex-col md:flex-row md:items-end gap-6">
+      <header className="relative overflow-hidden p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-orange-950">
+        {/* Cosmic glow circles */}
+        <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -left-24 -bottom-24 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 top-1/4 w-40 h-40 rounded-full bg-rose-500/5 blur-3xl pointer-events-none animate-pulse" />
+
+        <div className="flex flex-col md:flex-row md:items-end gap-6 relative z-10">
           <div className="flex-1 min-w-0">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
-              <Sparkles className="h-3 w-3" /> Реферальная программа
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-orange-400">
+              <Sparkles className="h-3.5 w-3.5 animate-pulse" /> Реферальная программа
             </div>
-            <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight text-white">
-              Приглашай друзей — получай туры в подарок
+            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
+              Приглашайте друзей — получайте туры в подарок
             </h1>
-            <p className="mt-2 text-white/85 max-w-2xl">
+            <p className="mt-2 text-slate-300 font-medium max-w-xl text-sm leading-relaxed">
               {data.remaining > 0
-                ? `Осталось ${data.remaining} ${pluralize(data.remaining, "приглашение", "приглашения", "приглашений")} до бесплатного тура!`
-                : "🎉 Поздравляем! Можете оформить бесплатный тур."}
+                ? `Осталось пригласить ${data.remaining} ${pluralize(data.remaining, "друга", "друзей", "друзей")} до вашего следующего бесплатного тура!`
+                : "🎉 Поздравляем! Все условия выполнены, вы можете забрать бесплатный тур."}
             </p>
           </div>
 
-          {/* Progress ring-ish */}
-          <div className="md:w-80 shrink-0">
+          {/* Progress metric card */}
+          <div className="md:w-80 shrink-0 bg-white/5 border border-white/10 backdrop-blur-md p-5 rounded-2xl shadow-inner relative">
             <div className="flex items-baseline justify-between text-white">
-              <p className="text-xs uppercase tracking-[0.12em] text-white/70">Прогресс</p>
-              <p className="text-2xl font-bold tabular-nums">
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Накоплено друзей</p>
+              <p className="text-3xl font-extrabold tabular-nums text-white">
                 {data.referralCount}
-                <span className="text-white/60 text-base"> / {data.threshold}</span>
+                <span className="text-slate-400 text-sm font-semibold"> / {data.threshold}</span>
               </p>
             </div>
-            <div className="mt-3 h-3 rounded-full bg-black/25 overflow-hidden">
+            <div className="mt-3 h-3 rounded-full bg-black/35 overflow-hidden p-0.5 border border-white/5">
               <div
-                className="h-full rounded-full bg-linear-to-r from-amber-300 to-amber-500 transition-[width] duration-700"
+                className="h-full rounded-full bg-gradient-to-r from-orange-500 via-rose-500 to-amber-400 transition-all duration-1000 ease-out shadow-sm"
                 style={{ width: `${Math.min(100, data.progressPercent)}%` }}
               />
             </div>
             {data.freeToursAvailable > 0 && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-300/95 px-3 py-2 text-amber-950 text-sm font-semibold shadow-sm">
-                <Gift className="h-4 w-4" />
-                Доступно: {data.freeToursAvailable} бесплатный тур
+              <div className="mt-4 flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-amber-950 text-xs font-extrabold shadow-lg shadow-orange-500/10">
+                <Gift className="h-4.5 w-4.5 text-amber-950 shrink-0 animate-bounce" />
+                Доступно: {data.freeToursAvailable} бесплатный тур!
               </div>
             )}
           </div>
         </div>
       </header>
 
-      {/* Stats */}
+      {/* Stats tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatTile label="Переходы" value={data.clicks} hint="клики по ссылке"
           icon={MousePointerClick} tone="sky" />
@@ -105,44 +110,44 @@ export function ReferralsPanel() {
           icon={TrendingUp} tone="amber" />
       </div>
 
-      {/* Referral link */}
-      <section className="tv-surface-elevated p-6 md:p-7">
-        <h3 className="font-semibold text-slate-900 text-lg">Твоя реферальная ссылка</h3>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Поделись ссылкой — мы сами посчитаем переходы, регистрации и продажи.
+      {/* Referral link generation */}
+      <section className="tv-surface-elevated p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm bg-gradient-to-b from-white to-slate-50/20">
+        <h3 className="font-bold text-slate-900 text-lg">Ваша уникальная реферальная ссылка</h3>
+        <p className="text-xs font-semibold text-slate-400 mt-1">
+          Поделитесь ссылкой — мы автоматически посчитаем переходы, регистрации и продажи в вашей панели.
         </p>
 
-        <div className="mt-4 flex flex-col sm:flex-row gap-2">
+        <div className="mt-5 flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             readOnly
             value={refLink}
-            className="flex-1 h-11 rounded-xl border border-slate-200 px-3.5 text-sm font-mono bg-slate-50 text-slate-700 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15 outline-none"
+            className="flex-1 h-12 rounded-2xl border border-slate-200/80 px-4 text-xs font-mono bg-slate-50/80 text-slate-700 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all duration-300 font-bold"
             onClick={(e) => e.currentTarget.select()}
           />
-          <Button onClick={onCopy} variant={copied ? "default" : "outline"} className="shrink-0">
-            {copied ? (<><Check className="w-4 h-4" />Скопировано</>) : (<><Copy className="w-4 h-4" />Скопировать</>)}
+          <Button onClick={onCopy} variant={copied ? "default" : "outline"} className={`shrink-0 h-12 px-6 rounded-2xl font-bold transition-all duration-300 active:scale-95 ${copied ? "bg-emerald-600 hover:bg-emerald-700 border-transparent text-white" : "hover:bg-slate-100 text-slate-700"}`}>
+            {copied ? (<><Check className="w-4.5 h-4.5 mr-1" />Скопировано</>) : (<><Copy className="w-4.5 h-4.5 mr-1" />Скопировать link</>)}
           </Button>
         </div>
 
-        <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 mb-2">Поделиться</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="mt-6">
+          <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">Поделиться в сетях</p>
+          <div className="flex flex-wrap gap-2.5">
             <ShareLink
               href={`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`}
-              className="bg-[#229ED9] hover:bg-[#1f8fc5]"
+              className="bg-[#229ED9] hover:bg-[#1e8ec3] shadow-[#229ED9]/15 hover:shadow-[#229ED9]/30"
               icon={<Send className="h-4 w-4" />}
               label="Telegram"
             />
             <ShareLink
               href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${refLink}`)}`}
-              className="bg-[#25D366] hover:bg-[#21bd5b]"
+              className="bg-[#25D366] hover:bg-[#21be5c] shadow-[#25D366]/15 hover:shadow-[#25D366]/30"
               icon={<MessageCircle className="h-4 w-4" />}
               label="WhatsApp"
             />
             <ShareLink
               href={`https://vk.com/share.php?url=${encodeURIComponent(refLink)}&title=${encodeURIComponent(shareText)}`}
-              className="bg-[#0077FF] hover:bg-[#006ae3]"
+              className="bg-[#0077FF] hover:bg-[#006be5] shadow-[#0077FF]/15 hover:shadow-[#0077FF]/30"
               icon={<Share2 className="h-4 w-4" />}
               label="VK"
             />
@@ -152,45 +157,45 @@ export function ReferralsPanel() {
 
       {/* Notices */}
       {data.pendingBookings > 0 && (
-        <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-900">
-          <span className="grid place-items-center h-9 w-9 rounded-xl bg-amber-100 text-amber-700 shrink-0">
-            <ShoppingBag className="h-4 w-4" />
+        <div className="relative overflow-hidden flex items-start gap-4 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-200/50 p-5 text-amber-900 shadow-sm">
+          <span className="grid place-items-center h-10 w-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/20 shrink-0">
+            <ShoppingBag className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-semibold">{data.pendingBookings} {pluralize(data.pendingBookings, "заявка", "заявки", "заявок")} в работе у менеджера</p>
-            <p className="text-amber-700/90">Когда они будут оплачены, счётчик увеличится автоматически.</p>
+            <p className="font-bold text-amber-950">{data.pendingBookings} {pluralize(data.pendingBookings, "заявка", "заявки", "заявок")} в обработке у менеджера</p>
+            <p className="text-xs font-semibold text-amber-800/80 mt-1">Как только они будут полностью оплачены клиентами, ваш счётчик увеличится автоматически.</p>
           </div>
         </div>
       )}
 
       {data.role === "PARTNER" && (
-        <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-900">
-          <span className="grid place-items-center h-9 w-9 rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
-            <Sparkles className="h-4 w-4" />
+        <div className="relative overflow-hidden flex items-start gap-4 rounded-3xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-200/50 p-5 text-emerald-950 shadow-sm">
+          <span className="grid place-items-center h-10 w-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20 shrink-0 animate-pulse">
+            <Sparkles className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-semibold">Вы партнёр</p>
-            <p className="text-emerald-700/90">
-              Подробная статистика и баланс — в {" "}
-              <a href={`/${locale}/partner/dashboard`} className="font-semibold underline underline-offset-2">кабинете партнёра</a>.
+            <p className="font-bold">Вы являетесь зарегистрированным Партнёром</p>
+            <p className="text-xs font-semibold text-emerald-800/80 mt-1">
+              Детальная финансовая статистика, выплаты и баланс доступны в вашем специальном{" "}
+              <a href={`/${locale}/partner/dashboard`} className="font-extrabold text-emerald-600 underline underline-offset-4 hover:text-emerald-700 transition-colors">кабинете партнёра</a>.
             </p>
           </div>
         </div>
       )}
 
       {data.role === "CLIENT" && (
-        <div className="flex items-start gap-3 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700">
-          <span className="grid place-items-center h-9 w-9 rounded-xl bg-slate-200 text-slate-700 shrink-0">
-            <TrendingUp className="h-4 w-4" />
+        <div className="relative overflow-hidden flex items-start gap-4 rounded-3xl bg-gradient-to-r from-slate-500/5 to-transparent border border-slate-200/50 p-5 text-slate-700 shadow-sm">
+          <span className="grid place-items-center h-10 w-10 rounded-2xl bg-gradient-to-tr from-slate-400 to-slate-500 text-white shadow-md shrink-0">
+            <TrendingUp className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-semibold text-slate-900">Хотите зарабатывать 5% с каждой продажи?</p>
-            <p>
-              Партнёрство — для блогеров и агентов с большой аудиторией. Партнёров мы приглашаем сами; напишите нам на{" "}
-              <a href="mailto:support@traveling-tours.local" className="font-semibold text-orange-700 underline underline-offset-2">
+            <p className="font-bold text-slate-900">Хотите зарабатывать 5% комиссии с каждой продажи?</p>
+            <p className="text-xs font-medium text-slate-500 mt-1 leading-relaxed">
+              Партнёрская программа разработана для тревел-агентов, блогеров и инфлюенсеров с большой аудиторией. Партнёров мы приглашаем в индивидуальном порядке. Напишите нам на{" "}
+              <a href="mailto:support@traveling-tours.local" className="font-extrabold text-orange-600 underline underline-offset-4 hover:text-orange-700 transition-colors">
                 support@traveling-tours.local
               </a>
-              , если хотите сотрудничать.
+              , если заинтересованы в постоянном сотрудничестве.
             </p>
           </div>
         </div>
@@ -207,9 +212,9 @@ function ShareLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_4px_12px_-4px_rgba(15,23,42,0.25)] hover:-translate-y-0.5 transition-transform ${className}`}
+      className={`inline-flex items-center gap-2.5 px-5 py-3.5 rounded-2xl text-white text-xs font-extrabold tracking-wider uppercase shadow-md hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 ${className}`}
     >
-      {icon} {label}
+      {icon} <span>{label}</span>
     </a>
   );
 }
@@ -223,23 +228,47 @@ function StatTile({
   icon: React.ElementType;
   tone: "teal" | "sky" | "emerald" | "amber" | "rose";
 }) {
-  const toneCls: Record<typeof tone, string> = {
-    teal: "from-orange-500 to-orange-600 text-white",
-    sky: "from-sky-500 to-sky-600 text-white",
-    emerald: "from-emerald-500 to-emerald-600 text-white",
-    amber: "from-amber-400 to-amber-500 text-amber-950",
-    rose: "from-rose-500 to-rose-600 text-white",
-  };
+  const toneCls = {
+    teal: {
+      badge: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+      iconBg: "bg-gradient-to-br from-orange-500 to-rose-500 text-white shadow-[0_4px_12px_rgba(249,115,22,0.2)]",
+      hover: "hover:border-orange-500/30 hover:shadow-[0_8px_20px_-6px_rgba(249,115,22,0.1)]",
+    },
+    sky: {
+      badge: "bg-sky-500/10 text-sky-600 border-sky-500/20",
+      iconBg: "bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-[0_4px_12px_rgba(14,165,233,0.2)]",
+      hover: "hover:border-sky-500/30 hover:shadow-[0_8px_20px_-6px_rgba(14,165,233,0.1)]",
+    },
+    emerald: {
+      badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+      iconBg: "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_4px_12px_rgba(16,185,129,0.2)]",
+      hover: "hover:border-emerald-500/30 hover:shadow-[0_8px_20px_-6px_rgba(16,185,129,0.1)]",
+    },
+    amber: {
+      badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+      iconBg: "bg-gradient-to-br from-amber-500 to-yellow-500 text-white shadow-[0_4px_12px_rgba(245,158,11,0.25)]",
+      hover: "hover:border-amber-500/30 hover:shadow-[0_8px_20px_-6px_rgba(245,158,11,0.1)]",
+    },
+    rose: {
+      badge: "bg-rose-500/10 text-rose-600 border-rose-500/20",
+      iconBg: "bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-[0_4px_12px_rgba(244,63,94,0.2)]",
+      hover: "hover:border-rose-500/30 hover:shadow-[0_8px_20px_-6px_rgba(244,63,94,0.1)]",
+    },
+  }[tone];
+
   return (
-    <div className="tv-kpi">
-      <div className="relative flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</span>
-        <span className={`grid place-items-center h-8 w-8 rounded-lg bg-linear-to-br ${toneCls[tone]} shadow-sm`}>
-          <Icon className="h-4 w-4" />
+    <div className={`relative overflow-hidden tv-surface border ${toneCls.badge} p-5 flex flex-col justify-between rounded-2xl transition-all duration-300 hover:-translate-y-1 ${toneCls.hover} group`}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{label}</span>
+        <span className={`grid place-items-center h-9 w-9 rounded-xl transition-transform duration-300 group-hover:scale-110 ${toneCls.iconBg}`}>
+          <Icon className="h-4.5 w-4.5" />
         </span>
       </div>
-      <p className="relative mt-2 text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{value}</p>
-      {hint && <p className="relative text-xs text-slate-400 mt-1">{hint}</p>}
+      <div className="mt-4">
+        <p className="text-3xl font-extrabold tracking-tight text-slate-900 tabular-nums leading-none">{value}</p>
+        {hint && <p className="text-[10px] font-bold text-slate-400 mt-1.5 uppercase tracking-wide">{hint}</p>}
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
     </div>
   );
 }

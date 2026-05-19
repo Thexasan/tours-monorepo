@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Compass } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { PageWrapper } from "@/src/widgets/layout/page-wrapper";
 import { CurrencySelector } from "@/src/components/shared/currency-selector";
 import { UserMenu } from "@/src/widgets/layout/user-menu";
@@ -11,15 +12,11 @@ import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 import { NotificationsBell } from "@/src/components/notifications/notifications-bell";
 import { cn } from "@/src/lib/utils";
 
-const T = {
-  home: "Главная",
-  tours: "Туры",
-};
-
 export function Navbar() {
   const pathname = usePathname();
+  const locale = useLocale();
+  const t = useTranslations();
 
-  // Pages where navbar overlaps a full-bleed hero image
   const isHomePage = /^\/[a-z]{2}\/?$/.test(pathname ?? "");
   const isTourDetail = /^\/[a-z]{2}\/tours\/[^/]+\/?$/.test(pathname ?? "");
   const isToursPage = /^\/[a-z]{2}\/tours\/?$/.test(pathname ?? "");
@@ -56,7 +53,7 @@ export function Navbar() {
     >
       <PageWrapper size="wide" className="flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/ru" className="group inline-flex items-center gap-2.5 font-bold tracking-tight shrink-0">
+        <Link href={`/${locale}`} className="group inline-flex items-center gap-2.5 font-bold tracking-tight shrink-0">
           <span
             className={cn(
               "grid place-items-center h-9 w-9 rounded-xl text-white transition-transform duration-300 group-hover:rotate-[-6deg]",
@@ -80,17 +77,33 @@ export function Navbar() {
 
         {/* Nav links + controls */}
         <nav className="flex items-center gap-1 sm:gap-2">
-          <NavLink href="/ru" label={T.home} transparent={transparent} active={isHomePage} />
-          <NavLink href="/ru/tours" label={T.tours} transparent={transparent} active={pathname?.includes("/tours")} />
+          <NavLink href={`/${locale}`} label={t("nav.home")} transparent={transparent} active={isHomePage} />
+          <NavLink href={`/${locale}/tours`} label={t("nav.tours")} transparent={transparent} active={pathname?.includes("/tours")} />
 
+          {/* Mobile: language buttons only (< md) */}
           <div
             className={cn(
-              "mx-1 hidden md:flex items-center gap-1 pl-2 transition-colors duration-300",
-              transparent ? "border-l border-white/25" : "border-l border-slate-200",
+              "flex md:hidden items-center rounded-full h-8 transition-all duration-300",
+              transparent
+                ? "bg-white/10 ring-1 ring-white/20 backdrop-blur-sm"
+                : "bg-slate-50 ring-1 ring-slate-200",
             )}
           >
-            <LanguageSwitcher />
-            <CurrencySelector />
+            <LanguageSwitcher transparent={transparent} compact />
+          </div>
+
+          {/* Desktop: Language + Currency unified pill (≥ md) */}
+          <div
+            className={cn(
+              "mx-1 hidden md:flex items-center rounded-full h-8 transition-all duration-300",
+              transparent
+                ? "bg-white/10 ring-1 ring-white/20 backdrop-blur-sm"
+                : "bg-slate-50 ring-1 ring-slate-200",
+            )}
+          >
+            <LanguageSwitcher transparent={transparent} />
+            <span className={cn("self-stretch w-px my-1.5 shrink-0", transparent ? "bg-white/20" : "bg-slate-200")} />
+            <CurrencySelector transparent={transparent} />
           </div>
 
           <NotificationsBell transparent={transparent} />

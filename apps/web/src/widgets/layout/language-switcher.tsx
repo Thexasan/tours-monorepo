@@ -1,46 +1,46 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Globe } from "lucide-react";
+import { usePathname, useRouter } from "@/src/i18n/routing";
+import { cn } from "@/src/lib/utils";
 
 const LOCALES = [
   { code: "ru", label: "RU" },
   { code: "en", label: "EN" },
+  { code: "tj", label: "TJ" },
 ] as const;
 
-export function LanguageSwitcher() {
+interface Props {
+  transparent?: boolean;
+  compact?: boolean;
+}
+
+export function LanguageSwitcher({ transparent = false, compact = false }: Props) {
   const router = useRouter();
-  const pathname = usePathname() ?? "/";
+  const pathname = usePathname();
   const currentLocale = useLocale();
 
-  const switchTo = (newLocale: string) => {
-    if (newLocale === currentLocale) return;
-    // Заменить первый сегмент пути на новый locale
-    const segments = pathname.split("/");
-    if (segments.length > 1 && LOCALES.some((l) => l.code === segments[1])) {
-      segments[1] = newLocale;
-    } else {
-      segments.splice(1, 0, newLocale);
-    }
-    const newPath = segments.join("/") || "/";
-    router.push(newPath);
-    router.refresh();
-  };
-
   return (
-    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-zinc-200 bg-white text-xs">
-      <Globe className="w-3.5 h-3.5 text-zinc-500" />
+    <div className={cn("flex items-center gap-px", compact ? "px-1" : "px-2")}>
+      {!compact && (
+        <Globe className={cn("w-3.5 h-3.5 mr-1 shrink-0", transparent ? "text-white/50" : "text-slate-400")} />
+      )}
       {LOCALES.map((l) => (
         <button
           key={l.code}
           type="button"
-          onClick={() => switchTo(l.code)}
-          className={`px-1.5 py-0.5 rounded transition-colors ${
+          onClick={() => router.replace(pathname, { locale: l.code })}
+          className={cn(
+            "px-1.5 py-0.5 rounded text-[11px] font-bold transition-all",
             currentLocale === l.code
-              ? "bg-zinc-900 text-white"
-              : "text-zinc-600 hover:bg-zinc-100"
-          }`}
+              ? transparent
+                ? "bg-white/20 text-white"
+                : "bg-orange-500 text-white shadow-sm"
+              : transparent
+              ? "text-white/65 hover:text-white hover:bg-white/15"
+              : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/70",
+          )}
         >
           {l.label}
         </button>

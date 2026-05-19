@@ -1,9 +1,15 @@
-﻿import { Check, X, CheckCircle2, XCircle } from "lucide-react";
+"use client";
+
+import { Check, X, CheckCircle2, XCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function TourIncludedExcluded({
   included, excluded,
 }: { included: string[]; excluded: string[] }) {
+  const t = useTranslations("tours");
+
   if (!included.length && !excluded.length) return null;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {included.length > 0 && (
@@ -12,7 +18,7 @@ export function TourIncludedExcluded({
             <span className="grid place-items-center h-9 w-9 rounded-xl bg-emerald-100 text-emerald-700">
               <Check className="h-[18px] w-[18px]" strokeWidth={2.5} />
             </span>
-            <h3 className="font-bold text-slate-900 text-lg">В стоимость включено</h3>
+            <h3 className="font-bold text-slate-900 text-lg">{t("detail.included")}</h3>
           </div>
           <ul className="space-y-2.5">
             {included.map((item, i) => (
@@ -30,7 +36,7 @@ export function TourIncludedExcluded({
             <span className="grid place-items-center h-9 w-9 rounded-xl bg-rose-100 text-rose-600">
               <X className="h-[18px] w-[18px]" strokeWidth={2.5} />
             </span>
-            <h3 className="font-bold text-slate-900 text-lg">Не включено</h3>
+            <h3 className="font-bold text-slate-900 text-lg">{t("detail.excluded")}</h3>
           </div>
           <ul className="space-y-2.5">
             {excluded.map((item, i) => (

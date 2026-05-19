@@ -49,29 +49,44 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Desktop sidebar ──────────────────────────────────────── */}
       <aside className="hidden lg:block lg:sticky lg:top-6 lg:self-start h-fit">
-        <div className="tv-surface-elevated overflow-hidden">
-          {/* Balance hero */}
-          <div className="relative p-5 pb-5 text-white tv-hero-forest">
-            <div className="flex items-center gap-2.5">
-              <div className="grid place-items-center h-10 w-10 rounded-xl bg-white/20 backdrop-blur ring-1 ring-white/30">
-                <Briefcase className="h-5 w-5 text-white" />
+        <div className="tv-surface-elevated overflow-hidden rounded-3xl border border-slate-100 shadow-md bg-white">
+          
+          {/* Balance hero - Luxury Credit Card Style */}
+          <div className="relative p-6 pb-6 text-white m-3 rounded-2xl overflow-hidden shadow-lg border border-emerald-500/10 bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900">
+            {/* Card microgrid background effect & lighting */}
+            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+            <div className="absolute -right-12 -top-12 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+            <div className="absolute -left-12 -bottom-12 w-32 h-32 rounded-full bg-teal-500/20 blur-2xl pointer-events-none" />
+            
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="grid place-items-center h-9 w-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner">
+                  <Briefcase className="h-4.5 w-4.5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200 leading-none">КАБИНЕТ ПАРТНЁРА</p>
+                  <p className="text-xs font-semibold text-emerald-100/90 truncate max-w-[120px] mt-0.5">{user.email}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">Партнёр</p>
-                <p className="text-sm font-medium text-white/95 truncate">{user.email}</p>
+              {/* NFC/Chip card symbol */}
+              <div className="h-6 w-8 rounded-md bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 opacity-80 shadow-sm flex items-center justify-center p-1 border border-yellow-200/30 shrink-0">
+                <div className="grid grid-cols-2 gap-px w-full h-full border border-amber-600/30 rounded" />
               </div>
             </div>
-            <div className="mt-4 flex items-end justify-between">
+
+            <div className="mt-8 flex items-end justify-between relative z-10">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/70">Баланс</p>
-                <p className="text-3xl font-bold tracking-tight tabular-nums mt-0.5">${user.balance.toFixed(2)}</p>
+                <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200/70">ДОСТУПНЫЙ БАЛАНС</p>
+                <p className="text-3xl font-black tracking-tight tabular-nums mt-1 text-white shadow-sm">${user.balance.toFixed(2)}</p>
               </div>
-              <div className="text-emerald-100"><TrendingUp className="h-5 w-5" /></div>
+              <div className="p-2 rounded-lg bg-white/10 text-emerald-300 border border-white/10 shadow-sm animate-pulse shrink-0">
+                <TrendingUp className="h-4.5 w-4.5" />
+              </div>
             </div>
           </div>
 
-          <nav className="px-3 py-3 flex flex-col gap-0.5">
-            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Кабинет</p>
+          <nav className="px-3 py-3 flex flex-col gap-1">
+            <p className="px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Категории</p>
             {nav.map((it) => {
               const active = isActive(it.href);
               const Icon = it.icon;
@@ -79,48 +94,48 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={it.href}
                   href={it.href}
-                  className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-300 hover:pl-4 border ${
                     active
-                      ? "bg-emerald-50 text-emerald-700 font-semibold ring-1 ring-emerald-100"
-                      : "text-slate-700 hover:bg-slate-50"
+                      ? "bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-700 font-bold border-emerald-500/10 shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
+                      : "text-slate-600 hover:bg-slate-50/80 hover:text-slate-800 border-transparent"
                   }`}
                 >
-                  {active && <span className="absolute -left-1.5 top-2 bottom-2 w-1 rounded-full bg-linear-to-b from-emerald-500 to-emerald-700" aria-hidden />}
-                  <span className={`relative grid place-items-center h-8 w-8 rounded-lg transition-colors ${
+                  {active && <span className="absolute left-2 top-3.5 bottom-3.5 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600 shadow-[0_0_8px_rgba(16,185,129,0.6)]" aria-hidden />}
+                  <span className={`relative grid place-items-center h-8.5 w-8.5 rounded-xl transition-all duration-300 shrink-0 ${
                     active
-                      ? "bg-emerald-600 text-white shadow-[0_4px_10px_-2px_rgba(5,150,105,0.55)]"
-                      : "bg-slate-100 text-slate-500 group-hover:bg-emerald-50 group-hover:text-emerald-700"
+                      ? "bg-gradient-to-tr from-emerald-500 to-teal-600 text-white shadow-[0_4px_12px_rgba(16,185,129,0.3)] group-hover:scale-105"
+                      : "bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 group-hover:scale-105 border border-slate-100"
                   }`}>
                     <Icon className="h-4 w-4" />
                     {"badge" in it && it.badge !== undefined && (
-                      <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center px-0.5">
+                      <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-rose-500 text-white text-[9px] font-extrabold flex items-center justify-center px-0.5 shadow-sm shadow-rose-500/20">
                         {it.badge > 9 ? "9+" : it.badge}
                       </span>
                     )}
                   </span>
                   <span className="flex-1 min-w-0">{it.label}</span>
-                  {active && <ChevronRight className="h-4 w-4 text-emerald-600" />}
+                  {active && <ChevronRight className="h-4 w-4 text-emerald-600 group-hover:translate-x-0.5 transition-transform" />}
                 </Link>
               );
             })}
           </nav>
 
           <div className="border-t border-slate-100 p-3">
-            <Button variant="outline" className="w-full justify-center" onClick={() => void logout()}>
-              <LogOut className="w-4 h-4" /> Выйти
+            <Button variant="outline" className="w-full justify-center rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all duration-300 active:scale-95 text-xs py-2.5 h-10" onClick={() => void logout()}>
+              <LogOut className="w-4 h-4 mr-1.5" /> Выйти из аккаунта
             </Button>
           </div>
         </div>
 
-        <div className="mt-5 tv-surface p-4">
-          <div className="flex items-start gap-3">
-            <div className="grid place-items-center h-9 w-9 rounded-xl bg-amber-100 text-amber-700 shrink-0">
-              <Sparkles className="h-4 w-4" />
+        <div className="mt-5 relative overflow-hidden rounded-2xl border border-amber-500/10 p-5 bg-gradient-to-b from-white to-amber-500/[0.01] shadow-sm">
+          <div className="flex items-start gap-3.5 relative z-10">
+            <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-white shadow-[0_4px_12px_rgba(245,158,11,0.2)] shrink-0">
+              <Sparkles className="h-4.5 w-4.5 animate-pulse" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900">Минимум для вывода — $50</p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Ваша комиссия — {((user.commissionRate ?? 0.05) * 100).toFixed(0)}% с каждого оплаченного бронирования.
+              <p className="text-sm font-bold text-slate-800">Лимит выплат: $50</p>
+              <p className="text-[11px] font-semibold text-slate-400 mt-1 leading-normal">
+                Комиссионный процент: <strong className="text-emerald-600 font-bold">{((user.commissionRate ?? 0.05) * 100).toFixed(0)}%</strong> с каждой продажи.
               </p>
             </div>
           </div>
@@ -134,7 +149,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
       <nav
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex"
         style={{
-          background: "rgba(255,255,255,0.95)",
+          background: "rgba(255,255,255,0.96)",
           backdropFilter: "blur(12px)",
           borderTop: "1px solid rgba(226,232,240,0.8)",
           boxShadow: "0 -4px 24px -8px rgba(15,23,42,0.12)",

@@ -549,7 +549,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
                   <Clock className="h-6 w-6 text-violet-500 mx-auto" />
                   <p className="text-sm font-medium text-violet-800">Ожидание документов</p>
                   <p className="text-xs text-violet-600">
-                    Туристу отправлено уведомление. Страница обновляется каждые 15 сек.
+                    Туристу отправлено уведомление. Обновите страницу, чтобы проверить статус.
                   </p>
                 </div>
                 <Button

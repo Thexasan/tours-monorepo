@@ -1,11 +1,11 @@
 import { User } from "lucide-react";
 import { ProfileForm } from "@/src/components/dashboard/profile-form";
-import { PageHeader } from "@/src/components/dashboard/page-header";
+import { AdminPageHeader } from "@/src/components/admin/admin-page-header";
 
 export default function AdminProfilePage() {
   return (
     <div>
-      <PageHeader
+      <AdminPageHeader
         eyebrow="Аккаунт"
         title="Мой профиль"
         description="Управляйте своими личными данными."

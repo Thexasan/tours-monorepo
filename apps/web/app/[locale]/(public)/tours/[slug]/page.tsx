@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Hotel, Star as StarIcon, Utensils, Wifi } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { type Tour, type Review } from "@tours/types";
 import { TourDetailHeroWithModal } from "@/src/components/tours/tour-detail-shell";
 import { TourHighlightsBar } from "@/src/components/tours/tour-highlights-bar";
@@ -16,13 +17,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1
 interface TourDetail extends Tour {
   reviews: Review[];
 }
-
-const MEAL_LABELS: Record<string, string> = {
-  ALL_INCLUSIVE: "Всё включено",
-  HALF_BOARD: "Полупансион",
-  BREAKFAST: "Завтраки",
-  NO_MEALS: "Без питания",
-};
 
 async function fetchTour(slug: string): Promise<TourDetail | null> {
   try {
@@ -48,36 +42,24 @@ async function fetchSimilar(country: string): Promise<Tour[]> {
   }
 }
 
-function deriveItinerary(description: string, durationDays: number): ItineraryDay[] {
-  if (!description) return [];
-  const paragraphs = description.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-  const titles = [
-    "Прибытие · Welcome dinner",
-    "Знакомство и адаптация",
-    "Главная экскурсия",
-    "Свободный день",
-    "Культурная программа",
-    "Гастрономический день",
-    "Природа и активности",
-    "Шопинг и сувениры",
-    "Прощальный ужин",
-    "Возвращение домой",
-  ];
-  return Array.from({ length: durationDays }).map((_, i) => ({
-    day: i + 1,
-    title: titles[i] ?? `День ${i + 1}`,
-    desc: paragraphs[i] ?? "Подробная программа дня будет согласована с вашим менеджером после бронирования.",
-  }));
-}
-
 export default async function TourDetailPage({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const tour = await fetchTour(slug);
+  const [tour, t] = await Promise.all([
+    fetchTour(slug),
+    getTranslations({ locale, namespace: "tours" }),
+  ]);
   if (!tour) notFound();
+
+  const MEAL_LABELS: Record<string, string> = {
+    ALL_INCLUSIVE: t("mealPlan.ALL_INCLUSIVE"),
+    HALF_BOARD: t("mealPlan.HALF_BOARD"),
+    BREAKFAST: t("mealPlan.BREAKFAST"),
+    NO_MEALS: t("mealPlan.NO_MEALS"),
+  };
 
   const lang = (locale as "ru" | "en" | "tj") ?? "ru";
   const title = tour.title[lang] ?? tour.title.ru ?? tour.slug;
@@ -86,8 +68,33 @@ export default async function TourDetailPage({
   const excludedList: string[] = tour.programExcluded[lang] ?? tour.programExcluded.ru ?? [];
   const mealLabel = MEAL_LABELS[tour.mealPlan] ?? tour.mealPlan;
   const region = [tour.city, tour.country].filter(Boolean).join(", ");
-  const itinerary = deriveItinerary(description, tour.durationDays);
 
+  const DAY_TITLES = [
+    t("detail.itinerary.day0"),
+    t("detail.itinerary.day1"),
+    t("detail.itinerary.day2"),
+    t("detail.itinerary.day3"),
+    t("detail.itinerary.day4"),
+    t("detail.itinerary.day5"),
+    t("detail.itinerary.day6"),
+    t("detail.itinerary.day7"),
+    t("detail.itinerary.day8"),
+    t("detail.itinerary.day9"),
+  ];
+  const dayFallbackDesc = t("detail.itinerary.dayFallbackDesc");
+  const dayLabel = t("detail.itinerary.dayLabel");
+
+  function deriveItinerary(desc: string, durationDays: number): ItineraryDay[] {
+    if (!desc) return [];
+    const paragraphs = desc.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    return Array.from({ length: durationDays }).map((_, i) => ({
+      day: i + 1,
+      title: DAY_TITLES[i] ?? `${dayLabel} ${i + 1}`,
+      desc: paragraphs[i] ?? dayFallbackDesc,
+    }));
+  }
+
+  const itinerary = deriveItinerary(description, tour.durationDays);
   const similar = (await fetchSimilar(tour.country)).filter(t => t.id !== tour.id);
 
   return (
@@ -129,15 +136,15 @@ export default async function TourDetailPage({
           <div className="space-y-12 min-w-0">
             {/* About + hotel meta */}
             <article>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">О туре</h2>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t("detail.about")}</h2>
               <p className="mt-5 text-slate-700 leading-relaxed text-[17px] max-w-3xl whitespace-pre-line">{description}</p>
 
               {tour.hotelName && (
                 <div className="mt-7 rounded-2xl bg-linear-to-br from-slate-50 via-white to-teal-50/40 ring-1 ring-slate-100 p-5 flex flex-wrap items-center gap-x-8 gap-y-3">
-                  <MetaItem Icon={Hotel} tone="text-teal-700" label="Отель" value={tour.hotelName} />
-                  <MetaItem Icon={StarIcon} tone="text-amber-500" label="Категория" value={`${tour.hotelStars}★`} />
-                  <MetaItem Icon={Utensils} tone="text-rose-500" label="Питание" value={mealLabel} />
-                  <MetaItem Icon={Wifi} tone="text-sky-600" label="Удобства" value="Wi-Fi · Бассейн · Спа" />
+                  <MetaItem Icon={Hotel} tone="text-teal-700" label={t("detail.hotel")} value={tour.hotelName} />
+                  <MetaItem Icon={StarIcon} tone="text-amber-500" label={t("detail.category")} value={`${tour.hotelStars}★`} />
+                  <MetaItem Icon={Utensils} tone="text-rose-500" label={t("detail.meal")} value={mealLabel} />
+                  <MetaItem Icon={Wifi} tone="text-sky-600" label={t("detail.amenities")} value={t("detail.amenitiesValue")} />
                 </div>
               )}
 

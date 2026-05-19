@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -6,6 +6,7 @@ import {
   Calendar, Users, Heart, Plus, Minus, ArrowRight,
   Shield, Award, Headphones, Sparkles, Tag, Share2, Copy, Check,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BookingModal } from "@/src/components/bookings/booking-modal";
 import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
@@ -28,12 +29,12 @@ export function TourBookingSidebar({
   tourId, tourTitle, tourSlug, pricePerPerson, oldPrice,
   coverImage, country, hotelStars, durationDays, roomTypes, referralReward = 50,
 }: Props) {
+  const t = useTranslations("tours");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  // Auto-open modal after redirect back from register/login with ?book=1
   useEffect(() => {
     if (searchParams?.get("book") === "1") {
       setOpen(true);
@@ -43,6 +44,7 @@ export function TourBookingSidebar({
       router.replace(newUrl, { scroll: false });
     }
   }, [searchParams, router, pathname]);
+
   const [guests, setGuests] = useState(() => {
     const g = searchParams?.get("guests");
     return g ? Math.max(1, Math.min(20, parseInt(g, 10) || 1)) : 1;
@@ -74,14 +76,14 @@ export function TourBookingSidebar({
           <div className="p-6">
             <div className="flex items-end justify-between mb-2">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">от</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{t("sidebar.from")}</p>
                 <div className="flex items-baseline gap-2">
                   <p className="text-4xl font-bold text-slate-900 tabular-nums tracking-tight">${pricePerPerson.toLocaleString()}</p>
                   {oldPrice && (
                     <p className="text-sm text-slate-400 line-through tabular-nums">${oldPrice.toLocaleString()}</p>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">за человека · все налоги</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t("sidebar.perPerson")}</p>
               </div>
               {discount > 0 && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold ring-1 ring-rose-100">
@@ -92,7 +94,7 @@ export function TourBookingSidebar({
 
             <div className="mt-5 space-y-2.5">
               <label className="block">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Дата вылета</span>
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">{t("sidebar.departureDate")}</span>
                 <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-100 focus-within:ring-orange-300 transition-all">
                   <Calendar className="h-4 w-4 text-orange-600 shrink-0" />
                   <input
@@ -103,18 +105,20 @@ export function TourBookingSidebar({
                   />
                 </div>
               </label>
-              <PaxStepper label="Персон" value={guests} setValue={setGuests} min={1} max={20} />
+              <PaxStepper label={t("sidebar.persons")} value={guests} setValue={setGuests} min={1} max={20} />
             </div>
 
             <div className="mt-4 rounded-xl bg-linear-to-br from-orange-50/60 to-sky-50/60 ring-1 ring-orange-100/60 px-3.5 py-3">
               <div className="flex items-baseline justify-between">
-                <p className="text-xs text-slate-600">{guests} {guests === 1 ? "гость" : "гостей"}</p>
+                <p className="text-xs text-slate-600">
+                  {guests} {guests === 1 ? t("sidebar.guestOne") : t("sidebar.guestMany")}
+                </p>
                 <p className="text-xl font-bold text-slate-900 tabular-nums">${totalEstimate.toLocaleString()}</p>
               </div>
               {savings > 0 && (
                 <div className="flex items-center gap-1 mt-1 text-emerald-700">
                   <Tag className="h-3 w-3" />
-                  <p className="text-[11px] font-bold">Вы экономите ${savings.toLocaleString()}</p>
+                  <p className="text-[11px] font-bold">{t("sidebar.youSave")} ${savings.toLocaleString()}</p>
                 </div>
               )}
             </div>
@@ -125,7 +129,7 @@ export function TourBookingSidebar({
               className="mt-4 w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
               style={{ background: "linear-gradient(135deg, #f97316, #f43f5e)", boxShadow: "0 18px 36px -12px rgba(244,63,94,0.55)" }}
             >
-              Забронировать
+              {t("sidebar.book")}
               <ArrowRight className="h-[18px] w-[18px]" />
             </button>
             <button
@@ -134,18 +138,18 @@ export function TourBookingSidebar({
               className="mt-2 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-semibold bg-slate-50 text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100 transition"
             >
               <Heart className={cn("h-4 w-4", wishlisted && "fill-rose-500 text-rose-500")} />
-              {wishlisted ? "В избранном" : "Добавить в избранное"}
+              {wishlisted ? t("sidebar.removeWishlist") : t("sidebar.addWishlist")}
             </button>
 
             <p className="mt-3 text-center text-[11px] text-slate-500">
-              Бесплатная отмена до подтверждения · Менеджер ответит за 20 минут
+              {t("sidebar.freeCancellation")}
             </p>
           </div>
 
           <div className="border-t border-slate-100 divide-y divide-slate-100">
-            <TrustRow icon={Shield} tone="emerald" label="Защищённое бронирование" />
-            <TrustRow icon={Award} tone="amber" label="Гарантия лучшей цены" />
-            <TrustRow icon={Headphones} tone="sky" label="Поддержка 24/7 в WhatsApp" />
+            <TrustRow icon={Shield} tone="emerald" label={t("sidebar.secureBooking")} />
+            <TrustRow icon={Award} tone="amber" label={t("sidebar.bestPrice")} />
+            <TrustRow icon={Headphones} tone="sky" label={t("sidebar.support")} />
           </div>
         </div>
 
@@ -164,12 +168,12 @@ export function TourBookingSidebar({
                 <Share2 className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">Поделись и заработай</p>
-                <p className="text-sm font-bold">Реферальная программа</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">{t("sidebar.referral.badge")}</p>
+                <p className="text-sm font-bold">{t("sidebar.referral.title")}</p>
               </div>
             </div>
             <p className="mt-3 text-sm text-white/90 leading-relaxed">
-              Пригласи друга — получи <span className="font-bold">${referralReward}</span> на счёт после его поездки.
+              {t("sidebar.referral.descPart1")} <span className="font-bold">${referralReward}</span> {t("sidebar.referral.descPart2")}
             </p>
             <div className="mt-4 flex items-center gap-1.5 rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur p-1">
               <code className="flex-1 px-3 py-1.5 text-[11px] font-mono text-white/90 truncate">
@@ -181,8 +185,8 @@ export function TourBookingSidebar({
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-orange-700 text-[11px] font-bold hover:bg-white/90 transition"
               >
                 {shareCopied
-                  ? <><Check className="h-3 w-3" strokeWidth={3} />Скопировано</>
-                  : <><Copy className="h-3 w-3" />Скопировать</>
+                  ? <><Check className="h-3 w-3" strokeWidth={3} />{t("sidebar.referral.copied")}</>
+                  : <><Copy className="h-3 w-3" />{t("sidebar.referral.copy")}</>
                 }
               </button>
             </div>

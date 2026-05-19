@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Mail, ArrowRight, RefreshCw, CheckCircle2, Check } from "lucide-react";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { authApi } from "@/src/shared/api/auth-api";
@@ -17,19 +17,15 @@ import { Label } from "@/src/components/ui/label";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 
 // ── Step Indicator ──────────────────────────────────────────────────────────
-const STEPS = [
-  { id: "email",   label: "Email" },
-  { id: "otp",     label: "Код" },
-  { id: "details", label: "Данные" },
-] as const;
-
+const STEP_IDS = ["email", "otp", "details"] as const;
 const STEP_INDEX: Record<string, number> = { email: 0, otp: 1, details: 2 };
 
-function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
+function StepIndicator({ current, labels }: { current: "email" | "otp" | "details"; labels: [string, string, string] }) {
   const currentIdx = STEP_INDEX[current] ?? 0;
+  const steps = STEP_IDS.map((id, i) => ({ id, label: labels[i] }));
   return (
     <div className="flex items-start">
-      {STEPS.map((s, i) => {
+      {steps.map((s, i) => {
         const done   = i < currentIdx;
         const active = i === currentIdx;
         return (
@@ -55,7 +51,7 @@ function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
               </span>
             </div>
 
-            {i < STEPS.length - 1 && (
+            {i < steps.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mt-4 mx-2 transition-colors ${
                   done ? "bg-orange-500" : "bg-slate-200"
@@ -132,19 +128,8 @@ function OtpBoxes({
 
 const OTP_COOLDOWN = 60;
 
-const emailSchema = z.object({
-  email: z.string().email("Некорректный email"),
-});
-
-const detailsSchema = z.object({
-  fullName:     z.string().min(2, "Имя минимум 2 символа").max(100),
-  phone:        z.string().regex(/^\+?[0-9\s\-()]{6,20}$/, "Некорректный телефон").optional().or(z.literal("")),
-  password:     z.string().min(8, "Минимум 8 символов"),
-  referralCode: z.string().optional().or(z.literal("")),
-});
-
-type EmailValues   = z.infer<typeof emailSchema>;
-type DetailsValues = z.infer<typeof detailsSchema>;
+type EmailValues   = { email: string };
+type DetailsValues = { fullName: string; phone?: string; password: string; referralCode?: string };
 
 function readReferralCookie(): string | undefined {
   if (typeof document === "undefined") return undefined;
@@ -153,10 +138,21 @@ function readReferralCookie(): string | undefined {
 }
 
 export function RegisterForm() {
+  const t = useTranslations("auth");
   const { register: registerUser, isLoading } = useAuth();
   const router       = useRouter();
   const locale       = useLocale();
   const searchParams = useSearchParams();
+
+  const emailSchema = z.object({
+    email: z.string().email(t("register.validEmail")),
+  });
+  const detailsSchema = z.object({
+    fullName:     z.string().min(2, t("register.validName")).max(100),
+    phone:        z.string().regex(/^\+?[0-9\s\-()]{6,20}$/, t("register.validPhone")).optional().or(z.literal("")),
+    password:     z.string().min(8, t("register.validPassword")),
+    referralCode: z.string().optional().or(z.literal("")),
+  });
 
   const prefillEmail    = searchParams?.get("email") ?? "";
   const prefillName     = searchParams?.get("name")  ?? "";
@@ -246,7 +242,7 @@ export function RegisterForm() {
 
   async function handleOtpContinue() {
     if (otp.length !== 6) {
-      setOtpError("Введите все 6 цифр кода");
+      setOtpError(t("register.validOtp"));
       return;
     }
     setVerifyingOtp(true);
@@ -295,7 +291,7 @@ export function RegisterForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StepIndicator current={step} />
+      <StepIndicator current={step} labels={[t("register.stepEmail"), t("register.stepOtp"), t("register.stepDetails")]} />
 
       {/* ── Шаг 1: Email ─────────────────────────────────────────────────── */}
       {step === "email" && (
@@ -305,7 +301,7 @@ export function RegisterForm() {
         >
           {hasGuestBooking && (
             <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-800">
-              У вас уже есть гостевая заявка. После регистрации она появится в вашем кабинете.
+              {t("register.guestBookingNotice")}
             </div>
           )}
 
@@ -324,15 +320,15 @@ export function RegisterForm() {
           </div>
 
           <Button type="submit" disabled={sendingOtp} className="mt-2">
-            {sendingOtp ? "Отправляем код…" : (
+            {sendingOtp ? t("register.sendingCode") : (
               <span className="flex items-center gap-2">
-                Получить код подтверждения <ArrowRight className="h-4 w-4" />
+                {t("register.sendCode")} <ArrowRight className="h-4 w-4" />
               </span>
             )}
           </Button>
 
           <p className="text-center text-sm text-slate-500">
-            Мы отправим 6-значный код на ваш email для подтверждения
+            {t("register.codeHint")}
           </p>
         </form>
       )}
@@ -348,30 +344,28 @@ export function RegisterForm() {
               <Mail className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Код отправлен</p>
-              <p className="text-xs text-slate-500">на <strong>{confirmedEmail}</strong></p>
+              <p className="text-sm font-semibold text-slate-900">{t("register.codeSent")}</p>
+              <p className="text-xs text-slate-500">{t("register.codeSentTo")} <strong>{confirmedEmail}</strong></p>
             </div>
           </div>
 
           {devCode && (
             <div className="rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 p-4 text-center">
               <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-2">
-                ⚠ Dev-режим — SMTP не настроен
+                {t("register.devMode")}
               </p>
               <p className="text-3xl font-bold tracking-[0.25em] text-amber-900 select-all">{devCode}</p>
-              <p className="text-xs text-amber-600 mt-1.5">Скопируй этот код и введи ниже</p>
+              <p className="text-xs text-amber-600 mt-1.5">{t("register.devCodeHint")}</p>
             </div>
           )}
 
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-              Введите 6-значный код
+              {t("register.enterCode")}
             </p>
             <OtpBoxes value={otp} onChange={handleOtpChange} onComplete={handleOtpContinue} autoFocus />
             <p className="mt-2 text-center text-xs text-slate-400">
-              {devCode
-                ? "Скопируй код выше и вставь сюда (Ctrl+V)"
-                : "Код действителен 10 минут · Можно вставить из буфера обмена"}
+              {devCode ? t("register.devCodePaste") : t("register.codeExpiry")}
             </p>
           </div>
 
@@ -387,10 +381,10 @@ export function RegisterForm() {
             className="w-full"
           >
             {verifyingOtp ? (
-              "Проверяем код…"
+              t("register.verifying")
             ) : (
               <span className="flex items-center gap-2">
-                Продолжить <ArrowRight className="h-4 w-4" />
+                {t("register.verifyCode")} <ArrowRight className="h-4 w-4" />
               </span>
             )}
           </Button>
@@ -401,7 +395,7 @@ export function RegisterForm() {
               onClick={() => { setStep("email"); setOtp(""); setOtpError(null); }}
               className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
             >
-              Изменить email
+              {t("register.changeEmail")}
             </button>
             <button
               type="button"
@@ -410,7 +404,7 @@ export function RegisterForm() {
               className="flex items-center gap-1 text-orange-600 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              {cooldown > 0 ? `Отправить снова (${cooldown}с)` : "Отправить снова"}
+              {cooldown > 0 ? `${t("register.resend")} (${cooldown}с)` : t("register.resend")}
             </button>
           </div>
         </form>
@@ -422,12 +416,12 @@ export function RegisterForm() {
           <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-100 px-3 py-2">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
             <p className="text-sm text-emerald-800">
-              Email подтверждён: <strong>{confirmedEmail}</strong>
+              {t("register.emailConfirmed")} <strong>{confirmedEmail}</strong>
             </p>
           </div>
 
           <div>
-            <Label htmlFor="fullName">Имя и фамилия</Label>
+            <Label htmlFor="fullName">{t("register.nameLabel")}</Label>
             <Input id="fullName" autoComplete="name" autoFocus {...detailsForm.register("fullName")} />
             {detailsForm.formState.errors.fullName && (
               <p className="mt-1 text-sm text-red-600">{detailsForm.formState.errors.fullName.message}</p>
@@ -435,7 +429,7 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <Label htmlFor="phone">Телефон (опционально)</Label>
+            <Label htmlFor="phone">{t("register.phoneLabel")}</Label>
             <Input id="phone" type="tel" autoComplete="tel" placeholder="+998…" {...detailsForm.register("phone")} />
             {detailsForm.formState.errors.phone && (
               <p className="mt-1 text-sm text-red-600">{detailsForm.formState.errors.phone.message}</p>
@@ -443,7 +437,7 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <Label htmlFor="password">Пароль</Label>
+            <Label htmlFor="password">{t("register.passwordLabel")}</Label>
             <Input id="password" type="password" autoComplete="new-password" {...detailsForm.register("password")} />
             {detailsForm.formState.errors.password && (
               <p className="mt-1 text-sm text-red-600">{detailsForm.formState.errors.password.message}</p>
@@ -452,7 +446,7 @@ export function RegisterForm() {
 
           {refFromCookie && (
             <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-700">
-              Вы пришли по реферальной ссылке: <strong>{refFromCookie}</strong>
+              {t("register.referralNotice")} <strong>{refFromCookie}</strong>
             </div>
           )}
 
@@ -463,7 +457,7 @@ export function RegisterForm() {
           )}
 
           <Button type="submit" disabled={isLoading} className="mt-2">
-            {isLoading ? "Создаём аккаунт…" : "Зарегистрироваться"}
+            {isLoading ? t("register.loading") : t("register.submit")}
           </Button>
         </form>
       )}

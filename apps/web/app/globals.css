@@ -301,3 +301,21 @@ html, body {
   50% { transform: scale(1.15); }
   100% { transform: scale(1.05); }
 }
+
+@keyframes tv-pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.15); }
+}
+
+.animate-pulse-subtle {
+  animation: tv-pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.3s ease-out both;
+}
+

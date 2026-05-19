@@ -1,4 +1,7 @@
-﻿import { MapPin, Calendar, Users, Star } from "lucide-react";
+"use client";
+
+import { MapPin, Calendar, Users, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   region: string;
@@ -14,12 +17,39 @@ export function TourHighlightsBar({
   region, country, durationDays, durationNights, avgRating, reviewsCount,
   groupSize = "2–14",
 }: Props) {
+  const t = useTranslations("tours");
+
   const items = [
-    { Ic: MapPin, lbl: "Направление", val: region, sub: country, tone: "text-rose-500" },
-    { Ic: Calendar, lbl: "Длительность", val: `${durationDays} дней`, sub: `${durationNights} ночей`, tone: "text-orange-600" },
-    { Ic: Users, lbl: "Размер группы", val: `${groupSize} чел`, sub: "малая группа", tone: "text-sky-600" },
-    { Ic: Star, lbl: "Рейтинг", val: avgRating.toFixed(2), sub: `${reviewsCount} отзывов`, tone: "text-amber-500" },
+    {
+      Ic: MapPin,
+      lbl: t("detail.direction"),
+      val: region,
+      sub: country,
+      tone: "text-rose-500",
+    },
+    {
+      Ic: Calendar,
+      lbl: t("detail.duration"),
+      val: `${durationDays} ${t("detail.days")}`,
+      sub: `${durationNights} ${t("detail.nights")}`,
+      tone: "text-orange-600",
+    },
+    {
+      Ic: Users,
+      lbl: t("detail.groupSize"),
+      val: `${groupSize} ${t("detail.people")}`,
+      sub: t("detail.smallGroup"),
+      tone: "text-sky-600",
+    },
+    {
+      Ic: Star,
+      lbl: t("detail.rating"),
+      val: avgRating.toFixed(2),
+      sub: `${reviewsCount} ${t("detail.reviewsCount")}`,
+      tone: "text-amber-500",
+    },
   ];
+
   return (
     <section className="relative z-20 -mt-8 md:-mt-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">

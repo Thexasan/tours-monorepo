@@ -1,23 +1,42 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/src/lib/utils";
 import { useCurrencyStore, type Currency } from "@/src/shared/store/currency-store";
 
 const CURRENCIES: Currency[] = ["USD", "EUR", "RUB"];
 
-export function CurrencySelector() {
+interface Props {
+  transparent?: boolean;
+}
+
+export function CurrencySelector({ transparent = false }: Props) {
   const { currency, setCurrency } = useCurrencyStore();
 
   return (
-    <select
-      value={currency}
-      onChange={(e) => setCurrency(e.target.value as Currency)}
-      className="h-9 rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
-    >
-      {CURRENCIES.map((c) => (
-        <option key={c} value={c}>
-          {c}
-        </option>
-      ))}
-    </select>
+    <div className="relative flex items-center px-2">
+      <select
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value as Currency)}
+        className={cn(
+          "appearance-none bg-transparent border-none outline-none cursor-pointer pl-0 pr-4 text-[11px] font-bold h-7 transition-colors",
+          transparent
+            ? "text-white/80 hover:text-white"
+            : "text-slate-600 hover:text-slate-900",
+        )}
+      >
+        {CURRENCIES.map((c) => (
+          <option key={c} value={c} className="text-slate-900 bg-white font-medium">
+            {c}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className={cn(
+          "absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none shrink-0",
+          transparent ? "text-white/50" : "text-slate-400",
+        )}
+      />
+    </div>
   );
 }
