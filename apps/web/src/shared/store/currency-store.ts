@@ -32,6 +32,7 @@ export const useCurrencyStore = create<CurrencyStore>()(
       name: "tours-currency-store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ currency: state.currency }),
+      skipHydration: true,
     },
   ),
 );

@@ -3,11 +3,13 @@
 import { useEffect } from "react";
 import { useAuthStore } from "../store/auth-store";
 import { authApi } from "../api/auth-api";
+import { useCurrencyStore } from "../store/currency-store";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setHydrated } = useAuthStore();
 
   useEffect(() => {
+    useCurrencyStore.persist.rehydrate();
     let cancelled = false;
     (async () => {
       try {
