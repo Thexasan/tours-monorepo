@@ -43,9 +43,9 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 transition-all duration-500",
+        "sticky top-0 z-40 transition-[background-color,backdrop-filter,box-shadow,color] duration-300",
         transparent
-          ? "bg-linear-to-b from-black/45 to-transparent border-transparent shadow-none"
+          ? "bg-linear-to-b from-black/45 to-transparent shadow-none"
           : [
               "border-b border-slate-200/60",
               "bg-white/85 backdrop-blur-xl",

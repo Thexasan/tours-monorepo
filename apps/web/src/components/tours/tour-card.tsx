@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -140,96 +140,86 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
   }
 
   /* ─────────────────────────────────────────────
-     DEFAULT variant — image top, content below
+     DEFAULT variant — premium inset card layout
   ───────────────────────────────────────────── */
   return (
     <Link href={href} className="group block h-full">
-      <Card className="overflow-hidden flex flex-row md:flex-col h-full transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_44px_-12px_rgba(249,115,22,0.18),0_4px_12px_-4px_rgba(15,23,42,0.10)]">
-
-        {/* Image */}
-        <div className="relative w-2/5 md:w-full md:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100">
+      <div className="bg-white rounded-[2rem] p-3 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 h-full flex flex-col">
+        
+        {/* Image wrapped in a rounded container with padding */}
+        <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shrink-0 bg-slate-100">
           <Image
             src={tour.coverImage}
             alt={titleLocalized || "Tour Image"}
             fill
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.07]"
-            sizes="(max-width: 768px) 40vw, (max-width: 1200px) 25vw, 20vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.12) 40%, transparent 70%)" }}
-            aria-hidden
-          />
+          
+          {/* Subtle top gradient for icons */}
+          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+
           {tour.isHot && (
-            <div
-              className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_-2px_rgba(244,63,94,0.5)]"
-              style={{ background: "linear-gradient(135deg, #f43f5e 0%, #f97316 100%)" }}
-            >
-              <Flame className="h-3 w-3" />
-              {t("labels.hotTour", { fallback: "Горящий тур" })}
+            <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-rose-500 text-white px-3 py-1 text-[11px] font-bold shadow-lg shadow-rose-500/30 tracking-wide uppercase">
+              <Flame className="h-3.5 w-3.5" />
+              HOT
             </div>
           )}
-          <div className="absolute top-3 right-3 z-10 grid place-items-center h-9 w-9 rounded-full bg-white shadow-md translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-            <ArrowUpRight className="h-4 w-4 text-orange-600" />
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5 hidden md:flex items-end justify-between gap-2">
-            {tour.country && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white">
-                <MapPin className="h-3 w-3 text-rose-400" />{tour.country}
-              </span>
-            )}
-            {tour.durationDays && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white">
-                <Clock className="h-3 w-3 text-orange-300" />
-                {tour.durationDays} {t("labels.days", { fallback: "дн." })}
-              </span>
-            )}
+
+          {/* Action Button */}
+          <div className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 shadow-sm opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-white hover:text-slate-900">
+            <ArrowUpRight className="h-5 w-5" />
           </div>
         </div>
 
         {/* Content */}
-        <CardContent className="flex flex-col p-4 md:p-5 w-3/5 md:w-full grow">
-          <div className="mb-2.5 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`h-3.5 w-3.5 ${i < tour.hotelStars ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-200"}`} />
-              ))}
-            </div>
-            {tour.avgRating > 0 && (
-              <div className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">
-                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
-                {tour.avgRating.toFixed(1)}
-                {tour.reviewsCount > 0 && <span className="font-normal text-amber-500/80">({tour.reviewsCount})</span>}
-              </div>
-            )}
-          </div>
-          <h3 className="line-clamp-2 text-[15px] font-bold text-slate-900 group-hover:text-orange-700 transition-colors mb-2.5 leading-snug">
-            {titleLocalized}
-          </h3>
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            <span className="inline-flex items-center text-[11px] font-medium text-slate-500 bg-slate-50 rounded-full px-2.5 py-0.5 border border-slate-100">
-              {t(`mealPlan.${tour.mealPlan}`, { fallback: tour.mealPlan })}
-            </span>
-            {tour.durationDays && (
-              <span className="md:hidden inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 rounded-full px-2.5 py-0.5 border border-slate-100">
-                <Clock className="h-3 w-3" />
-                {tour.durationDays} {t("labels.days", { fallback: "дней" })}
+        <div className="px-3 pt-5 pb-3 flex flex-col grow">
+          <div className="flex items-center justify-between mb-3">
+            {tour.country && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-black tracking-[0.15em] uppercase text-teal-600 bg-teal-50 px-2.5 py-1 rounded-md">
+                <MapPin className="w-3 h-3" /> {tour.country}
               </span>
             )}
+            
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+              <span className="text-sm font-bold text-slate-900">
+                {tour.avgRating > 0 ? tour.avgRating.toFixed(1) : "Новый"}
+              </span>
+              {tour.reviewsCount > 0 && (
+                <span className="text-sm text-slate-400 ml-0.5">({tour.reviewsCount})</span>
+              )}
+            </div>
           </div>
-          <div className="mt-auto flex items-end justify-between">
+          
+          <h3 className="text-[19px] font-black text-slate-900 leading-[1.3] mb-4 group-hover:text-teal-600 transition-colors line-clamp-2">
+            {titleLocalized}
+          </h3>
+
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 font-medium mb-6">
+            {tour.durationDays && (
+              <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg">
+                <Clock className="w-4 h-4 text-slate-400" /> {tour.durationDays} {t("labels.days", { fallback: "дн." })}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg">
+              {t(`mealPlan.${tour.mealPlan}`, { fallback: tour.mealPlan })}
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="mt-auto pt-4 border-t border-slate-100 flex items-end justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">
-                {t("labels.from", { fallback: "от" })}
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">
+                {t("labels.from", { fallback: "Стоимость" })}
               </p>
-              <p className="text-[22px] font-extrabold text-orange-700 tabular-nums leading-none">{formattedPrice}</p>
-            </div>
-            <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-[0_6px_20px_-4px_rgba(249,115,22,0.55)] transition-all duration-200">
-              <ArrowUpRight className="h-5 w-5" />
+              <p className="text-2xl font-black text-slate-900 flex items-baseline gap-1">
+                {formattedPrice} <span className="text-sm font-medium text-slate-500">/чел</span>
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

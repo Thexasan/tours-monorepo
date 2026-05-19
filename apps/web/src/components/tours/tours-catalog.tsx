@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
@@ -209,89 +209,40 @@ export function ToursCatalog() {
 
 function CatalogHero({ locale }: { locale: string }) {
   return (
-    <section className="relative overflow-hidden" style={{ minHeight: 500 }}>
-      <div className="absolute inset-0">
+    <section className="pt-20 pb-4 px-4 md:px-6 lg:px-8 max-w-[1600px] mx-auto relative z-0">
+      <div className="relative w-full h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl">
         <Image
           src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=2000&q=85&auto=format&fit=crop"
-          alt=""
+          alt="Tours Hero"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover transition-transform duration-1000 hover:scale-105"
           sizes="100vw"
         />
+        
         {/* Dark neutral base — photo shows through beautifully */}
         <div
           aria-hidden
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(160deg, rgba(8,16,32,0.74) 0%, rgba(8,16,32,0.52) 48%, rgba(8,16,32,0.68) 100%)",
-          }}
+          className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-[#0B0F19]/30 to-transparent"
         />
-        {/* Subtle teal wash — left/text side only */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(to right, rgba(249,115,22,0.30) 0%, transparent 55%)",
-          }}
-        />
-        {/* Bottom dark fade so chip bar floats in cleanly */}
-        <div
-          aria-hidden
-          className="absolute bottom-0 left-0 right-0 h-36"
-          style={{ background: "linear-gradient(to top, rgba(8,16,32,0.65) 0%, transparent 100%)" }}
-        />
-      </div>
-
-      <div className="relative mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 pt-28 md:pt-40 pb-28 md:pb-36 text-white">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-white/60 mb-6">
-          <Link href={`/${locale}`} className="hover:text-white transition-colors">Главная</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-white/90 font-medium">Каталог туров</span>
-        </nav>
-
-        {/* Badge */}
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-white mb-6">
-          <Sparkles className="h-3 w-3 text-amber-300" />
-          50+ направлений по всему миру
-        </div>
-
-        {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-extrabold tracking-[-0.03em] leading-[1.02] max-w-2xl mb-5">
-          Найди свой<br />
-          <span
-            style={{
-              background: "linear-gradient(135deg, #fde68a 0%, #fb923c 55%, #f43f5e 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            идеальный тур
-          </span>
-        </h1>
-
-        <p className="text-[15px] md:text-[17px] text-white/72 max-w-lg leading-relaxed mb-8">
-          Горящие предложения, проверенные отели, прозрачные цены — всё в одном месте.
-        </p>
-
-        {/* Trust chips */}
-        <div className="flex flex-wrap gap-2">
-          {[
-            { icon: Shield, text: "Защищённые платежи" },
-            { icon: Award, text: "Гарантия лучшей цены" },
-            { icon: Headphones, text: "Поддержка 24/7" },
-          ].map(({ icon: Icon, text }) => (
-            <span
-              key={text}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-white/85"
-            >
-              <Icon className="h-3.5 w-3.5 text-orange-300 shrink-0" />
-              {text}
-            </span>
-          ))}
+        
+        <div className="absolute inset-0 p-8 md:p-16 flex flex-col justify-end">
+          <div className="max-w-4xl">
+             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white mb-6 shadow-sm">
+                <Sparkles className="h-3.5 w-3.5 text-amber-300" /> 50+ направлений по всему миру
+             </div>
+             
+             <h1 className="text-5xl md:text-6xl lg:text-[80px] font-black text-white tracking-tight leading-[1.05] mb-6 drop-shadow-lg">
+               Найди свой <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400">
+                 идеальный тур.
+               </span>
+             </h1>
+             
+             <p className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed drop-shadow">
+                Горящие предложения, проверенные отели и прозрачные цены. Начните свое незабываемое путешествие прямо сейчас.
+             </p>
+          </div>
         </div>
       </div>
     </section>
@@ -306,11 +257,8 @@ function CountryChips({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-2 ring-1 ring-slate-100 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.22),0_4px_16px_-4px_rgba(15,23,42,0.08)]">
-      <div
-        className="flex items-center gap-1 overflow-x-auto"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-      >
+    <div className="flex justify-center -mt-14 md:-mt-16 relative z-20 pb-12 px-4">
+      <div className="rounded-[2.5rem] bg-white/70 backdrop-blur-2xl p-2 md:p-2.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] ring-1 ring-slate-200/50 flex items-center max-w-full overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {POPULAR_COUNTRIES.map((c) => {
           const active = value === c.value;
           return (
@@ -318,10 +266,10 @@ function CountryChips({
               key={c.label}
               type="button"
               onClick={() => onChange(c.value)}
-              className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              className={`shrink-0 px-5 md:px-6 py-3 rounded-[2rem] text-[13px] md:text-sm font-bold transition-all duration-300 ${
                 active
-                  ? "bg-linear-to-br from-orange-500 to-orange-600 text-white shadow-[0_4px_16px_-4px_rgba(249,115,22,0.65)] scale-[1.02]"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-slate-900 text-white shadow-xl scale-100"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 scale-[0.98]"
               }`}
             >
               {c.label}
@@ -455,7 +403,7 @@ function FiltersPanel({
   return (
     <>
       <aside className="hidden lg:block">
-        <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-[0_1px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.10)] p-6 lg:sticky lg:top-20">
+        <div className="lg:sticky lg:top-28 pr-6 border-r border-slate-100">
           {content}
         </div>
       </aside>
