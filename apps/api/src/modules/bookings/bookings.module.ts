@@ -4,9 +4,10 @@ import { BookingsController } from "./bookings.controller";
 import { BookingDocumentsController } from "./documents/booking-documents.controller";
 import { BookingDocumentsService } from "./documents/booking-documents.service";
 import { NotificationsModule } from "../notifications/notifications.module";
+import { PdfModule } from "../pdf/pdf.module";
 
 @Module({
-  imports: [NotificationsModule],
+  imports: [NotificationsModule, PdfModule],
   controllers: [BookingsController, BookingDocumentsController],
   providers: [BookingsService, BookingDocumentsService],
   exports: [BookingsService],

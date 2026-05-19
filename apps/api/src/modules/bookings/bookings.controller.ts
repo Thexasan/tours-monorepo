@@ -1,8 +1,8 @@
 import { ApiTags } from "@nestjs/swagger";
 import {
-  Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards,
+  Body, Controller, Get, Param, Patch, Post, Query, Req, Res, UseGuards,
 } from "@nestjs/common";
-import type { Request } from "express";
+import type { Request, Response } from "express";
 import { BookingsService } from "./bookings.service";
 import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingStatusDto } from "./dto/update-booking-status.dto";
@@ -66,6 +66,22 @@ export class BookingsController {
     @CurrentUser() user: { id: string; role: UserRole },
   ) {
     return this.bookings.getById(id, user);
+  }
+
+  /** Скачать PDF-тикет — владелец заявки или ADMIN. Доступно только для PAID / COMPLETED. */
+  @Get(":id/ticket")
+  async downloadTicket(
+    @Param("id") id: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+    @Res() res: Response,
+  ) {
+    const { pdf, filename } = await this.bookings.getTicketPdf(id, user);
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Length": pdf.length,
+    });
+    res.end(pdf);
   }
 
   /** Смена статуса — только ADMIN. */

@@ -27,6 +27,8 @@
     "@tours/db": "*",
     "@tours/types": "*",
     "@types/multer": "^2.1.0",
+    "@types/pdfkit": "^0.17.6",
+    "@types/qrcode": "^1.5.6",
     "@vercel/blob": "^2.3.3",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -38,10 +40,13 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "pdfkit": "^0.18.0",
+    "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@fontsource/roboto": "^5.2.10",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",

@@ -3,10 +3,17 @@ import { ConfigService } from "@nestjs/config";
 import * as nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 
+interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType: string;
+}
+
 interface EmailPayload {
   to: string;
   subject: string;
   html: string;
+  attachments?: EmailAttachment[];
 }
 
 @Injectable()
@@ -65,6 +72,11 @@ export class EmailService implements OnModuleInit {
         to: payload.to,
         subject: payload.subject,
         html: payload.html,
+        attachments: payload.attachments?.map((a) => ({
+          filename: a.filename,
+          content: a.content,
+          contentType: a.contentType,
+        })),
       });
       this.logger.log(`Email sent to ${payload.to} (messageId=${info.messageId})`);
     } catch (err) {
@@ -177,6 +189,62 @@ export class EmailService implements OnModuleInit {
           <p style="color:#6b7280;font-size:13px;margin-top:30px">Команда Tours</p>
         </div>
       `,
+    });
+  }
+
+  async sendBookingPaid(
+    to: string,
+    contactName: string,
+    tourTitle: string,
+    bookingId: string,
+    ticketPdf: Buffer,
+    locale = "ru",
+  ): Promise<void> {
+    const appUrl = this.config.get<string>("APP_URL") ?? "http://localhost:3000";
+    const shortId = bookingId.slice(0, 8).toUpperCase();
+
+    await this.send({
+      to,
+      subject: `✅ Оплата подтверждена — ${tourTitle}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;margin:auto">
+          <div style="background:#0d9488;padding:24px 32px;border-radius:12px 12px 0 0">
+            <h1 style="margin:0;color:#ffffff;font-size:22px">Tours</h1>
+          </div>
+          <div style="background:#ffffff;padding:32px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
+            <h2 style="margin:0 0 16px;color:#0f172a">Ваша оплата подтверждена! ✅</h2>
+            <p style="color:#334155;margin:0 0 8px">Привет, <strong>${escapeHtml(contactName)}</strong>!</p>
+            <p style="color:#334155;margin:0 0 24px">
+              Оплата за тур <strong>${escapeHtml(tourTitle)}</strong> успешно получена.
+              Ваш билет-подтверждение (заявка <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">#${shortId}</code>)
+              прикреплён к этому письму в формате PDF.
+            </p>
+
+            <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:20px;margin:0 0 24px">
+              <p style="margin:0 0 4px;font-weight:600;color:#0f172a">Что дальше?</p>
+              <ul style="margin:8px 0 0;padding-left:20px;color:#334155;line-height:1.8">
+                <li>Распечатайте или сохраните PDF-билет</li>
+                <li>Предъявите его вместе с паспортом</li>
+                <li>Следите за обновлениями в личном кабинете</li>
+              </ul>
+            </div>
+
+            <a href="${appUrl}/${locale}/dashboard/trips/${encodeURIComponent(bookingId)}"
+              style="display:inline-block;background:#0d9488;color:#ffffff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px">
+              Открыть мою заявку
+            </a>
+
+            <p style="color:#94a3b8;font-size:12px;margin:32px 0 0">Команда Tours · Если у вас есть вопросы, напишите нам в WhatsApp или Telegram.</p>
+          </div>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: `ticket-${shortId}.pdf`,
+          content: ticketPdf,
+          contentType: "application/pdf",
+        },
+      ],
     });
   }
 

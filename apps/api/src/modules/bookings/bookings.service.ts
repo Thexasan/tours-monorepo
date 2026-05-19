@@ -4,6 +4,7 @@ import {
 import { PrismaService } from "../../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { PdfService } from "../pdf/pdf.service";
 import { Prisma, BookingStatus, UserRole, TransactionType, NotificationType } from "@tours/db";
 import { CreateBookingDto } from "./dto/create-booking.dto";
 import { UpdateBookingStatusDto } from "./dto/update-booking-status.dto";
@@ -54,6 +55,7 @@ export class BookingsService {
     private readonly prisma: PrismaService,
     private readonly email: EmailService,
     private readonly notifications: NotificationsService,
+    private readonly pdf: PdfService,
   ) {}
 
   async create(dto: CreateBookingDto, ctx: BookingContext) {
@@ -227,7 +229,15 @@ export class BookingsService {
 
   async updateStatus(id: string, dto: UpdateBookingStatusDto, adminId: string) {
     const booking = await this.prisma.booking.findUnique({
-      where: { id }, include: { tour: { select: { title: true, slug: true, referralThreshold: true } } },
+      where: { id },
+      include: {
+        tour: {
+          select: {
+            title: true, slug: true, referralThreshold: true,
+            country: true, city: true, durationDays: true, hotelName: true,
+          },
+        },
+      },
     });
     if (!booking) throw new NotFoundException("Booking not found");
 
@@ -280,9 +290,42 @@ export class BookingsService {
 
     const tourTitleRu = (booking.tour.title as { ru?: string }).ru ?? booking.tour.slug;
     if (statusChanged) {
-      void this.email.sendBookingStatusChanged(
-        booking.contactEmail, booking.contactName, tourTitleRu, dto.status,
-      ).catch(() => undefined);
+      if (isNewlyPaid) {
+        // Generate PDF ticket and send as email attachment (fire-and-forget)
+        void (async () => {
+          try {
+            const paidAt = result.booking.paidAt ?? new Date();
+            const ticketPdf = await this.pdf.generateTicket({
+              bookingId: id,
+              tourTitle: tourTitleRu,
+              contactName: booking.contactName,
+              contactEmail: booking.contactEmail,
+              contactPhone: booking.contactPhone,
+              guestsCount: booking.guestsCount,
+              preferredDate: booking.preferredDate?.toISOString() ?? null,
+              totalPriceUsd: Number(booking.totalPriceUsd),
+              country: booking.tour.country,
+              city: booking.tour.city ?? null,
+              durationDays: booking.tour.durationDays,
+              hotelName: booking.tour.hotelName ?? null,
+              paidAt: paidAt.toISOString(),
+            });
+            await this.email.sendBookingPaid(
+              booking.contactEmail, booking.contactName, tourTitleRu, id, ticketPdf,
+            );
+          } catch (err) {
+            this.logger.error(`Failed to generate/send ticket for booking ${id}: ${(err as Error).message}`);
+            // Fallback: send plain status email without PDF
+            await this.email.sendBookingStatusChanged(
+              booking.contactEmail, booking.contactName, tourTitleRu, dto.status,
+            ).catch(() => undefined);
+          }
+        })();
+      } else {
+        void this.email.sendBookingStatusChanged(
+          booking.contactEmail, booking.contactName, tourTitleRu, dto.status,
+        ).catch(() => undefined);
+      }
 
       const notifTemplate = STATUS_NOTIFICATION[dto.status];
       if (notifTemplate && booking.userId) {
@@ -302,6 +345,42 @@ export class BookingsService {
     }
 
     return this.serialize(result.booking);
+  }
+
+  async getTicketPdf(id: string, requester: { id: string; role: UserRole }): Promise<{ pdf: Buffer; filename: string }> {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        tour: { select: { title: true, slug: true, country: true, city: true, durationDays: true, hotelName: true } },
+      },
+    });
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (requester.role !== UserRole.ADMIN && booking.userId !== requester.id) {
+      throw new ForbiddenException("Access denied");
+    }
+    if (booking.status !== BookingStatus.PAID && booking.status !== BookingStatus.COMPLETED) {
+      throw new BadRequestException("Ticket is only available for paid bookings");
+    }
+
+    const tourTitleRu = (booking.tour.title as { ru?: string }).ru ?? booking.tour.slug;
+    const pdf = await this.pdf.generateTicket({
+      bookingId: id,
+      tourTitle: tourTitleRu,
+      contactName: booking.contactName,
+      contactEmail: booking.contactEmail,
+      contactPhone: booking.contactPhone,
+      guestsCount: booking.guestsCount,
+      preferredDate: booking.preferredDate?.toISOString() ?? null,
+      totalPriceUsd: Number(booking.totalPriceUsd),
+      country: booking.tour.country,
+      city: booking.tour.city ?? null,
+      durationDays: booking.tour.durationDays,
+      hotelName: booking.tour.hotelName ?? null,
+      paidAt: (booking.paidAt ?? booking.updatedAt).toISOString(),
+    });
+
+    const shortId = id.slice(0, 8).toUpperCase();
+    return { pdf, filename: `ticket-${shortId}.pdf` };
   }
 
   async requestPayment(id: string, dto: RequestPaymentDto, adminId: string) {
