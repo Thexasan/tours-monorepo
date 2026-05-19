@@ -1,4 +1,4 @@
-import * as React from "react";
+﻿import * as React from "react";
 import { cn } from "@/src/lib/utils";
 
 interface PageHeaderProps {
@@ -56,13 +56,13 @@ export function PageHeader({
     >
       <div className="flex items-start gap-3 min-w-0">
         {icon && (
-          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.6)]">
+          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-linear-to-br from-orange-500 to-sky-600 text-white shadow-[0_8px_18px_-8px_rgba(249,115,22,0.6)]">
             {icon}
           </div>
         )}
         <div className="min-w-0">
           {eyebrow && (
-            <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-teal-700">
+            <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-orange-700">
               {eyebrow}
             </p>
           )}

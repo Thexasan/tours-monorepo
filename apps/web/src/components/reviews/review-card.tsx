@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { Star, MapPin } from "lucide-react";
@@ -10,12 +10,12 @@ export function ReviewCard({ review }: { review: Review }) {
   const tourTitle = review.tourTitle[locale] ?? review.tourTitle.ru;
 
   return (
-    <article className="relative h-full flex flex-col rounded-2xl bg-white p-6 ring-1 ring-slate-100 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_10px_28px_-14px_rgba(15,23,42,0.14)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.04),0_20px_44px_-12px_rgba(13,148,136,0.16)] hover:-translate-y-1.5 transition-all duration-300">
+    <article className="relative h-full flex flex-col rounded-2xl bg-white p-6 ring-1 ring-slate-100 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_10px_28px_-14px_rgba(15,23,42,0.14)] hover:shadow-[0_4px_8px_rgba(15,23,42,0.04),0_20px_44px_-12px_rgba(249,115,22,0.16)] hover:-translate-y-1.5 transition-all duration-300">
 
       {/* Large decorative quote — typographic character, not SVG */}
       <span
         aria-hidden
-        className="absolute top-3 right-4 text-[80px] font-black leading-none select-none pointer-events-none text-teal-100"
+        className="absolute top-3 right-4 text-[80px] font-black leading-none select-none pointer-events-none text-orange-100"
       >
         "
       </span>
@@ -56,7 +56,7 @@ export function ReviewCard({ review }: { review: Review }) {
 
       {/* Author */}
       <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-teal-100 shadow-sm">
+        <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-orange-100 shadow-sm">
           {review.author.avatarUrl ? (
             <Image
               src={review.author.avatarUrl}
@@ -68,7 +68,7 @@ export function ReviewCard({ review }: { review: Review }) {
           ) : (
             <div
               className="w-full h-full flex items-center justify-center font-bold text-sm text-white"
-              style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+              style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
             >
               {review.author.fullName.charAt(0).toUpperCase()}
             </div>
@@ -79,7 +79,7 @@ export function ReviewCard({ review }: { review: Review }) {
             {review.author.fullName}
           </p>
           <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5 truncate">
-            <MapPin className="h-3 w-3 text-teal-500 shrink-0" />
+            <MapPin className="h-3 w-3 text-orange-500 shrink-0" />
             {tourTitle}
           </p>
         </div>

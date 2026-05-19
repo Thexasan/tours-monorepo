@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -28,11 +28,11 @@ export function NewsletterForm() {
         onChange={e => setEmail(e.target.value)}
         placeholder="your@email.com"
         required
-        className="flex-1 sm:w-56 px-4 py-2.5 rounded-xl bg-white/[0.07] ring-1 ring-white/11 text-white placeholder-white/25 text-sm outline-none focus:ring-2 focus:ring-teal-500/50 transition-all"
+        className="flex-1 sm:w-56 px-4 py-2.5 rounded-xl bg-white/[0.07] ring-1 ring-white/11 text-white placeholder-white/25 text-sm outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
       />
       <button
         type="submit"
-        className="shrink-0 px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold text-sm transition-colors"
+        className="shrink-0 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-semibold text-sm transition-colors"
       >
         Подписаться
       </button>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -213,7 +213,7 @@ export function TourFormModal({
               className={cn(
                 "px-3 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all",
                 openSection === s
-                  ? "border-teal-600 text-teal-700"
+                  ? "border-orange-600 text-orange-700"
                   : "border-transparent text-slate-400 hover:text-slate-700",
               )}
             >
@@ -332,7 +332,7 @@ export function TourFormModal({
                       ...prev,
                       { id: `room-${Date.now()}`, title: "", desc: "", priceModifier: 0 },
                     ])}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-600 text-white text-xs font-semibold hover:bg-orange-700 transition"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Добавить
@@ -501,7 +501,7 @@ export function TourFormModal({
                       type="checkbox"
                       id="isActive"
                       {...register("isActive")}
-                      className="h-4 w-4 rounded text-teal-600 focus:ring-teal-400"
+                      className="h-4 w-4 rounded text-orange-600 focus:ring-orange-400"
                     />
                     <label htmlFor="isActive" className="text-sm font-semibold text-slate-800 cursor-pointer">
                       Тур активен (показывается в каталоге)
@@ -533,7 +533,7 @@ export function TourFormModal({
                 type="submit"
                 disabled={saving}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
-                style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
               >
                 {saving ? "Сохранение…" : isEdit ? "Сохранить изменения" : "Создать тур"}
               </button>
@@ -558,7 +558,7 @@ const BASE_INPUT = "w-full rounded-xl text-sm text-slate-900 bg-white ring-1 px-
 function fieldCls(hasError: boolean, disabled = false) {
   return cn(
     BASE_INPUT,
-    hasError ? "ring-rose-300 focus:ring-rose-500/40" : "ring-slate-200 focus:ring-teal-500/40",
+    hasError ? "ring-rose-300 focus:ring-rose-500/40" : "ring-slate-200 focus:ring-orange-500/40",
     disabled && "opacity-50 cursor-not-allowed bg-slate-50",
   );
 }
@@ -567,7 +567,7 @@ function textareaCls(hasError: boolean) {
   return cn(
     BASE_INPUT,
     "resize-none leading-relaxed",
-    hasError ? "ring-rose-300 focus:ring-rose-500/40" : "ring-slate-200 focus:ring-teal-500/40",
+    hasError ? "ring-rose-300 focus:ring-rose-500/40" : "ring-slate-200 focus:ring-orange-500/40",
   );
 }
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -24,7 +24,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="py-24 flex items-center justify-center">
         <div className="flex items-center gap-3 text-slate-500">
-          <span className="inline-block h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
+          <span className="inline-block h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
           <span>Проверяем авторизацию…</span>
         </div>
       </div>
@@ -51,7 +51,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const bottomTabs = nav.slice(0, 5);
 
   const roleMeta: Record<string, { label: string; cls: string }> = {
-    CLIENT:  { label: "Путешественник", cls: "bg-teal-50 text-teal-700 ring-teal-100" },
+    CLIENT:  { label: "Путешественник", cls: "bg-orange-50 text-orange-700 ring-orange-100" },
     PARTNER: { label: "Партнёр",        cls: "bg-amber-50 text-amber-700 ring-amber-100" },
     ADMIN:   { label: "Администратор",  cls: "bg-rose-50 text-rose-700 ring-rose-100" },
   };
@@ -86,7 +86,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     className="h-14 w-14 rounded-2xl object-cover ring-4 ring-white shadow-md"
                   />
                 ) : (
-                  <div className="h-14 w-14 rounded-2xl bg-white ring-4 ring-white shadow-md grid place-items-center text-teal-700 font-bold tracking-tight">
+                  <div className="h-14 w-14 rounded-2xl bg-white ring-4 ring-white shadow-md grid place-items-center text-orange-700 font-bold tracking-tight">
                     {initials || <Compass className="h-6 w-6" />}
                   </div>
                 )}
@@ -118,8 +118,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <Link key={it.href} href={it.href} data-active={active} className="tv-nav-item group">
                   <span className={`relative grid place-items-center h-8 w-8 rounded-lg transition-colors ${
                     active
-                      ? "bg-teal-600 text-white shadow-[0_4px_10px_-2px_rgba(13,148,136,0.55)]"
-                      : "bg-slate-100 text-slate-500 group-hover:bg-teal-50 group-hover:text-teal-700"
+                      ? "bg-orange-600 text-white shadow-[0_4px_10px_-2px_rgba(249,115,22,0.55)]"
+                      : "bg-slate-100 text-slate-500 group-hover:bg-orange-50 group-hover:text-orange-700"
                   }`}>
                     <Icon className="h-4 w-4" />
                     {badge > 0 && (
@@ -129,7 +129,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     )}
                   </span>
                   <span className="flex-1 min-w-0"><span className="block leading-tight">{it.label}</span></span>
-                  {active && <ChevronRight className="h-4 w-4 text-teal-600" />}
+                  {active && <ChevronRight className="h-4 w-4 text-orange-600" />}
                 </Link>
               );
             })}
@@ -176,18 +176,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[56px] relative"
             >
               <span className="relative">
-                <Icon className={`h-5 w-5 transition-colors ${active ? "text-teal-600" : "text-slate-400"}`} />
+                <Icon className={`h-5 w-5 transition-colors ${active ? "text-orange-600" : "text-slate-400"}`} />
                 {badge > 0 && (
                   <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-0.5 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
                     {badge > 9 ? "9+" : badge}
                   </span>
                 )}
               </span>
-              <span className={`text-[10px] font-semibold transition-colors leading-tight ${active ? "text-teal-600" : "text-slate-400"}`}>
+              <span className={`text-[10px] font-semibold transition-colors leading-tight ${active ? "text-orange-600" : "text-slate-400"}`}>
                 {it.shortLabel}
               </span>
               {active && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-teal-500" />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-orange-500" />
               )}
             </Link>
           );

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState, useCallback } from "react";
 import { UploadCloud, X, Loader2 } from "lucide-react";
@@ -90,7 +90,7 @@ export function SingleImageUploader({ value, onChange, label, hint }: SingleImag
           disabled={loading}
           className={cn(
             "flex flex-col items-center justify-center gap-2 w-full max-w-sm aspect-video rounded-xl border-2 border-dashed transition",
-            dragging ? "border-teal-400 bg-teal-50/60" : "border-slate-200 bg-slate-50/60 hover:border-teal-300 hover:bg-teal-50/40",
+            dragging ? "border-orange-400 bg-orange-50/60" : "border-slate-200 bg-slate-50/60 hover:border-orange-300 hover:bg-orange-50/40",
             loading && "pointer-events-none opacity-60"
           )}
         >

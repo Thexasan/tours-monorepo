@@ -68,8 +68,8 @@ export function TourBookingSidebar({
     <>
       <div className="lg:sticky lg:top-24 space-y-4">
         {/* Booking card */}
-        <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(13,148,136,0.35)]">
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-teal-500 via-sky-500 to-rose-500" />
+        <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(249,115,22,0.35)]">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-orange-500 via-sky-500 to-rose-500" />
 
           <div className="p-6">
             <div className="flex items-end justify-between mb-2">
@@ -93,8 +93,8 @@ export function TourBookingSidebar({
             <div className="mt-5 space-y-2.5">
               <label className="block">
                 <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Дата вылета</span>
-                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-100 focus-within:ring-teal-300 transition-all">
-                  <Calendar className="h-4 w-4 text-teal-600 shrink-0" />
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-100 focus-within:ring-orange-300 transition-all">
+                  <Calendar className="h-4 w-4 text-orange-600 shrink-0" />
                   <input
                     type="date"
                     value={departDate}
@@ -106,7 +106,7 @@ export function TourBookingSidebar({
               <PaxStepper label="Персон" value={guests} setValue={setGuests} min={1} max={20} />
             </div>
 
-            <div className="mt-4 rounded-xl bg-linear-to-br from-teal-50/60 to-sky-50/60 ring-1 ring-teal-100/60 px-3.5 py-3">
+            <div className="mt-4 rounded-xl bg-linear-to-br from-orange-50/60 to-sky-50/60 ring-1 ring-orange-100/60 px-3.5 py-3">
               <div className="flex items-baseline justify-between">
                 <p className="text-xs text-slate-600">{guests} {guests === 1 ? "гость" : "гостей"}</p>
                 <p className="text-xl font-bold text-slate-900 tabular-nums">${totalEstimate.toLocaleString()}</p>
@@ -153,8 +153,8 @@ export function TourBookingSidebar({
         <div
           className="relative overflow-hidden rounded-3xl text-white p-5"
           style={{
-            background: "linear-gradient(135deg, #0d9488 0%, #0284c7 60%, #1e3a8a 100%)",
-            boxShadow: "0 22px 48px -20px rgba(13,148,136,0.45)",
+            background: "linear-gradient(135deg, #f97316 0%, #0284c7 60%, #1e3a8a 100%)",
+            boxShadow: "0 22px 48px -20px rgba(249,115,22,0.45)",
           }}
         >
           <div aria-hidden className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white/15 blur-2xl" />
@@ -178,7 +178,7 @@ export function TourBookingSidebar({
               <button
                 type="button"
                 onClick={copyReferral}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-teal-700 text-[11px] font-bold hover:bg-white/90 transition"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-orange-700 text-[11px] font-bold hover:bg-white/90 transition"
               >
                 {shareCopied
                   ? <><Check className="h-3 w-3" strokeWidth={3} />Скопировано</>

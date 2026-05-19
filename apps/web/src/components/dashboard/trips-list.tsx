@@ -55,7 +55,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   if (data.items.length === 0) {
     return (
       <div className="tv-surface-elevated p-12 text-center">
-        <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-teal-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.55)]">
+        <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-orange-500 to-sky-600 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(249,115,22,0.55)]">
           <Compass className="h-7 w-7" />
         </div>
         <h3 className="mt-4 text-lg font-semibold text-slate-900">Пока ни одной поездки</h3>
@@ -88,7 +88,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
         return (
           <article
             key={b.id}
-            className="group tv-surface p-4 sm:p-5 flex flex-col sm:flex-row gap-4 hover:border-teal-200 hover:shadow-[0_10px_30px_-12px_rgba(13,148,136,0.25)] transition-all"
+            className="group tv-surface p-4 sm:p-5 flex flex-col sm:flex-row gap-4 hover:border-orange-200 hover:shadow-[0_10px_30px_-12px_rgba(249,115,22,0.25)] transition-all"
           >
             <div className="relative w-full sm:w-32 sm:h-32 aspect-video sm:aspect-square rounded-xl overflow-hidden shrink-0 bg-slate-100 ring-1 ring-slate-200/70">
               {tour?.coverImage ? (
@@ -114,7 +114,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
 
             <div className="flex-1 min-w-0 flex flex-col">
               <div className="flex items-start justify-between gap-2 mb-1">
-                <h3 className="font-semibold text-slate-900 leading-tight line-clamp-2 group-hover:text-teal-700 transition-colors">
+                <h3 className="font-semibold text-slate-900 leading-tight line-clamp-2 group-hover:text-orange-700 transition-colors">
                   {tour ? (
                     <Link href={`/${locale}/tours/${tour.slug}`} className="focus:outline-none">
                       {tourTitle}
@@ -127,7 +127,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
 
               {tour?.country && (
                 <p className="text-sm text-slate-500 flex items-center gap-1 mb-3">
-                  <MapPin className="h-3.5 w-3.5 text-teal-600" />
+                  <MapPin className="h-3.5 w-3.5 text-orange-600" />
                   {tour.country}
                 </p>
               )}
@@ -142,7 +142,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                   <span>{new Date(b.createdAt).toLocaleDateString("ru-RU")}</span>
                 </div>
                 <div className="text-slate-600 flex items-center gap-1.5">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500" />
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500" />
                   <span>Сумма: <strong className="text-slate-900 tabular-nums">${b.totalPriceUsd}</strong></span>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
               <div className="mt-auto pt-3 flex flex-wrap items-center gap-3">
                 <Link
                   href={`/${locale}/${basePath}/trips/${b.id}`}
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-orange-700 hover:text-teal-800"
                 >
                   Открыть заявку
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

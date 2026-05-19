@@ -5,12 +5,12 @@ import { Slot } from "radix-ui"
 import { cn } from "@/src/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-xl text-sm font-medium whitespace-nowrap transition-[transform,box-shadow,background,color] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-teal-500/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 active:translate-y-px [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-xl text-sm font-medium whitespace-nowrap transition-[transform,box-shadow,background,color] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-orange-500/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 active:translate-y-px [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-linear-to-b from-teal-500 to-teal-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(13,148,136,0.55)] hover:from-teal-500 hover:to-teal-700 hover:shadow-[0_2px_4px_rgba(15,23,42,0.10),0_14px_28px_-10px_rgba(13,148,136,0.65)]",
+          "bg-linear-to-b from-orange-500 to-orange-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(249,115,22,0.55)] hover:from-orange-500 hover:to-orange-700 hover:shadow-[0_2px_4px_rgba(15,23,42,0.10),0_14px_28px_-10px_rgba(249,115,22,0.65)]",
         accent:
           "bg-linear-to-b from-rose-500 to-rose-600 text-white shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_20px_-8px_rgba(244,63,94,0.55)] hover:from-rose-500 hover:to-rose-700",
         sunset:
@@ -24,7 +24,7 @@ const buttonVariants = cva(
         ghost:
           "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
         link:
-          "text-teal-700 underline-offset-4 hover:underline shadow-none",
+          "text-orange-700 underline-offset-4 hover:underline shadow-none",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3.5",

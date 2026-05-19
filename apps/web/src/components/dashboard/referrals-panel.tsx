@@ -117,7 +117,7 @@ export function ReferralsPanel() {
             type="text"
             readOnly
             value={refLink}
-            className="flex-1 h-11 rounded-xl border border-slate-200 px-3.5 text-sm font-mono bg-slate-50 text-slate-700 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 outline-none"
+            className="flex-1 h-11 rounded-xl border border-slate-200 px-3.5 text-sm font-mono bg-slate-50 text-slate-700 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15 outline-none"
             onClick={(e) => e.currentTarget.select()}
           />
           <Button onClick={onCopy} variant={copied ? "default" : "outline"} className="shrink-0">
@@ -187,7 +187,7 @@ export function ReferralsPanel() {
             <p className="font-semibold text-slate-900">Хотите зарабатывать 5% с каждой продажи?</p>
             <p>
               Партнёрство — для блогеров и агентов с большой аудиторией. Партнёров мы приглашаем сами; напишите нам на{" "}
-              <a href="mailto:support@traveling-tours.local" className="font-semibold text-teal-700 underline underline-offset-2">
+              <a href="mailto:support@traveling-tours.local" className="font-semibold text-orange-700 underline underline-offset-2">
                 support@traveling-tours.local
               </a>
               , если хотите сотрудничать.
@@ -224,7 +224,7 @@ function StatTile({
   tone: "teal" | "sky" | "emerald" | "amber" | "rose";
 }) {
   const toneCls: Record<typeof tone, string> = {
-    teal: "from-teal-500 to-teal-600 text-white",
+    teal: "from-orange-500 to-orange-600 text-white",
     sky: "from-sky-500 to-sky-600 text-white",
     emerald: "from-emerald-500 to-emerald-600 text-white",
     amber: "from-amber-400 to-amber-500 text-amber-950",

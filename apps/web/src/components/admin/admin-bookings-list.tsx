@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -187,7 +187,7 @@ export function AdminBookingsList() {
 
                   <div className="flex flex-wrap gap-2 mt-3">
                     {b.roomType && (
-                      <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 ring-1 ring-teal-100">
+                      <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-orange-50 text-teal-800 ring-1 ring-orange-100">
                         <BedDouble className="w-3 h-3" />
                         {b.roomType}
                       </div>
@@ -215,7 +215,7 @@ export function AdminBookingsList() {
                     </span>
                     <Link
                       href={`/${locale}/admin/bookings/${b.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-teal-700 bg-teal-50 border border-teal-100 hover:bg-teal-100 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-orange-700 bg-orange-50 border border-orange-100 hover:bg-orange-100 transition-colors"
                     >
                       Открыть
                       <ArrowRight className="h-3.5 w-3.5" />

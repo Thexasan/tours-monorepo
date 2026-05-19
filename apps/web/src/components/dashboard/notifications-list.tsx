@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
@@ -8,7 +8,7 @@ import { useNotifications } from "@/src/hooks/use-notifications";
 import type { NotificationType } from "@tours/types";
 
 const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string }> = {
-  BOOKING_ACCEPTED:            { icon: Check,      dot: "bg-teal-500" },
+  BOOKING_ACCEPTED:            { icon: Check,      dot: "bg-orange-500" },
   BOOKING_DOCUMENTS_REQUESTED: { icon: FileText,   dot: "bg-violet-500" },
   BOOKING_DOCUMENTS_CONFIRMED: { icon: Check,      dot: "bg-emerald-500" },
   BOOKING_DOCUMENTS_REJECTED:  { icon: FileText,   dot: "bg-amber-500" },
@@ -17,7 +17,7 @@ const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string
   BOOKING_COMPLETED:           { icon: Star,       dot: "bg-slate-500" },
   BOOKING_CANCELLED:           { icon: XCircle,    dot: "bg-rose-500" },
   COMMISSION_EARNED:           { icon: TrendingUp, dot: "bg-emerald-500" },
-  PAYOUT_PROCESSED:            { icon: Check,      dot: "bg-teal-500" },
+  PAYOUT_PROCESSED:            { icon: Check,      dot: "bg-orange-500" },
   PAYOUT_REJECTED:             { icon: Ban,        dot: "bg-rose-500" },
 };
 
@@ -79,7 +79,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
             return (
               <div
                 key={n.id}
-                className="tv-surface-elevated p-4 flex gap-3 cursor-pointer hover:bg-teal-50/40 transition-colors rounded-2xl ring-2 ring-teal-500/20"
+                className="tv-surface-elevated p-4 flex gap-3 cursor-pointer hover:bg-orange-50/40 transition-colors rounded-2xl ring-2 ring-orange-500/20"
                 onClick={() => {
                   markRead(n.id);
                   if (n.bookingId) router.push(`/${locale}/${basePath}/trips/${n.bookingId}`);
@@ -91,7 +91,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-semibold text-slate-900 leading-snug">{n.title}</p>
-                    <span className="h-2 w-2 rounded-full bg-teal-500 shrink-0 mt-1.5" />
+                    <span className="h-2 w-2 rounded-full bg-orange-500 shrink-0 mt-1.5" />
                   </div>
                   <p className="text-sm text-slate-600 mt-0.5 leading-snug">{n.body}</p>
                   <p className="text-xs text-slate-400 mt-1.5">

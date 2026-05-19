@@ -98,9 +98,9 @@ function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: numbe
                 className={cn(
                   "relative grid place-items-center h-10 w-10 rounded-full ring-4 transition-all duration-300",
                   activeIndex > i
-                    ? "bg-teal-600 text-white ring-teal-100"
+                    ? "bg-orange-600 text-white ring-orange-100"
                     : activeIndex === i
-                    ? "bg-white text-teal-700 ring-teal-200 shadow-[0_10px_24px_-10px_rgba(13,148,136,0.6)]"
+                    ? "bg-white text-orange-700 ring-orange-200 shadow-[0_10px_24px_-10px_rgba(249,115,22,0.6)]"
                     : "bg-white text-slate-400 ring-slate-200",
                 )}
               >
@@ -121,7 +121,7 @@ function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: numbe
             {i < labels.length - 1 && (
               <div className="flex-1 h-px mt-5 relative overflow-hidden rounded-full bg-slate-200">
                 <div
-                  className="absolute inset-y-0 left-0 bg-linear-to-r from-teal-500 to-sky-500 transition-all duration-500"
+                  className="absolute inset-y-0 left-0 bg-linear-to-r from-orange-500 to-sky-500 transition-all duration-500"
                   style={{ width: activeIndex > i ? "100%" : "0%" }}
                 />
               </div>
@@ -143,7 +143,7 @@ function Counter({
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-teal-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-orange-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         aria-label="Уменьшить"
       >
         <Minus className="h-4 w-4" strokeWidth={2.5} />
@@ -153,7 +153,7 @@ function Counter({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-teal-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        className="grid place-items-center h-9 w-9 rounded-full ring-1 ring-slate-200 text-slate-700 hover:bg-slate-50 hover:ring-orange-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         aria-label="Увеличить"
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
@@ -176,7 +176,7 @@ function RoomCard({
       className={cn(
         "relative text-left p-4 rounded-2xl ring-1 transition-all",
         selected
-          ? "ring-teal-500 bg-teal-50/40 shadow-[0_10px_24px_-12px_rgba(13,148,136,0.4)]"
+          ? "ring-orange-500 bg-orange-50/40 shadow-[0_10px_24px_-12px_rgba(249,115,22,0.4)]"
           : "ring-slate-200 bg-white hover:ring-slate-300",
       )}
     >
@@ -190,7 +190,7 @@ function RoomCard({
           <div
             className={cn(
               "mt-1 grid place-items-center h-5 w-5 rounded-full ring-2 transition-all ml-auto",
-              selected ? "bg-teal-500 ring-teal-500" : "ring-slate-300",
+              selected ? "bg-orange-500 ring-orange-500" : "ring-slate-300",
             )}
           >
             {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
@@ -270,10 +270,10 @@ function MiniCalendar({
                       className={cn(
                         "aspect-square text-xs font-medium rounded-lg transition-all",
                         isSelected
-                          ? "bg-teal-600 text-white shadow-[0_6px_14px_-6px_rgba(13,148,136,0.6)]"
+                          ? "bg-orange-600 text-white shadow-[0_6px_14px_-6px_rgba(249,115,22,0.6)]"
                           : past
                           ? "text-slate-300 cursor-not-allowed"
-                          : "text-slate-700 hover:bg-teal-50 hover:text-teal-700",
+                          : "text-slate-700 hover:bg-orange-50 hover:text-orange-700",
                       )}
                     >
                       {c.day}
@@ -301,7 +301,7 @@ function FormField({
       <div
         className={cn(
           "flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white ring-1 transition-all focus-within:ring-2",
-          error ? "ring-rose-300 focus-within:ring-rose-500/40" : "ring-slate-200 focus-within:ring-teal-500/40",
+          error ? "ring-rose-300 focus-within:ring-rose-500/40" : "ring-slate-200 focus-within:ring-orange-500/40",
         )}
       >
         {Icon && <Icon className="h-4 w-4 text-slate-400 shrink-0" />}
@@ -505,7 +505,7 @@ export function BookingModal({
             <div className="py-12 text-center max-w-md mx-auto">
               <div className="relative inline-grid place-items-center mb-5">
                 <div className="absolute inset-0 rounded-full bg-emerald-100 blur-2xl opacity-60" />
-                <div className="relative h-20 w-20 rounded-full bg-linear-to-br from-emerald-400 to-teal-600 grid place-items-center text-white shadow-[0_20px_40px_-12px_rgba(13,148,136,0.6)]">
+                <div className="relative h-20 w-20 rounded-full bg-linear-to-br from-emerald-400 to-orange-600 grid place-items-center text-white shadow-[0_20px_40px_-12px_rgba(249,115,22,0.6)]">
                   <Check className="h-9 w-9" strokeWidth={2.5} />
                 </div>
               </div>
@@ -523,7 +523,7 @@ export function BookingModal({
                     href={`/${locale}/dashboard/trips`}
                     onClick={handleClose}
                     className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
-                    style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                    style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                   >
                     Перейти в мои заявки
                     <ArrowRight className="h-4 w-4" />
@@ -534,7 +534,7 @@ export function BookingModal({
                       href={`/${locale}/register?email=${encodeURIComponent(successEmail)}&bookingId=${successBookingId ?? ""}`}
                       onClick={handleClose}
                       className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
-                      style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                      style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                     >
                       <UserPlus className="h-4 w-4" />
                       Зарегистрируйтесь, чтобы следить за заявкой
@@ -562,7 +562,7 @@ export function BookingModal({
           /* ── AUTH GATE (guests only) ─────────────────────────────── */
           ) : showAuthGate ? (
             <div className="py-10 flex flex-col items-center gap-6 max-w-sm mx-auto text-center mt-3">
-              <div className="grid place-items-center h-16 w-16 rounded-2xl bg-teal-50 ring-1 ring-teal-100 text-teal-600">
+              <div className="grid place-items-center h-16 w-16 rounded-2xl bg-orange-50 ring-1 ring-orange-100 text-orange-600">
                 <Lock className="h-7 w-7" />
               </div>
               <div>
@@ -575,7 +575,7 @@ export function BookingModal({
                 <Link
                   href={`/${locale}/register`}
                   className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white hover:-translate-y-0.5 transition-all"
-                  style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                  style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                 >
                   <UserPlus className="h-4 w-4" />
                   Зарегистрироваться
@@ -672,8 +672,8 @@ export function BookingModal({
                 </FormField>
               </div>
 
-              <div className="rounded-2xl bg-linear-to-br from-teal-50 to-sky-50 ring-1 ring-teal-100 p-4 flex gap-3">
-                <div className="grid place-items-center h-9 w-9 rounded-xl bg-white text-teal-700 ring-1 ring-teal-100 shrink-0">
+              <div className="rounded-2xl bg-linear-to-br from-orange-50 to-sky-50 ring-1 ring-orange-100 p-4 flex gap-3">
+                <div className="grid place-items-center h-9 w-9 rounded-xl bg-white text-orange-700 ring-1 ring-orange-100 shrink-0">
                   <Shield className="h-[18px] w-[18px]" />
                 </div>
                 <div>
@@ -713,8 +713,8 @@ export function BookingModal({
               {/* Auth users: show profile read-only card + phone input */}
               {isAuthenticated && (
                 <div className="space-y-3">
-                  <div className="rounded-2xl bg-teal-50/50 ring-1 ring-teal-100 p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-teal-600 mb-3">Данные из профиля</p>
+                  <div className="rounded-2xl bg-orange-50/50 ring-1 ring-orange-100 p-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-orange-600 mb-3">Данные из профиля</p>
                     <div className="grid sm:grid-cols-2 gap-2 text-sm">
                       <div className="flex items-center gap-2 text-slate-700">
                         <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -814,16 +814,16 @@ export function BookingModal({
                 <div
                   className={cn(
                     "mt-0.5 grid place-items-center h-5 w-5 rounded-md ring-1 transition-all shrink-0",
-                    agreed ? "bg-teal-600 ring-teal-600" : "bg-white ring-slate-300",
+                    agreed ? "bg-orange-600 ring-orange-600" : "bg-white ring-slate-300",
                   )}
                 >
                   {agreed && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                 </div>
                 <span className="text-xs text-slate-600 leading-relaxed">
                   Соглашаюсь с{" "}
-                  <a href="#" className="text-teal-700 font-semibold underline-offset-2 hover:underline">условиями бронирования</a>
+                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">условиями бронирования</a>
                   {" "}и{" "}
-                  <a href="#" className="text-teal-700 font-semibold underline-offset-2 hover:underline">политикой конфиденциальности</a>.
+                  <a href="#" className="text-orange-700 font-semibold underline-offset-2 hover:underline">политикой конфиденциальности</a>.
                   {" "}Оплата производится после подтверждения брони менеджером.
                 </span>
               </label>
@@ -864,7 +864,7 @@ export function BookingModal({
                     type="submit"
                     disabled={!agreed || submitting || (isAuthenticated && watchedPhone.length < 6)}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
-                    style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+                    style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
                   >
                     {submitting ? "Отправляем…" : "Подтвердить и забронировать"}
                     {!submitting && <Check className="h-4 w-4" strokeWidth={2.5} />}

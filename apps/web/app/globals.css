@@ -12,11 +12,11 @@
   --card-foreground: #0f172a;
 
   /* Brand palette */
-  --primary: #0d9488;            /* teal-600 */
-  --primary-hover: #0f766e;      /* teal-700 */
-  --primary-foreground: #f0fdfa;
-  --primary-soft: #ccfbf1;       /* teal-100 */
-  --primary-soft-foreground: #0f766e;
+  --primary: #f97316;            /* orange-500 */
+  --primary-hover: #ea580c;      /* orange-600 */
+  --primary-foreground: #fff7ed;
+  --primary-soft: #ffedd5;       /* orange-100 */
+  --primary-soft-foreground: #c2410c;
 
   --accent: #f43f5e;             /* rose-500 */
   --accent-hover: #e11d48;
@@ -44,7 +44,7 @@
   --border: #e2e8f0;
   --border-soft: #f1f5f9;
   --input: #e2e8f0;
-  --ring: rgba(13, 148, 136, 0.45);
+  --ring: rgba(249, 115, 22, 0.45);
 
   /* Shape */
   --radius: 0.875rem;            /* 14px default card */
@@ -55,17 +55,17 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
   --shadow-md: 0 4px 6px -2px rgba(15, 23, 42, 0.06), 0 10px 20px -8px rgba(15, 23, 42, 0.10);
   --shadow-lg: 0 12px 28px -12px rgba(15, 23, 42, 0.18), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
-  --shadow-glow-teal: 0 18px 40px -16px rgba(13, 148, 136, 0.45);
+  --shadow-glow-teal: 0 18px 40px -16px rgba(249, 115, 22, 0.45);
   --shadow-glow-rose: 0 18px 40px -16px rgba(244, 63, 94, 0.40);
   --shadow-glow-amber: 0 18px 40px -16px rgba(245, 158, 11, 0.45);
 
   /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #0d9488 0%, #0284c7 55%, #1e3a8a 100%);
+  --gradient-hero: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ea580c 100%);
   --gradient-sunset: linear-gradient(135deg, #f97316 0%, #f43f5e 100%);
   --gradient-amber: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   --gradient-forest: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --gradient-page: radial-gradient(1200px 600px at 0% -10%, rgba(20, 184, 166, 0.10) 0%, transparent 60%),
-                   radial-gradient(1000px 500px at 100% -20%, rgba(244, 63, 94, 0.08) 0%, transparent 55%),
+  --gradient-page: radial-gradient(1200px 600px at 0% -10%, rgba(249, 115, 22, 0.07) 0%, transparent 60%),
+                   radial-gradient(1000px 500px at 100% -20%, rgba(244, 63, 94, 0.06) 0%, transparent 55%),
                    linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
 }
 
@@ -182,14 +182,14 @@ html, body {
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .tv-nav-item:hover {
-  background: rgba(13, 148, 136, 0.06);
+  background: rgba(249, 115, 22, 0.06);
   color: var(--primary);
 }
 .tv-nav-item[data-active="true"] {
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(2, 132, 199, 0.10));
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(234, 88, 12, 0.10));
   color: var(--primary);
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.18);
 }
 .tv-nav-item[data-active="true"]::before {
   content: "";
@@ -199,7 +199,7 @@ html, body {
   bottom: 0.5rem;
   width: 3px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #0d9488, #0284c7);
+  background: linear-gradient(180deg, #fb923c, #f97316);
 }
 
 /* KPI tile */

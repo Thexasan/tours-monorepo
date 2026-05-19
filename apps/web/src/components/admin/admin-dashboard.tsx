@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -197,7 +197,7 @@ export function AdminDashboard() {
           {/* Status breakdown */}
           <div className="tv-surface-elevated p-5">
             <h2 className="font-semibold text-slate-900 flex items-center gap-2 mb-4">
-              <TrendingUp className="h-4 w-4 text-teal-600" />
+              <TrendingUp className="h-4 w-4 text-orange-600" />
               По статусам
             </h2>
             {loadingBookings ? (
@@ -236,7 +236,7 @@ export function AdminDashboard() {
             <div className="grid grid-cols-2 gap-2">
               {[
                 { href: `/${locale}/admin/bookings`, icon: Mail, label: "Заявки", color: "hover:bg-rose-50 hover:text-rose-700" },
-                { href: `/${locale}/admin/tours`, icon: Briefcase, label: "Туры", color: "hover:bg-teal-50 hover:text-teal-700" },
+                { href: `/${locale}/admin/tours`, icon: Briefcase, label: "Туры", color: "hover:bg-orange-50 hover:text-orange-700" },
                 { href: `/${locale}/admin/moderation`, icon: MessageSquare, label: "Модерация", color: "hover:bg-violet-50 hover:text-violet-700" },
                 { href: `/${locale}/admin/payouts`, icon: Wallet, label: "Выплаты", color: "hover:bg-amber-50 hover:text-amber-700" },
                 { href: `/${locale}/admin/users`, icon: Users, label: "Юзеры", color: "hover:bg-sky-50 hover:text-sky-700" },
@@ -272,7 +272,7 @@ function StatCard({
   const colors = {
     rose:    { bg: "bg-rose-50",    text: "text-rose-600",    grad: "from-rose-500 to-rose-600" },
     emerald: { bg: "bg-emerald-50", text: "text-emerald-600", grad: "from-emerald-500 to-emerald-600" },
-    teal:    { bg: "bg-teal-50",    text: "text-teal-600",    grad: "from-teal-500 to-teal-600" },
+    teal:    { bg: "bg-orange-50",    text: "text-orange-600",    grad: "from-orange-500 to-orange-600" },
     amber:   { bg: "bg-amber-50",   text: "text-amber-600",   grad: "from-amber-400 to-amber-500" },
     slate:   { bg: "bg-slate-100",  text: "text-slate-600",   grad: "from-slate-400 to-slate-500" },
   };

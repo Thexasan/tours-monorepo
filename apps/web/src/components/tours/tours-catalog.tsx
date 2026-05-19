@@ -144,14 +144,14 @@ export function ToursCatalog() {
             {urlLabel && filters.country && (
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-sm text-slate-500">Поиск:</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-sm font-semibold ring-1 ring-teal-200">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-sm font-semibold ring-1 ring-orange-200">
                   <MapPin className="h-3.5 w-3.5" />
                   {urlLabel}
                   <button
                     type="button"
                     aria-label="Сбросить поиск"
                     onClick={() => update("country", "")}
-                    className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-teal-200 transition-colors"
+                    className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-orange-200 transition-colors"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -233,7 +233,7 @@ function CatalogHero({ locale }: { locale: string }) {
           aria-hidden
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(to right, rgba(13,148,136,0.30) 0%, transparent 55%)",
+            background: "linear-gradient(to right, rgba(249,115,22,0.30) 0%, transparent 55%)",
           }}
         />
         {/* Bottom dark fade so chip bar floats in cleanly */}
@@ -288,7 +288,7 @@ function CatalogHero({ locale }: { locale: string }) {
               key={text}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-white/85"
             >
-              <Icon className="h-3.5 w-3.5 text-teal-300 shrink-0" />
+              <Icon className="h-3.5 w-3.5 text-orange-300 shrink-0" />
               {text}
             </span>
           ))}
@@ -320,7 +320,7 @@ function CountryChips({
               onClick={() => onChange(c.value)}
               className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 active
-                  ? "bg-linear-to-br from-teal-500 to-teal-600 text-white shadow-[0_4px_16px_-4px_rgba(13,148,136,0.65)] scale-[1.02]"
+                  ? "bg-linear-to-br from-orange-500 to-orange-600 text-white shadow-[0_4px_16px_-4px_rgba(249,115,22,0.65)] scale-[1.02]"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
@@ -347,10 +347,10 @@ function FiltersPanel({
     <>
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-teal-600" />
+          <SlidersHorizontal className="h-4 w-4 text-orange-600" />
           Фильтры
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-600 text-white">
               {activeCount}
             </span>
           )}
@@ -374,7 +374,7 @@ function FiltersPanel({
             value={filters.country}
             onChange={(e) => update("country", e.target.value)}
             placeholder="Например: Турция"
-            className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+            className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
           />
         </div>
       </FilterGroup>
@@ -387,7 +387,7 @@ function FiltersPanel({
             value={filters.minPrice}
             onChange={(e) => update("minPrice", e.target.value)}
             placeholder="от"
-            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
           />
           <input
             type="number"
@@ -395,7 +395,7 @@ function FiltersPanel({
             value={filters.maxPrice}
             onChange={(e) => update("maxPrice", e.target.value)}
             placeholder="до"
-            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
           />
         </div>
       </FilterGroup>
@@ -439,7 +439,7 @@ function FiltersPanel({
                 onClick={() => update("mealPlan", m.value)}
                 className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   active
-                    ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200"
+                    ? "bg-orange-50 text-orange-700 ring-1 ring-orange-200"
                     : "text-slate-700 hover:bg-slate-50"
                 }`}
               >
@@ -516,7 +516,7 @@ function ResultsBar({
           <Filter className="h-4 w-4" />
           Фильтры
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-teal-600 text-white">
+            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-orange-600 text-white">
               {activeCount}
             </span>
           )}
@@ -524,7 +524,7 @@ function ResultsBar({
         <p className="text-sm text-slate-600">
           {isLoading ? (
             <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
               Загрузка…
             </span>
           ) : (
@@ -600,8 +600,8 @@ function Pagination({
         type="button"
         disabled={page * pageSize >= total}
         onClick={onNext}
-        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
-        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(249,115,22,0.55)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
+        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
       >
         Вперёд
         <ChevronRight className="h-4 w-4" />
@@ -614,8 +614,8 @@ function EmptyState({ onReset }: { onReset: () => void }) {
   return (
     <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-14 text-center">
       <div
-        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(13,148,136,0.50)]"
-        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(249,115,22,0.50)]"
+        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
       >
         <Compass className="h-7 w-7" />
       </div>
@@ -626,8 +626,8 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(13,148,136,0.55)] hover:-translate-y-0.5 transition-all"
-        style={{ background: "linear-gradient(135deg, #0d9488, #0284c7)" }}
+        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.55)] hover:-translate-y-0.5 transition-all"
+        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
       >
         <ArrowUpRight className="h-4 w-4" />
         Сбросить фильтры

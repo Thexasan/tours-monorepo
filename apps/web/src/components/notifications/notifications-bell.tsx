@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -59,7 +59,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
             {unread > 0 && (
               <button
                 onClick={() => markAllRead()}
-                className="text-xs text-teal-700 hover:underline"
+                className="text-xs text-orange-700 hover:underline"
               >
                 Прочитать все
               </button>
@@ -78,7 +78,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
                   key={n.id}
                   className={cn(
                     "px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer",
-                    !n.isRead && "bg-teal-50/60",
+                    !n.isRead && "bg-orange-50/60",
                   )}
                   onClick={() => {
                     if (!n.isRead) markRead(n.id);
@@ -92,7 +92,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
                     <span
                       className={cn(
                         "h-2 w-2 rounded-full shrink-0 mt-1.5",
-                        !n.isRead ? "bg-teal-500" : "bg-transparent",
+                        !n.isRead ? "bg-orange-500" : "bg-transparent",
                       )}
                     />
                     <div className="flex-1 min-w-0">

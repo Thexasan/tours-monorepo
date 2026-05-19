@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -71,7 +71,7 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
 
           {/* Hover arrow */}
           <div className={`absolute top-4 right-4 z-10 grid place-items-center rounded-full bg-white shadow-md translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200 ${featured ? "h-11 w-11" : "h-9 w-9"}`}>
-            <ArrowUpRight className={featured ? "h-5 w-5 text-teal-600" : "h-4 w-4 text-teal-600"} />
+            <ArrowUpRight className={featured ? "h-5 w-5 text-orange-600" : "h-4 w-4 text-orange-600"} />
           </div>
 
           {/* Content overlay — pinned to bottom */}
@@ -144,7 +144,7 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
   ───────────────────────────────────────────── */
   return (
     <Link href={href} className="group block h-full">
-      <Card className="overflow-hidden flex flex-row md:flex-col h-full transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_44px_-12px_rgba(13,148,136,0.18),0_4px_12px_-4px_rgba(15,23,42,0.10)]">
+      <Card className="overflow-hidden flex flex-row md:flex-col h-full transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_44px_-12px_rgba(249,115,22,0.18),0_4px_12px_-4px_rgba(15,23,42,0.10)]">
 
         {/* Image */}
         <div className="relative w-2/5 md:w-full md:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100">
@@ -170,7 +170,7 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
             </div>
           )}
           <div className="absolute top-3 right-3 z-10 grid place-items-center h-9 w-9 rounded-full bg-white shadow-md translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-            <ArrowUpRight className="h-4 w-4 text-teal-600" />
+            <ArrowUpRight className="h-4 w-4 text-orange-600" />
           </div>
           <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5 hidden md:flex items-end justify-between gap-2">
             {tour.country && (
@@ -180,7 +180,7 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
             )}
             {tour.durationDays && (
               <span className="inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white">
-                <Clock className="h-3 w-3 text-teal-300" />
+                <Clock className="h-3 w-3 text-orange-300" />
                 {tour.durationDays} {t("labels.days", { fallback: "дн." })}
               </span>
             )}
@@ -203,7 +203,7 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
               </div>
             )}
           </div>
-          <h3 className="line-clamp-2 text-[15px] font-bold text-slate-900 group-hover:text-teal-700 transition-colors mb-2.5 leading-snug">
+          <h3 className="line-clamp-2 text-[15px] font-bold text-slate-900 group-hover:text-orange-700 transition-colors mb-2.5 leading-snug">
             {titleLocalized}
           </h3>
           <div className="flex flex-wrap gap-1.5 mb-3">
@@ -222,9 +222,9 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
               <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">
                 {t("labels.from", { fallback: "от" })}
               </p>
-              <p className="text-[22px] font-extrabold text-teal-700 tabular-nums leading-none">{formattedPrice}</p>
+              <p className="text-[22px] font-extrabold text-orange-700 tabular-nums leading-none">{formattedPrice}</p>
             </div>
-            <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white group-hover:shadow-[0_6px_20px_-4px_rgba(13,148,136,0.55)] transition-all duration-200">
+            <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-[0_6px_20px_-4px_rgba(249,115,22,0.55)] transition-all duration-200">
               <ArrowUpRight className="h-5 w-5" />
             </div>
           </div>

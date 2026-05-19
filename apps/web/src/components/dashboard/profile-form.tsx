@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -46,7 +46,7 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
-        className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 hover:border-teal-400 transition shrink-0 group"
+        className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 hover:border-orange-400 transition shrink-0 group"
         aria-label="Загрузить аватар"
       >
         {value ? (

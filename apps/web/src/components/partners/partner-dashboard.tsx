@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -102,7 +102,7 @@ export function PartnerDashboard() {
       <section className="tv-surface-elevated p-5 flex flex-col sm:flex-row sm:items-center gap-4">
         <div
           className="shrink-0 grid place-items-center h-11 w-11 rounded-xl"
-          style={{ background: "linear-gradient(135deg, #0d9488, #0891b2)" }}
+          style={{ background: "linear-gradient(135deg, #f97316, #0891b2)" }}
         >
           <Link2 className="h-5 w-5 text-white" aria-hidden />
         </div>
@@ -121,7 +121,7 @@ export function PartnerDashboard() {
           className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
             background: copied ? "#d1fae5" : "#f0fdfa",
-            color: copied ? "#065f46" : "#0d9488",
+            color: copied ? "#065f46" : "#f97316",
             border: `1px solid ${copied ? "#6ee7b7" : "#99f6e4"}`,
           }}
         >
@@ -151,7 +151,7 @@ export function PartnerDashboard() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-teal-600" />
+              <Activity className="h-4 w-4 text-orange-600" />
               Активность за 30 дней
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">Клики, регистрации, продажи по дням</p>
@@ -183,7 +183,7 @@ export function PartnerDashboard() {
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Line type="monotone" dataKey="clicks" name="Клики" stroke="#0284c7" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-              <Line type="monotone" dataKey="registrations" name="Регистрации" stroke="#0d9488" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="registrations" name="Регистрации" stroke="#f97316" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
               <Line type="monotone" dataKey="sales" name="Продажи" stroke="#059669" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
             </LineChart>
           </ResponsiveContainer>
@@ -241,7 +241,7 @@ function KPI({
   hint?: string;
 }) {
   const toneCls: Record<typeof tone, string> = {
-    teal: "from-teal-500 to-teal-600",
+    teal: "from-orange-500 to-orange-600",
     sky: "from-sky-500 to-sky-600",
     emerald: "from-emerald-500 to-emerald-600",
     amber: "from-amber-400 to-amber-500",

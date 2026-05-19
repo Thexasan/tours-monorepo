@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Users, Star } from "lucide-react";
+﻿import { MapPin, Calendar, Users, Star } from "lucide-react";
 
 interface Props {
   region: string;
@@ -16,7 +16,7 @@ export function TourHighlightsBar({
 }: Props) {
   const items = [
     { Ic: MapPin, lbl: "Направление", val: region, sub: country, tone: "text-rose-500" },
-    { Ic: Calendar, lbl: "Длительность", val: `${durationDays} дней`, sub: `${durationNights} ночей`, tone: "text-teal-600" },
+    { Ic: Calendar, lbl: "Длительность", val: `${durationDays} дней`, sub: `${durationNights} ночей`, tone: "text-orange-600" },
     { Ic: Users, lbl: "Размер группы", val: `${groupSize} чел`, sub: "малая группа", tone: "text-sky-600" },
     { Ic: Star, lbl: "Рейтинг", val: avgRating.toFixed(2), sub: `${reviewsCount} отзывов`, tone: "text-amber-500" },
   ];

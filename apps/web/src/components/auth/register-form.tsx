@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -38,9 +38,9 @@ function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
               <div
                 className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${
                   done
-                    ? "bg-teal-600 border-teal-600 text-white"
+                    ? "bg-orange-600 border-orange-600 text-white"
                     : active
-                    ? "bg-white border-teal-600 text-teal-700"
+                    ? "bg-white border-orange-600 text-orange-700"
                     : "bg-white border-slate-200 text-slate-400"
                 }`}
               >
@@ -48,7 +48,7 @@ function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
               </div>
               <span
                 className={`text-xs font-medium whitespace-nowrap ${
-                  active ? "text-teal-700" : done ? "text-slate-600" : "text-slate-400"
+                  active ? "text-orange-700" : done ? "text-slate-600" : "text-slate-400"
                 }`}
               >
                 {s.label}
@@ -58,7 +58,7 @@ function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
             {i < STEPS.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mt-4 mx-2 transition-colors ${
-                  done ? "bg-teal-500" : "bg-slate-200"
+                  done ? "bg-orange-500" : "bg-slate-200"
                 }`}
               />
             )}
@@ -71,8 +71,8 @@ function StepIndicator({ current }: { current: "email" | "otp" | "details" }) {
 
 // ── 6-box OTP Input ────────────────────────────────────────────────────────
 function OtpBoxes({
-  value, onChange, autoFocus,
-}: { value: string; onChange: (v: string) => void; autoFocus?: boolean }) {
+  value, onChange, onComplete, autoFocus,
+}: { value: string; onChange: (v: string) => void; onComplete?: () => void; autoFocus?: boolean }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -97,6 +97,7 @@ function OtpBoxes({
     if (e.key === "Backspace" && !value[i] && i > 0) refs.current[i - 1]?.focus();
     if (e.key === "ArrowLeft"  && i > 0)             refs.current[i - 1]?.focus();
     if (e.key === "ArrowRight" && i < 5)             refs.current[i + 1]?.focus();
+    if (e.key === "Enter" && value.length === 6)     onComplete?.();
   }
 
   function handlePaste(e: React.ClipboardEvent) {
@@ -122,7 +123,7 @@ function OtpBoxes({
           onChange={e => handleChange(i, e)}
           onKeyDown={e => handleKeyDown(i, e)}
           onFocus={e => e.target.select()}
-          className="w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/15 outline-none transition-all"
+          className="w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/15 outline-none transition-all"
         />
       ))}
     </div>
@@ -338,9 +339,12 @@ export function RegisterForm() {
 
       {/* ── Шаг 2: OTP ───────────────────────────────────────────────────── */}
       {step === "otp" && (
-        <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-3 rounded-xl bg-teal-50 border border-teal-100 p-4">
-            <div className="grid place-items-center h-10 w-10 rounded-xl bg-teal-600 text-white shrink-0">
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={(e) => { e.preventDefault(); handleOtpContinue(); }}
+        >
+          <div className="flex items-center gap-3 rounded-xl bg-orange-50 border border-orange-100 p-4">
+            <div className="grid place-items-center h-10 w-10 rounded-xl bg-orange-600 text-white shrink-0">
               <Mail className="h-5 w-5" />
             </div>
             <div>
@@ -363,7 +367,7 @@ export function RegisterForm() {
             <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
               Введите 6-значный код
             </p>
-            <OtpBoxes value={otp} onChange={handleOtpChange} autoFocus />
+            <OtpBoxes value={otp} onChange={handleOtpChange} onComplete={handleOtpContinue} autoFocus />
             <p className="mt-2 text-center text-xs text-slate-400">
               {devCode
                 ? "Скопируй код выше и вставь сюда (Ctrl+V)"
@@ -378,8 +382,7 @@ export function RegisterForm() {
           )}
 
           <Button
-            type="button"
-            onClick={handleOtpContinue}
+            type="submit"
             disabled={otp.length !== 6 || verifyingOtp}
             className="w-full"
           >
@@ -404,13 +407,13 @@ export function RegisterForm() {
               type="button"
               onClick={handleResendOtp}
               disabled={cooldown > 0 || sendingOtp}
-              className="flex items-center gap-1 text-teal-600 hover:text-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 text-orange-600 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               {cooldown > 0 ? `Отправить снова (${cooldown}с)` : "Отправить снова"}
             </button>
           </div>
-        </div>
+        </form>
       )}
 
       {/* ── Шаг 3: Данные профиля ────────────────────────────────────────── */}

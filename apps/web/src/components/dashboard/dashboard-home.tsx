@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -82,7 +82,7 @@ export function DashboardHome() {
         <Link
           href={`/${locale}/tours`}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white shrink-0 transition-all hover:-translate-y-0.5"
-          style={{ background: "var(--gradient-hero)", boxShadow: "0 10px 24px -8px rgba(13,148,136,0.45)" }}
+          style={{ background: "var(--gradient-hero)", boxShadow: "0 10px 24px -8px rgba(249,115,22,0.45)" }}
         >
           <Compass className="h-4 w-4" />
           Все туры
@@ -150,12 +150,12 @@ export function DashboardHome() {
         <div className="tv-surface-elevated p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-              <Plane className="h-4 w-4 text-teal-600" />
+              <Plane className="h-4 w-4 text-orange-600" />
               Последние заявки
             </h2>
             <Link
               href={`/${locale}/dashboard/trips`}
-              className="text-xs font-semibold text-teal-700 hover:text-teal-800 flex items-center gap-1"
+              className="text-xs font-semibold text-orange-700 hover:text-teal-800 flex items-center gap-1"
             >
               Все <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -163,13 +163,13 @@ export function DashboardHome() {
 
           {recentTrips.length === 0 ? (
             <div className="text-center py-8">
-              <div className="mx-auto h-12 w-12 rounded-2xl bg-teal-50 grid place-items-center mb-3">
-                <Compass className="h-5 w-5 text-teal-600" />
+              <div className="mx-auto h-12 w-12 rounded-2xl bg-orange-50 grid place-items-center mb-3">
+                <Compass className="h-5 w-5 text-orange-600" />
               </div>
               <p className="text-sm text-slate-500">Пока нет ни одной заявки</p>
               <Link
                 href={`/${locale}/tours`}
-                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal-700 hover:text-teal-800"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-orange-700 hover:text-teal-800"
               >
                 Посмотреть туры <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -187,11 +187,11 @@ export function DashboardHome() {
                     href={`/${locale}/dashboard/trips/${b.id}`}
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group"
                   >
-                    <div className="grid place-items-center h-10 w-10 rounded-xl bg-teal-50 shrink-0">
-                      <Plane className="h-4 w-4 text-teal-600" />
+                    <div className="grid place-items-center h-10 w-10 rounded-xl bg-orange-50 shrink-0">
+                      <Plane className="h-4 w-4 text-orange-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate group-hover:text-teal-700 transition-colors">
+                      <p className="text-sm font-semibold text-slate-900 truncate group-hover:text-orange-700 transition-colors">
                         {title}
                       </p>
                       <p className="text-xs text-slate-500">
@@ -229,7 +229,7 @@ export function DashboardHome() {
                       className="h-full rounded-full transition-all duration-700"
                       style={{
                         width: `${Math.min(stats.progressPercent, 100)}%`,
-                        background: "linear-gradient(90deg, #0d9488, #0284c7)",
+                        background: "linear-gradient(90deg, #f97316, #0284c7)",
                       }}
                     />
                   </div>
@@ -263,7 +263,7 @@ export function DashboardHome() {
               </div>
               <Link
                 href={`/${locale}/dashboard/referrals`}
-                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors"
+                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-orange-700 bg-orange-50 hover:bg-orange-100 transition-colors"
               >
                 <Share2 className="h-4 w-4" />
                 Моя реферальная ссылка
@@ -279,7 +279,7 @@ export function DashboardHome() {
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { href: `/${locale}/tours`, icon: Compass, label: "Каталог туров", color: "hover:bg-teal-50 hover:text-teal-700" },
+                { href: `/${locale}/tours`, icon: Compass, label: "Каталог туров", color: "hover:bg-orange-50 hover:text-orange-700" },
                 { href: `/${locale}/dashboard/trips`, icon: Plane, label: "Мои поездки", color: "hover:bg-sky-50 hover:text-sky-700" },
                 { href: `/${locale}/dashboard/referrals`, icon: Share2, label: "Мои рефералы", color: "hover:bg-rose-50 hover:text-rose-700" },
                 { href: `/${locale}/dashboard/notifications`, icon: Bell, label: "Уведомления", color: "hover:bg-violet-50 hover:text-violet-700" },
@@ -305,7 +305,7 @@ function MiniStat({
   icon: Icon, label, value, color, href,
 }: { icon: React.ElementType; label: string; value: string; color: "teal" | "amber" | "rose" | "emerald" | "slate"; href?: string }) {
   const colors = {
-    teal:    "bg-teal-50 text-teal-700",
+    teal:    "bg-orange-50 text-orange-700",
     amber:   "bg-amber-50 text-amber-700",
     rose:    "bg-rose-50 text-rose-700",
     emerald: "bg-emerald-50 text-emerald-700",

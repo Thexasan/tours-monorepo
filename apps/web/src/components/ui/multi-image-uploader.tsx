@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState, useCallback } from "react";
 import { X, Loader2, ImagePlus } from "lucide-react";
@@ -125,8 +125,8 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
             className={cn(
               "h-20 w-20 shrink-0 flex flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition text-slate-400",
               dragging
-                ? "border-teal-400 bg-teal-50/60 text-teal-500"
-                : "border-slate-200 bg-slate-50/40 hover:border-teal-300 hover:bg-teal-50/30"
+                ? "border-orange-400 bg-orange-50/60 text-orange-500"
+                : "border-slate-200 bg-slate-50/40 hover:border-orange-300 hover:bg-orange-50/30"
             )}
             aria-label="Добавить фото"
           >
