@@ -1,13 +1,27 @@
 ﻿"use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
-import { MapPin, Users, Calendar, ArrowRight, Compass, Plane } from "lucide-react";
+import { MapPin, Users, Calendar, ArrowRight, Compass, Plane, Download } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import type { BookingStatus } from "@tours/types";
 import { Button } from "@/src/components/ui/button";
+import { toast } from "sonner";
+
+async function triggerPdfDownload(bookingId: string) {
+  const blob = await bookingsApi.downloadTicket(bookingId);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ticket-${bookingId.slice(0, 8).toUpperCase()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
   NEW:                  { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",              dot: "bg-sky-500" },
@@ -19,6 +33,34 @@ const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: stri
   COMPLETED:            { label: "Завершена",            cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",      dot: "bg-slate-500" },
   CANCELLED:            { label: "Отменена",             cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",          dot: "bg-rose-500" },
 };
+
+function DownloadTicketButton({ bookingId }: { bookingId: string }) {
+  const [loading, setLoading] = useState(false);
+
+  async function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      await triggerPdfDownload(bookingId);
+    } catch {
+      toast.error("Не удалось скачать тикет");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:text-emerald-900 disabled:opacity-60 transition-colors"
+    >
+      <Download className="h-3.5 w-3.5" />
+      {loading ? "Загрузка…" : "Скачать тикет"}
+    </button>
+  );
+}
 
 export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
@@ -155,6 +197,9 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                   Открыть заявку
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
+                {(b.status === "PAID" || b.status === "COMPLETED") && (
+                  <DownloadTicketButton bookingId={b.id} />
+                )}
                 {tour && (
                   <Link
                     href={`/${locale}/tours/${tour.slug}`}

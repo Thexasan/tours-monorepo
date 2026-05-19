@@ -36,4 +36,8 @@ export const bookingsApi = {
     const { data } = await apiClient.post<Booking>(`/bookings/${id}/request-payment`, payload);
     return data;
   },
+  async downloadTicket(id: string): Promise<Blob> {
+    const { data } = await apiClient.get(`/bookings/${id}/ticket`, { responseType: "blob" });
+    return data as Blob;
+  },
 };

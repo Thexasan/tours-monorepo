@@ -524,7 +524,7 @@ export default async function HomePage() {
                 {/* Column 1 (Even indexes) */}
                 <div className="flex flex-col gap-6 md:gap-8">
                   {STATIC_TESTIMONIALS.filter((_, i) => i % 2 === 0).map((tm, idx) => {
-                    const tone = TESTIMONIAL_TONES[tm.tone as keyof typeof TESTIMONIAL_TONES] ?? TESTIMONIAL_TONES.teal;
+                    const tone = (TESTIMONIAL_TONES[tm.tone as keyof typeof TESTIMONIAL_TONES] ?? TESTIMONIAL_TONES.teal)!;
                     return (
                       <div key={idx} className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden group hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] transition-all duration-500">
                         {/* Huge subtle quote mark */}
@@ -569,7 +569,7 @@ export default async function HomePage() {
                 {/* Column 2 (Odd indexes - Staggered Down) */}
                 <div className="flex flex-col gap-6 md:gap-8 md:mt-24">
                   {STATIC_TESTIMONIALS.filter((_, i) => i % 2 !== 0).map((tm, idx) => {
-                    const tone = TESTIMONIAL_TONES[tm.tone as keyof typeof TESTIMONIAL_TONES] ?? TESTIMONIAL_TONES.teal;
+                    const tone = (TESTIMONIAL_TONES[tm.tone as keyof typeof TESTIMONIAL_TONES] ?? TESTIMONIAL_TONES.teal)!;
                     return (
                       <div key={idx} className="relative bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden group hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] transition-all duration-500">
                         {/* Huge subtle quote mark */}

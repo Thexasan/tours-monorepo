@@ -8,13 +8,28 @@ import { useLocale } from "next-intl";
 import {
   ArrowLeft, FileText, Check, ChevronRight, MapPin, Users,
   DollarSign, Calendar, Upload, X, AlertCircle, Clock, CreditCard, Receipt,
+  Download, QrCode,
 } from "lucide-react";
+import QRCodeSVG from "react-qr-code";
 import { useBooking } from "@/src/hooks/use-booking";
+import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { bookingDocumentsApi } from "@/src/shared/api/booking-documents-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import type { BookingStatus, BookingDocument, BookingDocumentKind, PaymentDetails } from "@tours/types";
+
+async function triggerPdfDownload(bookingId: string) {
+  const blob = await bookingsApi.downloadTicket(bookingId);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ticket-${bookingId.slice(0, 8).toUpperCase()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string; description: string }> = {
   NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500",     description: "Заявка получена, менеджер скоро свяжется" },
@@ -78,6 +93,140 @@ function DocRow({ doc }: { doc: BookingDocument }) {
             <Clock className="h-3 w-3" /> На проверке
           </p>
         )}
+      </div>
+    </div>
+  );
+}
+
+interface TicketCardProps {
+  bookingId: string;
+  tourTitle: string;
+  country: string;
+  guestsCount: number;
+  totalPriceUsd: number;
+  preferredDate: string | null;
+  paidAt: string | null;
+}
+
+function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd, preferredDate, paidAt }: TicketCardProps) {
+  const locale = useLocale();
+  const [downloading, setDownloading] = useState(false);
+  const qrUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/${locale}/dashboard/trips/${bookingId}`
+    : `/${locale}/dashboard/trips/${bookingId}`;
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      await triggerPdfDownload(bookingId);
+    } catch {
+      toast.error("Не удалось скачать тикет. Попробуйте позже.");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  return (
+    <div className="tv-surface-elevated overflow-hidden">
+      {/* Top accent bar */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 to-teal-500" />
+
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center">
+            <QrCode className="h-4 w-4 text-emerald-600" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900">Ваш тикет</h2>
+            <p className="text-xs text-slate-500">Предъявите вместе с паспортом</p>
+          </div>
+          <span className="ml-auto text-[10px] font-mono font-bold text-slate-400 tracking-widest">
+            #{bookingId.slice(0, 8).toUpperCase()}
+          </span>
+        </div>
+
+        {/* Perforated divider */}
+        <div className="relative my-4 flex items-center">
+          <div className="absolute -left-5 h-5 w-5 rounded-full bg-slate-100" />
+          <div className="flex-1 border-t-2 border-dashed border-slate-200 mx-2" />
+          <div className="absolute -right-5 h-5 w-5 rounded-full bg-slate-100" />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-5 items-start">
+          {/* Left: booking details */}
+          <div className="flex-1 space-y-3 min-w-0">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 mb-0.5">Тур</p>
+              <p className="text-base font-bold text-slate-900 leading-tight line-clamp-2">{tourTitle}</p>
+              {country && (
+                <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                  <MapPin className="h-3 w-3 text-emerald-500" />{country}
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Гостей</p>
+                <p className="text-sm font-semibold text-slate-800 flex items-center gap-1">
+                  <Users className="h-3.5 w-3.5 text-slate-400" />{guestsCount} чел.
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Сумма</p>
+                <p className="text-sm font-bold text-emerald-700">${totalPriceUsd}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Дата тура</p>
+                <p className="text-sm font-semibold text-slate-800">
+                  {preferredDate
+                    ? new Date(preferredDate).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })
+                    : "Уточняется"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Оплачено</p>
+                <p className="text-sm font-semibold text-slate-800">
+                  {paidAt
+                    ? new Date(paidAt).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })
+                    : "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: QR code */}
+          <div className="flex flex-col items-center gap-2 shrink-0">
+            <div className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <QRCodeSVG
+                value={qrUrl}
+                size={110}
+                fgColor="#0f172a"
+                bgColor="#ffffff"
+                level="M"
+              />
+            </div>
+            <p className="text-[10px] text-slate-400 text-center max-w-[120px] leading-tight">
+              Сканируйте для открытия заявки
+            </p>
+          </div>
+        </div>
+
+        {/* Perforated divider */}
+        <div className="relative my-4 flex items-center">
+          <div className="absolute -left-5 h-5 w-5 rounded-full bg-slate-100" />
+          <div className="flex-1 border-t-2 border-dashed border-slate-200 mx-2" />
+          <div className="absolute -right-5 h-5 w-5 rounded-full bg-slate-100" />
+        </div>
+
+        <Button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+        >
+          <Download className="h-4 w-4" />
+          {downloading ? "Формируем PDF…" : "Скачать PDF-тикет"}
+        </Button>
       </div>
     </div>
   );
@@ -185,6 +334,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
   const stepIndex = getStepIndex(status);
   const canUpload = status === "DOCUMENTS_REQUESTED";
   const canUploadReceipt = status === "AWAITING_PAYMENT";
+  const isPaidOrDone = status === "PAID" || status === "COMPLETED";
   const passportDocs = booking.documents.filter((d) => d.kind !== "PAYMENT_RECEIPT");
   const receiptDocs = booking.documents.filter((d) => d.kind === "PAYMENT_RECEIPT");
   const pd = (booking.paymentDetails ?? null) as PaymentDetails | null;
@@ -273,6 +423,19 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
           })}
         </div>
       </div>
+
+      {/* ── Ticket card — PAID / COMPLETED ── */}
+      {isPaidOrDone && (
+        <TicketCard
+          bookingId={bookingId}
+          tourTitle={tourTitle}
+          country={tour?.country ?? ""}
+          guestsCount={booking.guestsCount}
+          totalPriceUsd={booking.totalPriceUsd}
+          preferredDate={booking.preferredDate}
+          paidAt={booking.paidAt}
+        />
+      )}
 
       {/* Payment block — shown only in AWAITING_PAYMENT */}
       {canUploadReceipt && pd && (
