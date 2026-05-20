@@ -1,6 +1,6 @@
 // Базовые общие типы
 
-export type Locale = "ru" | "en" | "tj";
+export type Locale = "ru" | "en" | "tr";
 
 export type LocalizedText = Partial<Record<Locale, string>> & { ru: string };
 
