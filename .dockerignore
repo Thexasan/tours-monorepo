@@ -1,0 +1,14 @@
+.git
+.github
+.turbo
+node_modules
+apps/api/dist
+apps/api/node_modules
+apps/web/.next
+apps/web/node_modules
+packages/db/dist
+packages/db/node_modules
+packages/types/dist
+*.md
+*.pdf
+*.zip
