@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -26,7 +26,7 @@ async function triggerPdfDownload(bookingId: string) {
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
   NEW:                  { label: "Новая",               cls: "bg-sky-50/90 text-sky-700 border-sky-100",              dot: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]" },
   DOCUMENTS_REQUESTED:  { label: "Нужны документы",     cls: "bg-violet-50/90 text-violet-700 border-violet-100 animate-pulse",    dot: "bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)]" },
-  DOCUMENTS_SUBMITTED:  { label: "На проверке",          cls: "bg-orange-50/90 text-orange-700 border-orange-100",   dot: "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]" },
+  DOCUMENTS_SUBMITTED:  { label: "На проверке",          cls: "bg-teal-50/90 text-teal-700 border-teal-100",   dot: "bg-teal-500 shadow-[0_0_8px_rgba(13,148,136,0.4)]" },
   IN_PROGRESS:          { label: "В работе",             cls: "bg-amber-50/90 text-amber-700 border-amber-100",       dot: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" },
   AWAITING_PAYMENT:     { label: "Ожидает оплаты",      cls: "bg-rose-50/95 text-rose-700 border-rose-200 animate-pulse",             dot: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" },
   PAID:                 { label: "Оплачена",             cls: "bg-emerald-50/90 text-emerald-700 border-emerald-100", dot: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" },
@@ -64,7 +64,7 @@ function DownloadTicketButton({ bookingId }: { bookingId: string }) {
 
 export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
-  const lang = locale as "ru" | "en" | "tj";
+  const lang = locale as "ru" | "en" | "tr";
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["bookings", "my"],
@@ -97,7 +97,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   if (data.items.length === 0) {
     return (
       <div className="tv-surface-elevated p-12 text-center rounded-3xl border border-slate-100 shadow-lg bg-gradient-to-b from-white to-slate-50/20 max-w-xl mx-auto my-8">
-        <div className="mx-auto h-20 w-20 rounded-3xl bg-gradient-to-tr from-orange-500 to-rose-500 grid place-items-center text-white shadow-[0_12px_28px_-6px_rgba(249,115,22,0.45)] mb-6 animate-pulse">
+        <div className="mx-auto h-20 w-20 rounded-3xl bg-gradient-to-tr from-teal-500 to-emerald-500 grid place-items-center text-white shadow-[0_12px_28px_-6px_rgba(13,148,136,0.45)] mb-6 animate-pulse">
           <Compass className="h-9 w-9 text-white animate-spin-slow" />
         </div>
         <h3 className="text-xl font-bold text-slate-800">Пока ни одной поездки</h3>
@@ -105,7 +105,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
           Начните ваше путешествие с нашего каталога — там собраны лучшие направления и сезонные предложения со всего мира.
         </p>
         <Link href={`/${locale}/tours`} className="inline-block mt-6">
-          <Button size="lg" className="rounded-2xl font-bold text-sm bg-orange-600 hover:bg-orange-700 shadow-md hover:shadow-lg transition-all duration-300">
+          <Button size="lg" className="rounded-2xl font-bold text-sm bg-teal-600 hover:bg-teal-700 shadow-md hover:shadow-lg transition-all duration-300">
             <Plane className="h-4.5 w-4.5 mr-1" />
             Перейти в каталог туров
           </Button>
@@ -130,7 +130,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
         return (
           <article
             key={b.id}
-            className="group relative overflow-hidden tv-surface p-5 flex flex-col sm:flex-row gap-5 rounded-3xl border border-slate-100/80 shadow-sm bg-white hover:border-orange-500/30 hover:shadow-[0_12px_32px_-8px_rgba(249,115,22,0.12)] hover:-translate-y-0.5 transition-all duration-300"
+            className="group relative overflow-hidden tv-surface p-5 flex flex-col sm:flex-row gap-5 rounded-3xl border border-slate-100/80 shadow-sm bg-white hover:border-teal-500/30 hover:shadow-[0_12px_32px_-8px_rgba(13,148,136,0.12)] hover:-translate-y-0.5 transition-all duration-300"
           >
             <div className="relative w-full sm:w-36 sm:h-36 aspect-video sm:aspect-square rounded-2xl overflow-hidden shrink-0 bg-slate-50 border border-slate-100 shadow-inner">
               {tour?.coverImage ? (
@@ -156,7 +156,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
 
             <div className="flex-1 min-w-0 flex flex-col">
               <div className="flex items-start justify-between gap-2 mb-1.5">
-                <h3 className="text-base font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-orange-600 transition-colors">
+                <h3 className="text-base font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-teal-600 transition-colors">
                   {tour ? (
                     <Link href={`/${locale}/tours/${tour.slug}`} className="focus:outline-none">
                       {tourTitle}
@@ -169,7 +169,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
 
               {tour?.country && (
                 <p className="text-xs font-semibold text-slate-400 flex items-center gap-1 mb-4">
-                  <MapPin className="h-3.5 w-3.5 text-orange-600" />
+                  <MapPin className="h-3.5 w-3.5 text-teal-600" />
                   <span>{tour.country}</span>
                 </p>
               )}
@@ -184,7 +184,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                   <span>{new Date(b.createdAt).toLocaleDateString("ru-RU")}</span>
                 </div>
                 <div className="text-slate-500 font-medium flex items-center gap-1.5 col-span-2 sm:col-span-1">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0 shadow-[0_0_6px_rgba(249,115,22,0.6)]" />
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500 shrink-0 shadow-[0_0_6px_rgba(13,148,136,0.6)]" />
                   <span>Сумма: <strong className="text-slate-800 font-extrabold tabular-nums">${b.totalPriceUsd}</strong></span>
                 </div>
               </div>
@@ -192,7 +192,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
               <div className="mt-5 pt-3 border-t border-slate-100/60 flex flex-wrap items-center gap-2.5">
                 <Link
                   href={`/${locale}/${basePath}/trips/${b.id}`}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 hover:bg-orange-100 hover:text-orange-700 px-3.5 py-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow active:scale-95"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 hover:text-teal-700 px-3.5 py-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow active:scale-95"
                 >
                   <span>Открыть детали</span>
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

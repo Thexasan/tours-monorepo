@@ -3,7 +3,10 @@
 import { useState, useMemo } from "react";
 import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Archive, Star, Search, RefreshCw, Layers, CheckCircle2, Flame, Inbox } from "lucide-react";
+import {
+  Plus, Edit, Archive, Star, Search,
+  Layers, CheckCircle2, Flame, Inbox, RotateCcw,
+} from "lucide-react";
 import { adminToursApi } from "@/src/shared/api/admin-tours-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
@@ -42,18 +45,16 @@ export function AdminToursList() {
     onError: (e) => toast.error("Не удалось восстановить тур", { description: extractErrorMessage(e) }),
   });
 
-  // Calculate dynamic stats
   const stats = useMemo(() => {
     if (!tours) return { total: 0, active: 0, hot: 0, archived: 0 };
     return {
-      total: tours.length,
-      active: tours.filter((t) => t.isActive).length,
-      hot: tours.filter((t) => t.isActive && t.isHot).length,
+      total:    tours.length,
+      active:   tours.filter((t) => t.isActive).length,
+      hot:      tours.filter((t) => t.isActive && t.isHot).length,
       archived: tours.filter((t) => !t.isActive).length,
     };
   }, [tours]);
 
-  // Dynamic filter and search client-side
   const filteredTours = useMemo(() => {
     if (!tours) return [];
     return tours.filter((t) => {
@@ -61,60 +62,60 @@ export function AdminToursList() {
         (t.title.ru ?? "").toLowerCase().includes(search.toLowerCase()) ||
         t.country.toLowerCase().includes(search.toLowerCase()) ||
         t.slug.toLowerCase().includes(search.toLowerCase());
-      
       const matchesTab =
-        filterTab === "all"
-          ? true
-          : filterTab === "active"
-          ? t.isActive
-          : filterTab === "hot"
-          ? t.isActive && t.isHot
-          : !t.isActive; // archived
-          
+        filterTab === "all"      ? true
+        : filterTab === "active" ? t.isActive
+        : filterTab === "hot"    ? t.isActive && t.isHot
+        : !t.isActive;
       return matchesSearch && matchesTab;
     });
   }, [tours, search, filterTab]);
 
+  const TABS = [
+    { id: "all",      label: "Все" },
+    { id: "active",   label: "Активные" },
+    { id: "hot",      label: "Горящие 🔥" },
+    { id: "archived", label: "В архиве" },
+  ] as const;
+
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      {/* ── Page Actions ────────────────────────────────────────── */}
+    <div className="space-y-5 animate-fade-in-up">
+
+      {/* ── Action ──────────────────────────────────────────────── */}
       <div className="flex justify-end">
         <Button
           onClick={() => router.push(`/${locale}/admin/tours/create`)}
-          className="bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md shadow-orange-500/20 transition-all shrink-0 hover:scale-103 duration-150 border-0 cursor-pointer"
+          className="h-9 px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-none border-0 cursor-pointer"
         >
-          <Plus className="w-5 h-5 mr-1.5" />
+          <Plus className="w-4 h-4 mr-1.5" />
           Новый тур
         </Button>
       </div>
 
-      {/* ── KPI Summary Cards ───────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MiniStatCard label="Всего туров" value={isLoading ? "—" : String(stats.total)} icon={Layers} color="indigo" />
-        <MiniStatCard label="Активные" value={isLoading ? "—" : String(stats.active)} icon={CheckCircle2} color="emerald" />
-        <MiniStatCard label="Горящие 🔥" value={isLoading ? "—" : String(stats.hot)} icon={Flame} color="amber" />
-        <MiniStatCard label="В архиве" value={isLoading ? "—" : String(stats.archived)} icon={Inbox} color="slate" />
+      {/* ── KPI Cards ───────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard label="Всего туров"  value={isLoading ? "—" : String(stats.total)}    icon={Layers}       accent="border-indigo-500" iconCls="text-indigo-600 bg-indigo-50" />
+        <StatCard label="Активные"     value={isLoading ? "—" : String(stats.active)}   icon={CheckCircle2} accent="border-emerald-500" iconCls="text-emerald-700 bg-emerald-50" />
+        <StatCard label="Горящие 🔥"   value={isLoading ? "—" : String(stats.hot)}      icon={Flame}        accent="border-amber-500"   iconCls="text-amber-600 bg-amber-50" />
+        <StatCard label="В архиве"     value={isLoading ? "—" : String(stats.archived)} icon={Inbox}        accent="border-slate-400"   iconCls="text-slate-500 bg-slate-100" />
       </div>
 
-      {/* ── Filter & Search Toolbar ────────────────────────────── */}
-      <div className="tv-surface-elevated p-4 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+      {/* ── Table Panel ─────────────────────────────────────────── */}
+      <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
+
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 border-b border-slate-100">
           {/* Tabs */}
-          <div className="flex flex-wrap p-1 gap-1 select-none bg-slate-50 border border-slate-200/50 rounded-xl max-w-fit">
-            {[
-              { id: "all", label: "Все" },
-              { id: "active", label: "Активные" },
-              { id: "hot", label: "Горящие 🔥" },
-              { id: "archived", label: "В архиве" }
-            ].map((tab) => (
+          <div className="flex items-center gap-1 flex-wrap">
+            {TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setFilterTab(tab.id as any)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                onClick={() => setFilterTab(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer select-none ${
                   filterTab === tab.id
-                    ? "bg-white text-slate-900 border border-slate-200/60 shadow-xs scale-103"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-emerald-700 border-emerald-700 text-white shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-800"
                 }`}
               >
                 {tab.label}
@@ -123,97 +124,133 @@ export function AdminToursList() {
           </div>
 
           {/* Search */}
-          <div className="relative flex-1 lg:max-w-xs lg:ml-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <div className="relative sm:ml-auto sm:max-w-xs w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <Input
-              placeholder="Поиск по названию или стране..."
+              placeholder="Поиск по названию или стране…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-50/50 hover:bg-white hover:border-slate-300 focus:bg-white rounded-xl text-xs font-medium border-slate-200/60 shadow-3xs transition-all w-full"
+              className="pl-9 pr-8 h-9 text-xs bg-slate-50 border-slate-200 focus-visible:ring-emerald-600/20 rounded-lg shadow-none"
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <RotateCcw className="h-3 w-3" />
+              </button>
+            )}
           </div>
-        </div>
-      </div>
 
-      {/* ── Tours Table ────────────────────────────────────────── */}
-      {isLoading && (
-        <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3">
-          <RefreshCw className="h-6 w-6 text-orange-500 animate-spin" />
-          <p className="text-sm font-semibold">Загружаем список туров...</p>
+          {filteredTours.length > 0 && (
+            <p className="text-[11px] text-slate-400 shrink-0 select-none hidden sm:block">
+              <span className="font-bold text-slate-700 tabular-nums">{filteredTours.length}</span> туров
+            </p>
+          )}
         </div>
-      )}
 
-      {!isLoading && filteredTours.length === 0 && (
-        <div className="tv-surface-elevated p-16 text-center text-slate-400 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-          <Inbox className="h-10 w-10 text-slate-300 mx-auto mb-3.5" />
-          <p className="text-sm font-bold text-slate-800">Туров не найдено</p>
-          <p className="text-xs text-slate-400 mt-1">Измените поисковой запрос или фильтрацию в панели сверху.</p>
-        </div>
-      )}
+        {/* Loading */}
+        {isLoading && (
+          <div className="divide-y divide-slate-100 animate-pulse">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+                <div className="h-10 w-10 rounded-lg bg-slate-100 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3.5 w-1/3 rounded bg-slate-100" />
+                  <div className="h-3 w-1/5 rounded bg-slate-100" />
+                </div>
+                <div className="h-6 w-16 rounded-lg bg-slate-100 hidden sm:block" />
+                <div className="h-6 w-20 rounded-lg bg-slate-100 hidden md:block" />
+              </div>
+            ))}
+          </div>
+        )}
 
-      {!isLoading && filteredTours.length > 0 && (
-        <div className="tv-surface-elevated overflow-hidden bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] select-none">
+        {/* Empty */}
+        {!isLoading && filteredTours.length === 0 && (
+          <div className="p-16 text-center select-none">
+            <div className="mx-auto h-10 w-10 rounded-xl bg-slate-50 border border-slate-200 grid place-items-center mb-4">
+              <Inbox className="h-4.5 w-4.5 text-slate-400" />
+            </div>
+            <p className="text-sm font-semibold text-slate-700">Туров не найдено</p>
+            <p className="text-xs text-slate-400 mt-1">Измените поисковый запрос или выберите другой фильтр</p>
+            {(search || filterTab !== "all") && (
+              <button
+                onClick={() => { setSearch(""); setFilterTab("all"); }}
+                className="mt-4 text-xs text-emerald-700 hover:underline font-medium"
+              >
+                Сбросить фильтры
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Table */}
+        {!isLoading && filteredTours.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50/70 border-b border-slate-200/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <tr>
-                  <th className="text-left px-5 py-4 font-bold">Название Тура</th>
-                  <th className="text-left px-5 py-4 font-bold">Страна</th>
-                  <th className="text-left px-5 py-4 font-bold">Стоимость</th>
-                  <th className="text-left px-5 py-4 font-bold">Отель / Звёзды</th>
-                  <th className="text-left px-5 py-4 font-bold">Статус</th>
-                  <th className="text-right px-5 py-4 font-bold">Действия</th>
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/60">
+                  <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Название тура</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[120px]">Страна</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">Стоимость</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[130px]">Отель / Звёзды</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[160px]">Статус</th>
+                  <th className="text-right px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">Действия</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredTours.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50/40 transition-colors group">
-                    {/* Tour image & details */}
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/40 shadow-2xs group-hover:scale-103 duration-200">
+                  <tr key={t.id} className="group hover:bg-slate-50/50 transition-colors duration-100">
+                    {/* Tour */}
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-slate-100 shrink-0 ring-1 ring-slate-200/60">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={t.coverImage} alt="" className="w-full h-full object-cover group-hover:scale-108 duration-300" />
+                          <img src={t.coverImage} alt="" className="w-full h-full object-cover" />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-800 leading-snug group-hover:text-orange-600 duration-150 truncate max-w-[280px]">
+                          <p className="font-semibold text-slate-800 truncate max-w-[260px] group-hover:text-emerald-700 transition-colors leading-snug">
                             {t.title.ru}
                           </p>
-                          <p className="text-[10px] text-slate-400 font-mono mt-1 select-all">{t.slug}</p>
+                          <p className="text-[10px] text-slate-400 font-mono mt-0.5">{t.slug}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Country */}
-                    <td className="px-5 py-3.5 text-slate-600 font-medium">{t.country}</td>
+                    <td className="px-4 py-3 text-slate-600 font-medium">{t.country}</td>
 
                     {/* Price */}
-                    <td className="px-5 py-3.5 text-slate-900 font-bold font-mono">${t.priceUsd}</td>
+                    <td className="px-4 py-3">
+                      <span className="font-bold tabular-nums text-slate-800 font-mono">${t.priceUsd}</span>
+                    </td>
 
                     {/* Stars */}
-                    <td className="px-5 py-3.5">
-                      <span className="inline-flex items-center gap-0.5 text-amber-500 bg-amber-500/5 px-2 py-1 rounded-lg border border-amber-500/10">
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-0.5 text-amber-500">
                         {Array.from({ length: t.hotelStars }).map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                          <Star key={i} className="w-3 h-3 fill-current" />
                         ))}
                       </span>
                     </td>
 
                     {/* Status */}
-                    <td className="px-5 py-3.5">
+                    <td className="px-4 py-3">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {t.isActive ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/15">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-subtle" />
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                             Активен
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200/40">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-slate-500 bg-slate-100 border border-slate-200/60">
                             В архиве
                           </span>
                         )}
                         {t.isActive && t.isHot && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-500/10 text-orange-600 border border-orange-500/15">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/60">
                             🔥 Горячий
                           </span>
                         )}
@@ -221,17 +258,17 @@ export function AdminToursList() {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
                           onClick={() => router.push(`/${locale}/admin/tours/${t.id}/edit`)}
-                          className="p-2 bg-slate-50 hover:bg-sky-50 text-slate-500 hover:text-sky-600 rounded-xl border border-slate-200/30 hover:border-sky-200/40 transition-all hover:scale-105 duration-150 cursor-pointer"
+                          className="h-8 w-8 grid place-items-center border border-slate-200 rounded-lg text-slate-400 hover:text-sky-600 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer"
                           title="Редактировать"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="w-3.5 h-3.5" />
                         </button>
-                        
+
                         {t.isActive ? (
                           <button
                             type="button"
@@ -240,16 +277,16 @@ export function AdminToursList() {
                                 archiveMutation.mutate(t.id);
                               }
                             }}
-                            className="p-2 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 rounded-xl border border-slate-200/30 hover:border-rose-200/40 transition-all hover:scale-105 duration-150 cursor-pointer"
+                            className="h-8 w-8 grid place-items-center border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Архивировать"
                           >
-                            <Archive className="w-4 h-4" />
+                            <Archive className="w-3.5 h-3.5" />
                           </button>
                         ) : (
                           <button
                             type="button"
                             onClick={() => restoreMutation.mutate(t.id)}
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs rounded-xl border border-slate-200/40 hover:border-emerald-200/40 transition-all hover:scale-105 duration-150 cursor-pointer"
+                            className="h-8 px-2.5 border border-slate-200 rounded-lg text-[10px] font-semibold text-slate-500 hover:text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50 transition-colors cursor-pointer"
                             title="Восстановить"
                           >
                             Восстановить
@@ -262,37 +299,29 @@ export function AdminToursList() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
-
+        )}
+      </div>
     </div>
   );
 }
 
-function MiniStatCard({
-  label, value, icon: Icon, color,
+function StatCard({
+  label, value, icon: Icon, accent, iconCls,
 }: {
   label: string;
   value: string;
   icon: React.ElementType;
-  color: "indigo" | "emerald" | "amber" | "slate";
+  accent: string;
+  iconCls: string;
 }) {
-  const colors = {
-    indigo:  { bg: "bg-indigo-500/10 text-indigo-600 border-indigo-500/15", icon: "text-indigo-600" },
-    emerald: { bg: "bg-emerald-500/10 text-emerald-600 border-emerald-500/15", icon: "text-emerald-600" },
-    amber:   { bg: "bg-orange-500/10 text-orange-600 border-orange-500/15", icon: "text-orange-600" },
-    slate:   { bg: "bg-slate-500/10 text-slate-600 border-slate-500/15", icon: "text-slate-600" },
-  };
-  const c = colors[color];
-
   return (
-    <div className={`tv-surface-elevated p-4 flex items-center gap-3.5 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.01)] select-none hover:shadow-xs transition-all`}>
-      <div className={`grid place-items-center h-10 w-10 rounded-xl shrink-0 font-bold border ${c.bg}`}>
-        <Icon className="h-5 w-5" />
+    <div className={`bg-white border border-slate-200/80 border-l-2 ${accent} rounded-xl shadow-sm p-4 flex items-center gap-3 select-none`}>
+      <div className={`grid place-items-center h-9 w-9 rounded-lg shrink-0 ${iconCls}`}>
+        <Icon className="h-4.5 w-4.5" />
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate mb-0.5">{label}</p>
-        <p className="text-xl font-black text-slate-800 tabular-nums leading-none">{value}</p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">{label}</p>
+        <p className="text-xl font-black text-slate-800 tabular-nums leading-none mt-0.5">{value}</p>
       </div>
     </div>
   );

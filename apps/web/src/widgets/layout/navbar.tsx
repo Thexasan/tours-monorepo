@@ -57,7 +57,7 @@ export function Navbar() {
           <span
             className={cn(
               "grid place-items-center h-9 w-9 rounded-xl text-white transition-transform duration-300 group-hover:rotate-[-6deg]",
-              "bg-linear-to-br from-orange-500 to-sky-600 shadow-[0_6px_16px_-6px_rgba(249,115,22,0.55)]",
+              "bg-linear-to-br from-teal-500 to-emerald-600 shadow-[0_6px_16px_-6px_rgba(13,148,136,0.55)]",
             )}
           >
             <Compass className="h-5 w-5" />
@@ -69,7 +69,7 @@ export function Navbar() {
             )}
           >
             Traveling
-            <span className={cn("transition-colors duration-300", transparent ? "text-orange-300" : "text-orange-600")}>
+            <span className={cn("transition-colors duration-300", transparent ? "text-teal-300" : "text-teal-600")}>
               {" "}Tours
             </span>
           </span>
@@ -127,13 +127,13 @@ function NavLink({
             ? "text-white bg-white/15"
             : "text-white/80 hover:text-white hover:bg-white/10"
           : active
-          ? "text-orange-700 bg-orange-50"
-          : "text-slate-700 hover:text-orange-700 hover:bg-slate-50",
+          ? "text-teal-700 bg-teal-50"
+          : "text-slate-700 hover:text-teal-700 hover:bg-slate-50",
       )}
     >
       {label}
       {active && !transparent && (
-        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-500" />
+        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-500" />
       )}
     </Link>
   );

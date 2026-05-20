@@ -34,7 +34,7 @@ async function triggerPdfDownload(bookingId: string) {
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string; description: string }> = {
   NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500",     description: "Заявка получена, менеджер скоро свяжется" },
   DOCUMENTS_REQUESTED: { label: "Нужны документы",    cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",   dot: "bg-violet-500",  description: "Загрузите запрошенные документы ниже" },
-  DOCUMENTS_SUBMITTED: { label: "Документы на проверке", cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100", dot: "bg-orange-500", description: "Менеджер проверяет ваши документы" },
+  DOCUMENTS_SUBMITTED: { label: "Документы на проверке", cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100", dot: "bg-teal-500", description: "Менеджер проверяет ваши документы" },
   IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",      dot: "bg-amber-500",   description: "Документы подтверждены, заявка в обработке" },
   AWAITING_PAYMENT:    { label: "Ожидает оплаты",      cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",            dot: "bg-sky-500",     description: "Переведите оплату по реквизитам и загрузите квитанцию" },
   PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500", description: "Оплата получена, готовимся к поездке!" },
@@ -234,7 +234,7 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
 
 export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips" }: { bookingId: string; backPath?: string }) {
   const locale = useLocale();
-  const lang = locale as "ru" | "en" | "tj";
+  const lang = locale as "ru" | "en" | "tr";
   const qc = useQueryClient();
 
   const { data: booking, isLoading, isError } = useBooking(bookingId);
@@ -369,7 +369,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
             </div>
             {tour?.country && (
               <p className="text-sm text-slate-500 flex items-center gap-1 mb-2">
-                <MapPin className="h-3.5 w-3.5 text-orange-600" />
+                <MapPin className="h-3.5 w-3.5 text-teal-600" />
                 {tour.country}
               </p>
             )}
@@ -403,20 +403,20 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
               <div key={step.key} className="flex items-center flex-1 min-w-0">
                 <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all ${
-                    done   ? "bg-orange-600 text-white shadow-sm" :
-                    active ? "bg-orange-600 text-white ring-4 ring-orange-500/20" :
+                    done   ? "bg-teal-600 text-white shadow-sm" :
+                    active ? "bg-teal-600 text-white ring-4 ring-teal-500/20" :
                     "bg-slate-100 text-slate-400"
                   }`}>
                     {done ? <Check className="h-4 w-4" /> : i + 1}
                   </div>
                   <span className={`text-xs font-medium text-center leading-tight px-1 ${
-                    active ? "text-orange-700" : done ? "text-slate-700" : "text-slate-400"
+                    active ? "text-teal-700" : done ? "text-slate-700" : "text-slate-400"
                   }`}>
                     {step.label}
                   </span>
                 </div>
                 {i < STEPPER_STEPS.length - 1 && (
-                  <div className={`h-0.5 flex-1 mx-1 ${done ? "bg-orange-600" : "bg-slate-200"}`} />
+                  <div className={`h-0.5 flex-1 mx-1 ${done ? "bg-teal-600" : "bg-slate-200"}`} />
                 )}
               </div>
             );
@@ -559,8 +559,8 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                     onClick={() => setKind(k)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                       kind === k
-                        ? "bg-orange-600 text-white border-orange-600"
-                        : "bg-white text-slate-600 border-slate-200 hover:border-orange-300"
+                        ? "bg-teal-600 text-white border-teal-600"
+                        : "bg-white text-slate-600 border-slate-200 hover:border-teal-300"
                     }`}
                   >
                     {KIND_LABEL[k]}
@@ -580,7 +580,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Например: Загранник Ивана"
                 maxLength={200}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-orange-500/15 focus:border-orange-500 transition-colors"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:border-teal-500 transition-colors"
               />
             </div>
 
@@ -588,12 +588,12 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Файл (JPEG, PNG, PDF, до 10 МБ)</label>
               <div
-                className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all"
+                className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-all"
                 onClick={() => fileInputRef.current?.click()}
               >
                 {selectedFile ? (
                   <div className="flex items-center justify-center gap-2">
-                    <FileText className="h-5 w-5 text-orange-600" />
+                    <FileText className="h-5 w-5 text-teal-600" />
                     <span className="text-sm font-medium text-slate-700">{selectedFile.name}</span>
                     <button
                       type="button"

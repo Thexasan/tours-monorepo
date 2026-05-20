@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import {
@@ -31,32 +31,22 @@ const STATUS_COLORS: Record<BookingStatus, { text: string; bg: string; dot: stri
   COMPLETED:           { text: "text-slate-600",    bg: "bg-slate-100/60 ring-slate-400/20",    dot: "bg-slate-400",    bar: "bg-slate-400" },
   CANCELLED:           { text: "text-rose-600",     bg: "bg-rose-50/60 ring-rose-500/20",     dot: "bg-rose-500",     bar: "bg-rose-500" },
   DOCUMENTS_REQUESTED: { text: "text-violet-600",   bg: "bg-violet-50/60 ring-violet-500/20",   dot: "bg-violet-500",   bar: "bg-violet-500" },
-  DOCUMENTS_SUBMITTED: { text: "text-orange-600",   bg: "bg-orange-50/60 ring-orange-500/20",   dot: "bg-orange-500",   bar: "bg-orange-500" },
+  DOCUMENTS_SUBMITTED: { text: "text-teal-600",     bg: "bg-teal-50/60 ring-teal-500/20",     dot: "bg-teal-500",     bar: "bg-teal-500" },
 };
 
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  NEW: "Новые",
-  IN_PROGRESS: "В работе",
-  AWAITING_PAYMENT: "Ждут оплаты",
-  PAID: "Оплачены",
-  COMPLETED: "Завершены",
-  CANCELLED: "Отменены",
-  DOCUMENTS_REQUESTED: "Ждут документы",
-  DOCUMENTS_SUBMITTED: "Документы загружены",
-};
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, revenueLabel, bookingsLabel }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[#0f172a] border border-slate-800 p-3.5 rounded-xl shadow-xl text-white text-xs select-none">
         <p className="font-semibold text-slate-300 mb-1.5">{payload[0].payload.month}</p>
         <div className="space-y-1 font-mono">
-          <p className="flex items-center justify-between gap-5 text-orange-400">
-            <span>Выручка:</span>
-            <span className="font-bold">${payload[0].payload.revenue.toLocaleString("ru-RU")}</span>
+          <p className="flex items-center justify-between gap-5 text-teal-400">
+            <span>{revenueLabel}</span>
+            <span className="font-bold">${payload[0].payload.revenue.toLocaleString()}</span>
           </p>
           <p className="flex items-center justify-between gap-5 text-sky-400">
-            <span>Заявки:</span>
+            <span>{bookingsLabel}</span>
             <span className="font-bold">{payload[0].payload.bookings}</span>
           </p>
         </div>
@@ -68,6 +58,18 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export function AdminDashboard() {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
+
+  const STATUS_LABELS: Record<BookingStatus, string> = {
+    NEW: t('admin.status.NEW'),
+    IN_PROGRESS: t('admin.status.IN_PROGRESS'),
+    AWAITING_PAYMENT: t('admin.status.AWAITING_PAYMENT'),
+    PAID: t('admin.status.PAID'),
+    COMPLETED: t('admin.status.COMPLETED'),
+    CANCELLED: t('admin.status.CANCELLED'),
+    DOCUMENTS_REQUESTED: t('admin.status.DOCUMENTS_REQUESTED'),
+    DOCUMENTS_SUBMITTED: t('admin.status.DOCUMENTS_SUBMITTED'),
+  };
 
   const { data: allBookings, isLoading: loadingBookings } = useQuery({
     queryKey: ["admin", "bookings", "all", "dashboard"],
@@ -118,7 +120,7 @@ export function AdminDashboard() {
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = d.toISOString().substring(0, 7); // "YYYY-MM"
-      const label = d.toLocaleDateString("ru-RU", { month: "short" });
+      const label = d.toLocaleDateString(locale, { month: "short" });
       monthlyData[key] = { month: label, bookings: 0, revenue: 0 };
     }
 
@@ -142,35 +144,35 @@ export function AdminDashboard() {
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
-          label="Всего заявок"
+          label={t('admin.dashboard.statBookings')}
           value={loadingBookings ? "—" : String(totalBookings)}
           icon={Mail}
           color="rose"
           href={`/${locale}/admin/bookings`}
-          sub="полный список броней"
+          sub={t('admin.dashboard.statBookingsSub')}
         />
         <StatCard
-          label="Общая Выручка"
-          value={loadingBookings ? "—" : `$${revenue.toLocaleString("ru-RU")}`}
+          label={t('admin.dashboard.statRevenue')}
+          value={loadingBookings ? "—" : `$${revenue.toLocaleString(locale)}`}
           icon={DollarSign}
           color="emerald"
-          sub="оплаченные + завершённые"
+          sub={t('admin.dashboard.statRevenueSub')}
         />
         <StatCard
-          label="Активные туры"
+          label={t('admin.dashboard.statTours')}
           value={loadingTours ? "—" : String(activeTours)}
           icon={Briefcase}
           color="amber"
           href={`/${locale}/admin/tours`}
-          sub="опубликовано на сайте"
+          sub={t('admin.dashboard.statToursSub')}
         />
         <StatCard
-          label="Запросы выплат"
+          label={t('admin.dashboard.statPayouts')}
           value={loadingPayouts ? "—" : String(pendingPayouts)}
           icon={Wallet}
           color={pendingPayouts > 0 ? "indigo" : "slate"}
           href={`/${locale}/admin/payouts`}
-          sub="ожидают обработки"
+          sub={t('admin.dashboard.statPayoutsSub')}
         />
       </div>
 
@@ -185,17 +187,17 @@ export function AdminDashboard() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-amber-900 text-sm leading-snug">
-              Внимание: {needsAttention} {needsAttention === 1 ? "заявка требует" : (needsAttention < 5 ? "заявки требуют" : "заявок требуют")} рассмотрения
+              {t('admin.dashboard.attentionTitle', { count: needsAttention })}
             </p>
             <p className="text-xs text-amber-700 mt-1">
-              У вас есть необработанные новые заявки, прикреплённые гостевые документы или брони, ожидающие оплаты.
+              {t('admin.dashboard.attentionDesc')}
             </p>
           </div>
           <Link
             href={`/${locale}/admin/bookings`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 transition-all font-semibold text-xs shrink-0 self-center border border-amber-500/15"
           >
-            Обработать <ArrowRight className="h-3.5 w-3.5" />
+            {t('admin.dashboard.process')} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
@@ -205,20 +207,20 @@ export function AdminDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <TrendingUp className="h-4.5 w-4.5 text-orange-500" />
-              Аналитика продаж
+              <TrendingUp className="h-4.5 w-4.5 text-emerald-600" />
+              {t('admin.dashboard.analyticsTitle')}
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">Динамика выручки и заявок за последние 6 месяцев</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t('admin.dashboard.analyticsSubtitle')}</p>
           </div>
           
           <div className="flex gap-4 text-xs font-semibold select-none bg-slate-50 border border-slate-200/50 p-1 rounded-xl">
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200/50 shadow-xs text-slate-800">
-              <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
-              Выручка ($)
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+              {t('admin.dashboard.revenueLabel')}
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-500">
               <span className="h-2.5 w-2.5 rounded-full bg-sky-400" />
-              Заявки (шт.)
+              {t('admin.dashboard.bookingsLabel')}
             </span>
           </div>
         </div>
@@ -226,15 +228,15 @@ export function AdminDashboard() {
         <div className="h-[280px] w-full">
           {loadingBookings ? (
             <div className="h-full w-full rounded-2xl bg-slate-50 animate-pulse border border-slate-100 flex items-center justify-center text-xs text-slate-400">
-              Строим график аналитики...
+              {t('admin.dashboard.buildingChart')}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.18}/>
-                    <stop offset="95%" stopColor="#f97316" stopOpacity={0.01}/>
+                    <stop offset="5%" stopColor="#047857" stopOpacity={0.18}/>
+                    <stop offset="95%" stopColor="#047857" stopOpacity={0.01}/>
                   </linearGradient>
                   <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.12}/>
@@ -245,8 +247,8 @@ export function AdminDashboard() {
                 <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="left" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#ea580c" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
+                <Tooltip content={<CustomTooltip revenueLabel={t('admin.dashboard.tooltipRevenue')} bookingsLabel={t('admin.dashboard.tooltipBookings')} />} />
+                <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#047857" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
                 <Area yAxisId="right" type="monotone" dataKey="bookings" stroke="#38bdf8" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -259,14 +261,14 @@ export function AdminDashboard() {
         <div className="tv-surface-elevated p-6 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Activity className="h-4.5 w-4.5 text-rose-500" />
-              Последние бронирования
+              <Activity className="h-4.5 w-4.5 text-emerald-600" />
+              {t('admin.dashboard.recentTitle')}
             </h2>
             <Link
               href={`/${locale}/admin/bookings`}
-              className="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 bg-rose-50 hover:bg-rose-100/60 px-3 py-1.5 rounded-xl border border-rose-100/40 transition-colors"
+              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100/60 px-3 py-1.5 rounded-xl border border-emerald-100/40 transition-colors"
             >
-              Все заявки <ArrowRight className="h-3.5 w-3.5" />
+              {t('admin.dashboard.allBookings')} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
@@ -277,7 +279,7 @@ export function AdminDashboard() {
               ))}
             </div>
           ) : recentBookings.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-12">Новых бронирований пока нет</p>
+            <p className="text-sm text-slate-400 text-center py-12">{t('admin.dashboard.noBookings')}</p>
           ) : (
             <div className="divide-y divide-slate-100">
               {recentBookings.map((b) => {
@@ -288,15 +290,15 @@ export function AdminDashboard() {
                     href={`/${locale}/admin/bookings/${b.id}`}
                     className="flex items-center gap-4 py-3.5 hover:bg-slate-50/50 transition-colors group first:pt-0 last:pb-0"
                   >
-                    <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200/50 group-hover:scale-105 group-hover:from-orange-50 group-hover:to-rose-50 group-hover:border-orange-200/30 transition-all shrink-0">
-                      <Mail className="h-4.5 w-4.5 text-slate-500 group-hover:text-orange-600 transition-colors" />
+                    <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200/50 group-hover:scale-105 group-hover:from-emerald-50/50 group-hover:to-emerald-50 group-hover:border-emerald-200/30 transition-all shrink-0">
+                      <Mail className="h-4.5 w-4.5 text-slate-500 group-hover:text-emerald-700 transition-colors" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 truncate group-hover:text-orange-600 transition-colors leading-tight">
+                      <p className="text-sm font-bold text-slate-800 truncate group-hover:text-emerald-700 transition-colors leading-tight">
                         {b.contactName}
                       </p>
                       <p className="text-xs text-slate-400 mt-1 truncate">
-                        {b.contactEmail} · {new Date(b.createdAt).toLocaleDateString("ru-RU")}
+                        {b.contactEmail} · {new Date(b.createdAt).toLocaleDateString(locale)}
                       </p>
                     </div>
                     
@@ -320,7 +322,7 @@ export function AdminDashboard() {
           <div className="tv-surface-elevated p-6 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-4">
               <TrendingUp className="h-4.5 w-4.5 text-indigo-500" />
-              Распределение по статусам
+              {t('admin.dashboard.statusTitle')}
             </h2>
             
             {loadingBookings ? (
@@ -365,16 +367,16 @@ export function AdminDashboard() {
           <div className="tv-surface-elevated p-6 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
             <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
               <Clock className="h-4.5 w-4.5 text-slate-500" />
-              Быстрые действия
+              {t('admin.dashboard.quickTitle')}
             </h2>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { href: `/${locale}/admin/bookings`, icon: Mail, label: "Заявки", border: "hover:border-rose-300/40", hover: "hover:bg-rose-50/50 hover:text-rose-700" },
-                { href: `/${locale}/admin/tours`, icon: Briefcase, label: "Туры", border: "hover:border-orange-300/40", hover: "hover:bg-orange-50/50 hover:text-orange-700" },
-                { href: `/${locale}/admin/moderation`, icon: MessageSquare, label: "Модерация", border: "hover:border-violet-300/40", hover: "hover:bg-violet-50/50 hover:text-violet-700" },
-                { href: `/${locale}/admin/payouts`, icon: Wallet, label: "Выплаты", border: "hover:border-amber-300/40", hover: "hover:bg-amber-50/50 hover:text-amber-700" },
-                { href: `/${locale}/admin/users`, icon: Users, label: "Юзеры", border: "hover:border-sky-300/40", hover: "hover:bg-sky-50/50 hover:text-sky-700" },
-                { href: `/${locale}/admin/partners`, icon: CheckCircle2, label: "Партнёры", border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/bookings`, icon: Mail, label: t('admin.dashboard.quickBookings'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/tours`, icon: Briefcase, label: t('admin.dashboard.quickTours'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/moderation`, icon: MessageSquare, label: t('admin.dashboard.quickModeration'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/payouts`, icon: Wallet, label: t('admin.dashboard.quickPayouts'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/users`, icon: Users, label: t('admin.dashboard.quickUsers'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
+                { href: `/${locale}/admin/partners`, icon: CheckCircle2, label: t('admin.dashboard.quickPartners'), border: "hover:border-emerald-300/40", hover: "hover:bg-emerald-50/50 hover:text-emerald-700" },
               ].map(({ href, icon: Icon, label, hover, border }) => (
                 <Link
                   key={href}
@@ -406,11 +408,11 @@ function StatCard({
   sub?: string;
 }) {
   const colors = {
-    rose:    { border: "hover:border-rose-300/60",    grad: "from-rose-500 to-rose-600",    shadow: "shadow-rose-500/25 bg-rose-500/10 text-rose-600" },
-    emerald: { border: "hover:border-emerald-300/60", grad: "from-emerald-500 to-emerald-600", shadow: "shadow-emerald-500/25 bg-emerald-500/10 text-emerald-600" },
-    amber:   { border: "hover:border-amber-300/60",   grad: "from-orange-500 to-amber-500",   shadow: "shadow-orange-500/25 bg-orange-500/10 text-orange-600" },
-    indigo:  { border: "hover:border-indigo-300/60",  grad: "from-indigo-500 to-indigo-600",  shadow: "shadow-indigo-500/25 bg-indigo-500/10 text-indigo-600" },
-    slate:   { border: "hover:border-slate-300/60",   grad: "from-slate-500 to-slate-600",   shadow: "shadow-slate-500/25 bg-slate-500/10 text-slate-600" },
+    rose:    { border: "hover:border-rose-300/40",    grad: "from-rose-500 to-rose-600",       shadow: "shadow-rose-500/10 bg-rose-50 text-rose-700" },
+    emerald: { border: "hover:border-emerald-400/40", grad: "from-emerald-600 to-emerald-700", shadow: "shadow-emerald-600/10 bg-emerald-100 text-emerald-800" },
+    amber:   { border: "hover:border-amber-300/40",   grad: "from-amber-500 to-amber-600",     shadow: "shadow-amber-500/10 bg-amber-50 text-amber-700" },
+    indigo:  { border: "hover:border-indigo-300/40",  grad: "from-indigo-500 to-indigo-600",  shadow: "shadow-indigo-500/25 bg-indigo-50 text-indigo-700" },
+    slate:   { border: "hover:border-slate-300/40",   grad: "from-slate-500 to-slate-600",   shadow: "shadow-slate-500/10 bg-slate-50 text-slate-600" },
   };
   const c = colors[color];
 

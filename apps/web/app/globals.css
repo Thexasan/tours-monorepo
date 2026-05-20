@@ -12,16 +12,16 @@
   --card-foreground: #0f172a;
 
   /* Brand palette */
-  --primary: #f97316;            /* orange-500 */
-  --primary-hover: #ea580c;      /* orange-600 */
-  --primary-foreground: #fff7ed;
-  --primary-soft: #ffedd5;       /* orange-100 */
-  --primary-soft-foreground: #c2410c;
+  --primary: #047857;            /* emerald-700 (Strict deep emerald) */
+  --primary-hover: #065f46;      /* emerald-800 */
+  --primary-foreground: #f0fdf4; /* emerald-50 */
+  --primary-soft: #d1fae5;       /* emerald-100 */
+  --primary-soft-foreground: #064e3b; /* emerald-900 */
 
-  --accent: #f43f5e;             /* rose-500 */
-  --accent-hover: #e11d48;
-  --accent-foreground: #fff1f2;
-  --accent-soft: #ffe4e6;
+  --accent: #10b981;             /* emerald-500 */
+  --accent-hover: #059669;
+  --accent-foreground: #ecfdf5;
+  --accent-soft: #d1fae5;
 
   --sunset: #f59e0b;             /* amber-500 */
   --sunset-soft: #fef3c7;
@@ -31,9 +31,9 @@
   --ocean-soft: #e0f2fe;
   --ocean-foreground: #075985;
 
-  --forest: #059669;             /* emerald-600 */
+  --forest: #047857;             /* emerald-700 */
   --forest-soft: #d1fae5;
-  --forest-foreground: #065f46;
+  --forest-foreground: #064e3b;
 
   --destructive: #dc2626;
   --destructive-foreground: #fef2f2;
@@ -44,7 +44,7 @@
   --border: #e2e8f0;
   --border-soft: #f1f5f9;
   --input: #e2e8f0;
-  --ring: rgba(249, 115, 22, 0.45);
+  --ring: rgba(4, 120, 87, 0.40);
 
   /* Shape */
   --radius: 0.875rem;            /* 14px default card */
@@ -55,17 +55,17 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
   --shadow-md: 0 4px 6px -2px rgba(15, 23, 42, 0.06), 0 10px 20px -8px rgba(15, 23, 42, 0.10);
   --shadow-lg: 0 12px 28px -12px rgba(15, 23, 42, 0.18), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
-  --shadow-glow-teal: 0 18px 40px -16px rgba(249, 115, 22, 0.45);
-  --shadow-glow-rose: 0 18px 40px -16px rgba(244, 63, 94, 0.40);
-  --shadow-glow-amber: 0 18px 40px -16px rgba(245, 158, 11, 0.45);
+  --shadow-glow-teal: 0 18px 40px -16px rgba(4, 120, 87, 0.35);
+  --shadow-glow-rose: 0 18px 40px -16px rgba(220, 38, 38, 0.15);
+  --shadow-glow-amber: 0 18px 40px -16px rgba(245, 158, 11, 0.35);
 
   /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ea580c 100%);
-  --gradient-sunset: linear-gradient(135deg, #f97316 0%, #f43f5e 100%);
+  --gradient-hero: linear-gradient(135deg, #059669 0%, #047857 45%, #064e3b 100%);
+  --gradient-sunset: linear-gradient(135deg, #047857 0%, #065f46 100%);
   --gradient-amber: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  --gradient-forest: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --gradient-page: radial-gradient(1200px 600px at 0% -10%, rgba(249, 115, 22, 0.07) 0%, transparent 60%),
-                   radial-gradient(1000px 500px at 100% -20%, rgba(244, 63, 94, 0.06) 0%, transparent 55%),
+  --gradient-forest: linear-gradient(135deg, #059669 0%, #064e3b 100%);
+  --gradient-page: radial-gradient(1200px 600px at 0% -10%, rgba(4, 120, 87, 0.04) 0%, transparent 60%),
+                   radial-gradient(1000px 500px at 100% -20%, rgba(5, 150, 105, 0.03) 0%, transparent 55%),
                    linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
 }
 

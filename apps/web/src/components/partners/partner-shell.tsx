@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   BarChart3, Wallet, LogOut, Briefcase, ChevronRight,
   Sparkles, TrendingUp, User, Plane, MessageSquare, Bell,
@@ -13,28 +13,29 @@ import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
 
 export function PartnerShell({ children }: { children: React.ReactNode }) {
-  const { user, isHydrated } = useRequireAuth(["PARTNER"]);
-  const { logout } = useAuth();
+  const { user, isAuthorized } = useRequireAuth(["PARTNER"]);
+  const { logout, isLoading } = useAuth();
   const { unread } = useNotifications();
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations('dashboard');
 
-  if (!isHydrated || !user) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="py-24 flex items-center justify-center text-slate-500">
         <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse mr-2" />
-        Проверяем доступ…
+        {t('partner.checking')}
       </div>
     );
   }
 
   const nav = [
-    { href: `/${locale}/partner/dashboard`,     label: "Дашборд",      shortLabel: "Дашборд",  icon: BarChart3    },
-    { href: `/${locale}/partner/finance`,        label: "Финансы",      shortLabel: "Финансы",  icon: Wallet       },
-    { href: `/${locale}/partner/trips`,          label: "Мои туры",     shortLabel: "Туры",     icon: Plane        },
-    { href: `/${locale}/partner/notifications`,  label: "Уведомления",  shortLabel: "Уведомл.", icon: Bell, badge: unread > 0 ? unread : undefined },
-    { href: `/${locale}/partner/profile`,        label: "Мой профиль",  shortLabel: "Профиль",  icon: User         },
-    { href: `/${locale}/partner/reviews`,        label: "Мои отзывы",   shortLabel: "Отзывы",   icon: MessageSquare },
+    { href: `/${locale}/partner/dashboard`,     label: t('partner.nav.dashboard'),     shortLabel: t('partner.nav.dashboardShort'), icon: BarChart3    },
+    { href: `/${locale}/partner/finance`,        label: t('partner.nav.finance'),       shortLabel: t('partner.nav.financeShort'),   icon: Wallet       },
+    { href: `/${locale}/partner/trips`,          label: t('partner.nav.trips'),         shortLabel: t('partner.nav.tripsShort'),     icon: Plane        },
+    { href: `/${locale}/partner/notifications`,  label: t('partner.nav.notifications'), shortLabel: t('partner.nav.notifShort'),     icon: Bell, badge: unread > 0 ? unread : undefined },
+    { href: `/${locale}/partner/profile`,        label: t('partner.nav.profile'),       shortLabel: t('partner.nav.profileShort'),   icon: User         },
+    { href: `/${locale}/partner/reviews`,        label: t('partner.nav.reviews'),       shortLabel: t('partner.nav.reviews'),        icon: MessageSquare },
   ];
 
   // Bottom tabs: top 5 (reviews stays in sidebar on desktop)
@@ -64,8 +65,8 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                   <Briefcase className="h-4.5 w-4.5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200 leading-none">КАБИНЕТ ПАРТНЁРА</p>
-                  <p className="text-xs font-semibold text-emerald-100/90 truncate max-w-[120px] mt-0.5">{user.email}</p>
+                  <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200 leading-none">{t('partner.badge')}</p>
+                  <p className="text-xs font-semibold text-emerald-100/90 truncate max-w-[120px] mt-0.5">{user?.email}</p>
                 </div>
               </div>
               {/* NFC/Chip card symbol */}
@@ -76,8 +77,8 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
 
             <div className="mt-8 flex items-end justify-between relative z-10">
               <div>
-                <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200/70">ДОСТУПНЫЙ БАЛАНС</p>
-                <p className="text-3xl font-black tracking-tight tabular-nums mt-1 text-white shadow-sm">${user.balance.toFixed(2)}</p>
+                <p className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-200/70">{t('partner.balance')}</p>
+                <p className="text-3xl font-black tracking-tight tabular-nums mt-1 text-white shadow-sm">${user?.balance?.toFixed(2) ?? "0.00"}</p>
               </div>
               <div className="p-2 rounded-lg bg-white/10 text-emerald-300 border border-white/10 shadow-sm animate-pulse shrink-0">
                 <TrendingUp className="h-4.5 w-4.5" />
@@ -86,7 +87,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <nav className="px-3 py-3 flex flex-col gap-1">
-            <p className="px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Категории</p>
+            <p className="px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">{t('partner.categories')}</p>
             {nav.map((it) => {
               const active = isActive(it.href);
               const Icon = it.icon;
@@ -122,7 +123,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
 
           <div className="border-t border-slate-100 p-3">
             <Button variant="outline" className="w-full justify-center rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all duration-300 active:scale-95 text-xs py-2.5 h-10" onClick={() => void logout()}>
-              <LogOut className="w-4 h-4 mr-1.5" /> Выйти из аккаунта
+              <LogOut className="w-4 h-4 mr-1.5" /> {t('partner.logout')}
             </Button>
           </div>
         </div>
@@ -133,9 +134,9 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
               <Sparkles className="h-4.5 w-4.5 animate-pulse" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-slate-800">Лимит выплат: $50</p>
+              <p className="text-sm font-bold text-slate-800">{t('partner.limitTitle')}</p>
               <p className="text-[11px] font-semibold text-slate-400 mt-1 leading-normal">
-                Комиссионный процент: <strong className="text-emerald-600 font-bold">{((user.commissionRate ?? 0.05) * 100).toFixed(0)}%</strong> с каждой продажи.
+                {t('partner.limitDesc')} <strong className="text-emerald-600 font-bold">{((user?.commissionRate ?? 0.05) * 100).toFixed(0)}%</strong> {t('partner.limitRate')}
               </p>
             </div>
           </div>

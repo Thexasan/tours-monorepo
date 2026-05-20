@@ -46,12 +46,15 @@ export function useAuth() {
   );
 
   const logout = useCallback(async () => {
-    await authApi.logout();
-    clear();
-    qc.clear();
-    router.push("/");
-    router.refresh();
-  }, [clear, qc, router]);
+    setLoading(true);
+    try {
+      await authApi.logout();
+    } finally {
+      clear();
+      qc.clear();
+      router.push("/");
+    }
+  }, [clear, qc, router, setLoading]);
 
   return {
     user,

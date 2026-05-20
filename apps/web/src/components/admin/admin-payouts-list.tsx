@@ -100,7 +100,7 @@ export function AdminPayoutsList() {
       {/* ── Loading State ───────────────────────────────────────── */}
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3">
-          <RefreshCw className="h-6 w-6 text-indigo-500 animate-spin" />
+          <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
           <p className="text-sm font-semibold">Загружаем список выплат...</p>
         </div>
       )}
@@ -131,7 +131,7 @@ export function AdminPayoutsList() {
                   <div>
                     {/* Partner Header Row */}
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-black text-xs shadow-md shadow-indigo-500/10 shrink-0 select-none">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-xs shadow-md shadow-emerald-500/10 shrink-0 select-none">
                         {initials}
                       </div>
                       <div>
@@ -183,13 +183,13 @@ export function AdminPayoutsList() {
                 {/* 2. Middle side: Custom Dark Virtual Bank Card */}
                 <div className="w-full xl:w-96 shrink-0 relative bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white/90 overflow-hidden shadow-md flex flex-col justify-between select-none">
                   {/* Neon radial light reflection overlay */}
-                  <div className="absolute -right-16 -top-16 w-36 h-36 rounded-full bg-gradient-to-br from-indigo-500/15 to-purple-600/15 blur-2xl pointer-events-none" />
-                  <div className="absolute -left-16 -bottom-16 w-36 h-36 rounded-full bg-gradient-to-br from-blue-500/10 to-teal-500/10 blur-2xl pointer-events-none" />
+                  <div className="absolute -right-16 -top-16 w-36 h-36 rounded-full bg-gradient-to-br from-emerald-500/15 to-teal-600/15 blur-2xl pointer-events-none" />
+                  <div className="absolute -left-16 -bottom-16 w-36 h-36 rounded-full bg-gradient-to-br from-teal-500/10 to-emerald-500/10 blur-2xl pointer-events-none" />
 
                   {/* Bank card logo/title */}
                   <div className="flex items-center justify-between mb-4 relative z-10">
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-indigo-400" />
+                      <Building2 className="w-4 h-4 text-teal-400" />
                       <span className="text-xs font-extrabold tracking-wider uppercase text-white/80">
                         {bank.bank || "BANK SYSTEM"}
                       </span>

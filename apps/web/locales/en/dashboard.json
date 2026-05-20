@@ -1,5 +1,139 @@
 {
   "clientTitle": "Client Dashboard",
   "partnerTitle": "Partner Dashboard",
-  "adminTitle": "Admin Panel"
+  "adminTitle": "Admin Panel",
+
+  "admin": {
+    "checking": "Checking panel access…",
+    "role": "Administrator",
+    "logout": "Sign out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "panelTitle": "Admin Panel",
+    "apiConnected": "API Connected",
+    "currentLanguage": "English",
+    "nav": {
+      "overview": "Overview",
+      "dashboard": "Dashboard",
+      "content": "Content",
+      "tours": "Tours",
+      "moderation": "Moderation",
+      "operations": "Operations",
+      "bookings": "Bookings",
+      "payouts": "Payouts",
+      "usersGroup": "Users",
+      "users": "Users",
+      "partners": "Partners",
+      "account": "Account",
+      "profile": "My Profile"
+    },
+    "breadcrumb": {
+      "root": "Admin",
+      "overview": "Overview",
+      "tours": "Tours",
+      "moderation": "Moderation",
+      "bookings": "Bookings",
+      "payouts": "Payouts",
+      "usersList": "Users list",
+      "partners": "Partners",
+      "profile": "My Profile",
+      "control": "Control Panel"
+    },
+    "dashboard": {
+      "eyebrow": "CONTROL PANEL",
+      "title": "Overview",
+      "subtitle": "Summary statistics on bookings, tours and partner payouts.",
+      "statBookings": "Total bookings",
+      "statBookingsSub": "full bookings list",
+      "statRevenue": "Total revenue",
+      "statRevenueSub": "paid + completed",
+      "statTours": "Active tours",
+      "statToursSub": "published on site",
+      "statPayouts": "Payout requests",
+      "statPayoutsSub": "awaiting processing",
+      "attentionTitle": "{count} bookings require attention",
+      "attentionDesc": "You have unprocessed new bookings, attached guest documents or bookings awaiting payment.",
+      "process": "Process",
+      "analyticsTitle": "Sales analytics",
+      "analyticsSubtitle": "Revenue and bookings trend over the last 6 months",
+      "revenueLabel": "Revenue ($)",
+      "bookingsLabel": "Bookings",
+      "buildingChart": "Building analytics chart...",
+      "tooltipRevenue": "Revenue:",
+      "tooltipBookings": "Bookings:",
+      "recentTitle": "Recent bookings",
+      "allBookings": "All bookings",
+      "noBookings": "No new bookings yet",
+      "statusTitle": "Status breakdown",
+      "quickTitle": "Quick actions",
+      "quickBookings": "Bookings",
+      "quickTours": "Tours",
+      "quickModeration": "Moderation",
+      "quickPayouts": "Payouts",
+      "quickUsers": "Users",
+      "quickPartners": "Partners"
+    },
+    "status": {
+      "NEW": "New",
+      "IN_PROGRESS": "In progress",
+      "AWAITING_PAYMENT": "Awaiting payment",
+      "PAID": "Paid",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "DOCUMENTS_REQUESTED": "Awaiting docs",
+      "DOCUMENTS_SUBMITTED": "Docs submitted"
+    }
+  },
+
+  "partner": {
+    "checking": "Checking access…",
+    "badge": "PARTNER CABINET",
+    "balance": "AVAILABLE BALANCE",
+    "categories": "Navigation",
+    "nav": {
+      "dashboard": "Dashboard",
+      "dashboardShort": "Dashboard",
+      "finance": "Finance",
+      "financeShort": "Finance",
+      "trips": "My Tours",
+      "tripsShort": "Tours",
+      "notifications": "Notifications",
+      "notifShort": "Notif.",
+      "profile": "My Profile",
+      "profileShort": "Profile",
+      "reviews": "My Reviews"
+    },
+    "logout": "Sign out",
+    "limitTitle": "Payout limit: $50",
+    "limitDesc": "Commission rate:",
+    "limitRate": "% per sale."
+  },
+
+  "client": {
+    "checking": "Checking authorisation…",
+    "nav": {
+      "overview": "Overview",
+      "overviewShort": "Overview",
+      "profile": "Profile",
+      "profileShort": "Profile",
+      "trips": "My Trips",
+      "tripsShort": "Trips",
+      "notifications": "Notifications",
+      "notifShort": "Notif.",
+      "referrals": "Referrals",
+      "referralsShort": "Refs",
+      "reviews": "My Reviews"
+    },
+    "roles": {
+      "CLIENT": "Traveller",
+      "PARTNER": "Partner",
+      "ADMIN": "Administrator"
+    },
+    "catalog": "Catalogue",
+    "personalCabinet": "My Account",
+    "logout": "Sign out",
+    "referralBadge": "Referrals",
+    "referralText": "Invite 5 friends — get a free tour ✨",
+    "referralLink": "Learn more"
+  }
 }

@@ -8,7 +8,7 @@ import { cn } from "@/src/lib/utils";
 const LOCALES = [
   { code: "ru", label: "RU" },
   { code: "en", label: "EN" },
-  { code: "tj", label: "TJ" },
+  { code: "tr", label: "TR" },
 ] as const;
 
 interface Props {

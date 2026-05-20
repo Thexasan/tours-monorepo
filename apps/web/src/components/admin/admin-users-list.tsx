@@ -56,7 +56,7 @@ export function AdminUsersList() {
       <div className="tv-surface-elevated p-4 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 shrink-0 select-none">
-            <Filter className="h-3.5 w-3.5 text-orange-500" />
+            <Filter className="h-3.5 w-3.5 text-teal-600" />
             Роли
           </div>
           
@@ -106,7 +106,7 @@ export function AdminUsersList() {
       {/* ── Loading state ───────────────────────────────────────── */}
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3 select-none">
-          <RefreshCw className="h-6 w-6 text-orange-500 animate-spin" />
+          <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
           <p className="text-sm font-semibold">Загружаем список пользователей...</p>
         </div>
       )}
@@ -133,7 +133,7 @@ export function AdminUsersList() {
                 {/* Profile block */}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-                    <span className="font-bold text-slate-800 truncate text-sm leading-none group-hover:text-orange-600 duration-150">
+                    <span className="font-bold text-slate-800 truncate text-sm leading-none group-hover:text-teal-600 duration-150">
                       {u.fullName}
                     </span>
                     <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${meta.cls}`}>

@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 import { type Review } from "@tours/types";
 
 export function ReviewCard({ review }: { review: Review }) {
-  const locale = useLocale() as "ru" | "en" | "tj";
+  const locale = useLocale() as "ru" | "en" | "tr";
   const tourTitle = review.tourTitle[locale] ?? review.tourTitle.ru;
 
   return (

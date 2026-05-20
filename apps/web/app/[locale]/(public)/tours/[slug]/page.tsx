@@ -61,7 +61,7 @@ export default async function TourDetailPage({
     NO_MEALS: t("mealPlan.NO_MEALS"),
   };
 
-  const lang = (locale as "ru" | "en" | "tj") ?? "ru";
+  const lang = (locale as "ru" | "en" | "tr") ?? "ru";
   const title = tour.title[lang] ?? tour.title.ru ?? tour.slug;
   const description = tour.description[lang] ?? tour.description.ru ?? "";
   const includedList: string[] = tour.programIncluded[lang] ?? tour.programIncluded.ru ?? [];

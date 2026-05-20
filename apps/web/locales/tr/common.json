@@ -1,0 +1,123 @@
+{
+  "appName": "Traveling Tours",
+  "nav": {
+    "home": "Ana Sayfa",
+    "tours": "Turlar",
+    "login": "Giriş"
+  },
+  "home": {
+    "hero": {
+      "title": "Dünyayı Bizimle Keşfedin",
+      "subtitle": "Para iadesi sistemi ile en iyi fiyatlara en iyi turlar",
+      "badge": "Sınırsız seyahat et",
+      "headingLine1": "Dünyayı keşfet",
+      "headingAccent": "yeniden.",
+      "description": "Dürüst fiyatlarla lüks turlar. Premium tatil rezervasyonu yapın veya benzersiz tavsiye programımız aracılığıyla tamamen ücretsiz seyahat edin.",
+      "touristsCount": "12.000+",
+      "touristsLabel": "Mutlu turist",
+      "rating": "4,9/5 puan",
+      "searchTitle": "Nereye gidiyoruz?",
+      "popularLabel": "Popüler aramalar"
+    },
+    "search": {
+      "destination": "Nereye gidiyoruz?",
+      "destinationPlaceholder": "Ülke, şehir veya tur",
+      "dateFrom": "Tarihten",
+      "dateTo": "Tarihe",
+      "guests": "Misafirler",
+      "button": "Ara",
+      "destinationLabel": "Destinasyon",
+      "dateLabel": "Kalkış tarihi",
+      "datePlaceholder": "Seçin",
+      "guestsLabel": "Misafir",
+      "searchResults": "Arama sonuçları",
+      "popularDestinations": "Popüler destinasyonlar",
+      "noResults": "Destinasyon bulunamadı",
+      "noResultsHint": "Farklı bir arama deneyin",
+      "buttonSearch": "Tur bul",
+      "clearAriaLabel": "Temizle",
+      "decreaseAriaLabel": "Azalt",
+      "increaseAriaLabel": "Artır"
+    },
+    "trust": {
+      "security": { "title": "%100 Güvenli", "text": "Güvenli ödemeler ve iade garantisi" },
+      "support": { "title": "7/24 Destek", "text": "Kişisel yöneticiniz her zaman ulaşılabilir" },
+      "price": { "title": "En İyi Fiyatlar", "text": "Gizli ücret ve komisyon yok" },
+      "free": { "title": "Ücretsiz Turlar", "text": "Arkadaşlarınızı davet ederek ücretsiz tur kazanın" }
+    },
+    "destinations": {
+      "eyebrow": "Dünyayı keşfet",
+      "title": "En iyi destinasyonlar",
+      "description": "İkonik tatil köyleri, egzotik adalar ve dünyanın en güzel plajları sizi bekliyor.",
+      "viewAll": "Tümünü gör",
+      "toursCount": "tur mevcut",
+      "bali": { "name": "Bali", "country": "Endonezya", "tag": "Popüler" },
+      "turkey": { "name": "Türkiye", "country": "Antalya", "tag": "Sezonun en iyisi" },
+      "dubai": { "name": "Dubai", "country": "BAE", "tag": "Lüks" },
+      "maldives": { "name": "Maldivler", "country": "Hint Okyanusu", "tag": "Özel" },
+      "thailand": { "name": "Tayland", "country": "Bangkok · Phuket", "tag": "Egzotik" },
+      "egypt": { "name": "Mısır", "country": "Hurgada · Şarm", "tag": "Plaj" }
+    },
+    "hotTours": {
+      "title": "Fırsatlı turlar",
+      "empty": "Şu anda fırsatlı tur yok",
+      "viewAll": "Tümünü gör",
+      "costLabel": "Fiyat",
+      "perPerson": "/kişi"
+    },
+    "howItWorks": {
+      "title": "Ücretsiz nasıl seyahat edilir?",
+      "badge": "Sadakat programı",
+      "heading": "Seyahat et",
+      "headingAccent": "bizim hesabımıza",
+      "description": "Deneyimlerinizi paylaşın ve gerçek seyahatler için puan kazanın. Gizli koşul yok — her şey kristal netliğinde.",
+      "cta": "Linkini al",
+      "step1": { "title": "Linkinizi paylaşın", "desc": "Hesap oluşturun ve benzersiz tavsiye bağlantınızı arkadaşlarınıza gönderin." },
+      "step2": { "title": "Arkadaşlar rezervasyon yapar", "desc": "Arkadaşınızın her ödemeli rezervasyonundan hesabınıza bonus kazanırsınız." },
+      "step3": { "title": "Denize gidin", "desc": "Puan biriktirin ve kataloğumuzdan istediğiniz turu tamamen ücretsiz seçin." }
+    },
+    "reviews": {
+      "title": "Son Yorumlar",
+      "empty": "Henüz yorum yok"
+    },
+    "testimonials": {
+      "eyebrow": "Müşteri yorumları",
+      "title": "Paha biçilmez",
+      "titleAccent": "anlar",
+      "subtitle": "Seyahatin yeni seviyesini keşfedenlerin sesini dinleyin. 12.000'den fazla mutlu turist tatillerini bize emanet ediyor.",
+      "cta": "Tüm destinasyonlar",
+      "item0name": "Alina Koval",
+      "item0city": "Almatı → Bali",
+      "item0text": "Bali'de 10 gün geçirdim — her şey mükemmel organizeydi. Yönetici tüm sorularıma 20 dakika içinde cevap verdi. Zaten bir sonraki turumu planlıyorum!",
+      "item0tour": "Bali, Endonezya",
+      "item1name": "Dmitry Petrov",
+      "item1city": "Moskova → Maldivler",
+      "item1text": "Tavsiye programı sayesinde puan biriktirdim ve Maldivler'e ücretsiz tur kazandım. İnanılmaz — herkese tavsiye ediyorum!",
+      "item1tour": "Maldivler",
+      "item2name": "Zarina Begmatova",
+      "item2city": "Taşkent → Dubai",
+      "item2text": "Gerçek fiyatlar ve gizli komisyon olmayan bir seyahat acentesi. Yönetici 24 saat ulaşılabilir. Kesinlikle geri döneceğim.",
+      "item2tour": "Dubai, BAE",
+      "item3name": "Marat Isakov",
+      "item3city": "Bişkek → Türkiye",
+      "item3text": "Türkiye'deki tatil tüm beklentileri aştı. 5 yıldızlı otel, her şey dahil, transfer mükemmel şekilde düzenlendi. Tüm ekibe teşekkürler!",
+      "item3tour": "Antalya, Türkiye"
+    },
+    "chat": {
+      "badge": "Çevrimiçiyiz",
+      "title": "Kişisel tur seçimi",
+      "subtitle": "Uzun aramalar olmadan. Sadece nereye gitmek istediğinizi söyleyin, her şeyi 15 dakikada ayarlayalım.",
+      "msg1": "Bali'ye ikili gitmek istiyoruz, bütçe $2000 🌴",
+      "msg2": "Harika seçim! 3 muhteşem villa buldum. Seçenekleri şimdi gönderiyorum ✈️",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "loyalty": {
+      "badge": "Gezginler Kulübü",
+      "title": "Ücretsiz",
+      "titleAccent": "seyahat et",
+      "subtitle": "Kişisel linkiniz aracılığıyla arkadaşlarınızı davet edin ve rezervasyonlarından bonus kazanın. Yeterince bonus biriktirin ve tatile bizim hesabımıza gidin!",
+      "cta": "Kulübe katıl"
+    }
+  }
+}

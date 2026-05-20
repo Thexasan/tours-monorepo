@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Compass, Camera, Send, Mail, MapPin } from "lucide-react";
 import { NewsletterForm } from "@/src/components/shared/newsletter-form";
 
@@ -25,11 +25,11 @@ export function Footer() {
           <div className="col-span-2 md:col-span-5">
             <Link href="/ru" className="inline-flex items-center gap-2.5 font-bold">
               <span className="grid place-items-center h-10 w-10 rounded-xl text-white shrink-0"
-                style={{ background: "linear-gradient(135deg, #f97316, #0284c7)", boxShadow: "0 6px 16px -6px rgba(249,115,22,0.6)" }}>
+                style={{ background: "linear-gradient(135deg, #0d9488, #059669)", boxShadow: "0 6px 16px -6px rgba(13,148,136,0.6)" }}>
                 <Compass className="h-5 w-5" />
               </span>
               <span className="text-lg text-white">
-                Traveling<span className="text-orange-400"> Tours</span>
+                Traveling<span className="text-teal-400"> Tours</span>
               </span>
             </Link>
 
@@ -113,12 +113,12 @@ export function Footer() {
                   href="mailto:support@traveling-tours.local"
                   className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm transition-colors group"
                 >
-                  <Mail className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                  <Mail className="h-3.5 w-3.5 text-teal-500 shrink-0" />
                   support@traveling-tours.local
                 </a>
               </li>
               <li className="inline-flex items-center gap-2 text-white/35 text-sm">
-                <MapPin className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+                <MapPin className="h-3.5 w-3.5 text-teal-400 shrink-0" />
                 Ташкент · Алматы · Бишкек
               </li>
             </ul>

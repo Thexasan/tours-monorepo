@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { Popover as PopoverPrimitive } from "radix-ui";
@@ -210,7 +210,7 @@ export function DatePickerInput({
               className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors ${
                 inputError
                   ? "border-rose-400 bg-rose-50"
-                  : "border-slate-200 bg-slate-50 focus-within:border-orange-400 focus-within:bg-white"
+                  : "border-slate-200 bg-slate-50 focus-within:border-teal-400 focus-within:bg-white"
               }`}
             >
               <CalendarDays className="h-4 w-4 shrink-0 text-slate-400" />
@@ -290,11 +290,11 @@ export function DatePickerInput({
                     relative mx-auto flex h-9 w-9 items-center justify-center rounded-xl text-[13px] font-medium transition-all
                     ${disabled ? "text-slate-300 cursor-not-allowed" : "cursor-pointer"}
                     ${selected
-                      ? "bg-orange-500 text-white font-bold shadow-[0_4px_12px_-2px_rgba(249,115,22,0.5)] scale-105"
+                      ? "bg-teal-500 text-white font-bold shadow-[0_4px_12px_-2px_rgba(13,148,136,0.5)] scale-105"
                       : !disabled
-                      ? "text-slate-700 hover:bg-orange-50 hover:text-orange-700"
+                      ? "text-slate-700 hover:bg-teal-50 hover:text-teal-700"
                       : ""}
-                    ${todayCell && !selected ? "ring-1 ring-orange-400 ring-offset-1" : ""}
+                    ${todayCell && !selected ? "ring-1 ring-teal-400 ring-offset-1" : ""}
                   `}
                 >
                   {day}
@@ -321,7 +321,7 @@ export function DatePickerInput({
                   setInputText(iso);
                 }
               }}
-              className="text-[12px] font-semibold text-orange-600 hover:text-orange-700 transition-colors"
+              className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 transition-colors"
             >
               Сегодня
             </button>

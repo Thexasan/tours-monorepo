@@ -30,7 +30,7 @@ const STATUS_LABELS: Partial<Record<BookingStatus, string>> = {
 const STATUS_COLORS: Partial<Record<BookingStatus, { dot: string; text: string; bg: string }>> = {
   NEW: { dot: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]", text: "text-sky-700", bg: "bg-sky-50/70 border-sky-100" },
   DOCUMENTS_REQUESTED: { dot: "bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)] animate-pulse", text: "text-violet-700", bg: "bg-violet-50/70 border-violet-100" },
-  DOCUMENTS_SUBMITTED: { dot: "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]", text: "text-orange-700", bg: "bg-orange-50/70 border-orange-100" },
+  DOCUMENTS_SUBMITTED: { dot: "bg-teal-500 shadow-[0_0_8px_rgba(13,148,136,0.4)]", text: "text-teal-700", bg: "bg-teal-50/70 border-teal-100" },
   IN_PROGRESS: { dot: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]", text: "text-amber-700", bg: "bg-amber-50/70 border-amber-100" },
   AWAITING_PAYMENT: { dot: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)] animate-pulse", text: "text-rose-700", bg: "bg-rose-50/70 border-rose-100" },
   PAID: { dot: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]", text: "text-emerald-700", bg: "bg-emerald-50/70 border-emerald-100" },
@@ -71,11 +71,11 @@ export function DashboardHome() {
       {/* Greeting */}
       <div className="relative overflow-hidden tv-surface-elevated p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-6 rounded-3xl border border-white/50 shadow-md backdrop-blur-md bg-gradient-to-br from-white/95 to-slate-50/90">
         {/* Glow Effects */}
-        <div className="absolute -right-16 -top-16 w-52 h-52 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -left-16 -bottom-16 w-52 h-52 rounded-full bg-rose-500/5 blur-3xl pointer-events-none" />
+        <div className="absolute -right-16 -top-16 w-52 h-52 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -left-16 -bottom-16 w-52 h-52 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
         <div className="flex-1 min-w-0 relative z-10">
-          <p className="text-xs uppercase tracking-wider text-orange-500 font-bold">{greeting}</p>
+          <p className="text-xs uppercase tracking-wider text-emerald-700 font-bold">{greeting}</p>
           <h1 className="text-3xl font-extrabold text-slate-900 mt-1">{firstName} 👋</h1>
           <p className="text-slate-500 text-sm mt-2 font-medium max-w-xl">
             {activeTrips.length > 0
@@ -85,7 +85,7 @@ export function DashboardHome() {
         </div>
         <Link
           href={`/${locale}/tours`}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white shrink-0 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_10px_24px_-8px_rgba(249,115,22,0.45)] hover:shadow-[0_12px_28px_-6px_rgba(249,115,22,0.55)] relative z-10"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white shrink-0 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_10px_24px_-8px_rgba(4,120,87,0.45)] hover:shadow-[0_12px_28px_-6px_rgba(4,120,87,0.55)] relative z-10"
           style={{ background: "var(--gradient-hero)" }}
         >
           <Compass className="h-4.5 w-4.5 animate-spin-slow" />
@@ -132,14 +132,14 @@ export function DashboardHome() {
           icon={Clock}
           label="Активные туры"
           value={String(activeTrips.length)}
-          color={activeTrips.length > 0 ? "amber" : "slate"}
+          color={activeTrips.length > 0 ? "teal" : "slate"}
           href={`/${locale}/dashboard/trips`}
         />
         <MiniStat
           icon={Share2}
           label="Приглашено друзей"
           value={stats ? String(stats.referralCount) : "0"}
-          color="rose"
+          color="teal"
           href={`/${locale}/dashboard/referrals`}
         />
         <MiniStat
@@ -157,14 +157,14 @@ export function DashboardHome() {
           <div>
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-slate-900 flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-orange-500/10 text-orange-600">
+                <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-700">
                   <Plane className="h-4 w-4" />
                 </span>
                 Последние заявки
               </h2>
               <Link
                 href={`/${locale}/dashboard/trips`}
-                className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 hover:underline decoration-2"
+                className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline decoration-2"
               >
                 Все поездки <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -172,8 +172,8 @@ export function DashboardHome() {
 
             {recentTrips.length === 0 ? (
               <div className="text-center py-12 flex flex-col items-center justify-center">
-                <div className="h-16 w-16 rounded-3xl bg-gradient-to-tr from-orange-500/10 to-rose-500/5 grid place-items-center mb-4 border border-orange-500/10">
-                  <Compass className="h-7 w-7 text-orange-500 animate-pulse" />
+                <div className="h-16 w-16 rounded-3xl bg-gradient-to-tr from-emerald-500/10 to-emerald-500/5 grid place-items-center mb-4 border border-emerald-500/10">
+                  <Compass className="h-7 w-7 text-emerald-600 animate-pulse" />
                 </div>
                 <p className="text-sm font-semibold text-slate-800">Пока нет ни одной заявки</p>
                 <p className="text-xs text-slate-400 mt-1 max-w-[240px] mx-auto">
@@ -200,11 +200,11 @@ export function DashboardHome() {
                       href={`/${locale}/dashboard/trips/${b.id}`}
                       className="flex items-center gap-4 p-3.5 rounded-2xl border border-transparent hover:border-slate-100 hover:bg-slate-50/70 transition-all duration-300 group"
                     >
-                      <div className="grid place-items-center h-11 w-11 rounded-xl bg-gradient-to-tr from-orange-500/10 to-rose-500/5 border border-orange-500/10 shrink-0 transition-transform duration-300 group-hover:scale-110">
-                        <Plane className="h-4.5 w-4.5 text-orange-600 transition-transform duration-500 group-hover:rotate-12" />
+                      <div className="grid place-items-center h-11 w-11 rounded-xl bg-gradient-to-tr from-emerald-500/10 to-emerald-500/5 border border-emerald-500/10 shrink-0 transition-transform duration-300 group-hover:scale-110">
+                        <Plane className="h-4.5 w-4.5 text-emerald-700 transition-transform duration-500 group-hover:rotate-12" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-800 truncate group-hover:text-orange-600 transition-colors">
+                        <p className="text-sm font-bold text-slate-800 truncate group-hover:text-emerald-700 transition-colors">
                           {title}
                         </p>
                         <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
@@ -227,12 +227,12 @@ export function DashboardHome() {
         <div className="space-y-5">
           {/* Referral card */}
           {stats && (
-            <div className="relative overflow-hidden tv-surface-elevated p-6 border border-rose-500/10 shadow-sm bg-gradient-to-b from-white to-rose-500/[0.01]">
+            <div className="relative overflow-hidden tv-surface-elevated p-6 border border-emerald-500/10 shadow-sm bg-gradient-to-b from-white to-emerald-500/[0.01]">
               {/* Blur accent */}
-              <div className="absolute right-0 top-0 w-24 h-24 rounded-full bg-rose-500/5 blur-2xl pointer-events-none" />
+              <div className="absolute right-0 top-0 w-24 h-24 rounded-full bg-emerald-500/5 blur-2xl pointer-events-none" />
 
               <h2 className="font-bold text-slate-900 flex items-center gap-2 mb-4">
-                <span className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600">
+                <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-700">
                   <TrendingUp className="h-4 w-4" />
                 </span>
                 Реферальный прогресс
@@ -241,14 +241,14 @@ export function DashboardHome() {
                 <div>
                   <div className="flex justify-between text-xs text-slate-500 mb-2">
                     <span className="font-bold text-slate-600">{stats.referralCount} из {stats.threshold} друзей</span>
-                    <span className="font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md text-[10px]">{Math.round(stats.progressPercent)}%</span>
+                    <span className="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[10px]">{Math.round(stats.progressPercent)}%</span>
                   </div>
                   <div className="h-3 rounded-full bg-slate-100 overflow-hidden shadow-inner p-0.5 border border-slate-200/20">
                     <div
                       className="h-full rounded-full transition-all duration-1000 ease-out"
                       style={{
                         width: `${Math.min(stats.progressPercent, 100)}%`,
-                        background: "linear-gradient(90deg, #f97316, #ec4899, #0284c7)",
+                        background: "linear-gradient(90deg, #047857, #10b981, #34d399)",
                       }}
                     />
                   </div>
@@ -267,22 +267,22 @@ export function DashboardHome() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100/80">
                   <div className="text-center group/item cursor-default">
-                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-orange-500">{stats.clicks}</p>
+                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-emerald-600">{stats.clicks}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">кликов</p>
                   </div>
                   <div className="text-center group/item cursor-default">
-                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-rose-500">{stats.registrations}</p>
+                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-emerald-600">{stats.registrations}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">регистраций</p>
                   </div>
                   <div className="text-center group/item cursor-default">
-                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-sky-500">{stats.paidBookings}</p>
+                    <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-sky-600">{stats.paidBookings}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">продаж</p>
                   </div>
                 </div>
               </div>
               <Link
                 href={`/${locale}/dashboard/referrals`}
-                className="mt-5 flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold text-orange-600 bg-orange-50 border border-orange-200/50 hover:bg-orange-100/60 hover:text-orange-700 transition-all duration-300 shadow-sm hover:shadow-md active:scale-98"
+                className="mt-5 flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/50 hover:bg-emerald-100/60 hover:text-emerald-800 transition-all duration-300 shadow-sm hover:shadow-md active:scale-98"
               >
                 <Share2 className="h-4 w-4" />
                 Пригласить друзей
@@ -300,10 +300,10 @@ export function DashboardHome() {
             </h2>
             <div className="grid grid-cols-2 gap-3.5">
               {[
-                { href: `/${locale}/tours`, icon: Compass, label: "Каталог туров", color: "hover:bg-orange-500/5 hover:text-orange-600 hover:border-orange-200/40" },
-                { href: `/${locale}/dashboard/trips`, icon: Plane, label: "Мои поездки", color: "hover:bg-sky-500/5 hover:text-sky-600 hover:border-sky-200/40" },
-                { href: `/${locale}/dashboard/referrals`, icon: Share2, label: "Рефералы", color: "hover:bg-rose-500/5 hover:text-rose-600 hover:border-rose-200/40" },
-                { href: `/${locale}/dashboard/notifications`, icon: Bell, label: "Уведомления", color: "hover:bg-violet-500/5 hover:text-violet-600 hover:border-violet-200/40" },
+                { href: `/${locale}/tours`, icon: Compass, label: "Каталог туров", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/trips`, icon: Plane, label: "Мои поездки", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/referrals`, icon: Share2, label: "Рефералы", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/notifications`, icon: Bell, label: "Уведомления", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
               ].map(({ href, icon: Icon, label, color }) => (
                 <Link
                   key={href}
@@ -329,9 +329,9 @@ function MiniStat({
 }: { icon: React.ElementType; label: string; value: string; color: "teal" | "amber" | "rose" | "emerald" | "slate"; href?: string }) {
   const colorSchemes = {
     teal: {
-      bg: "bg-orange-500/10 border-orange-500/20 text-orange-600 hover:border-orange-500/40",
-      iconBg: "bg-gradient-to-tr from-orange-500 to-rose-500 text-white shadow-[0_4px_12px_rgba(249,115,22,0.25)]",
-      glow: "group-hover:shadow-[0_12px_24px_-8px_rgba(249,115,22,0.15)]",
+      bg: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 hover:border-emerald-500/40",
+      iconBg: "bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white shadow-[0_4px_12px_rgba(4,120,87,0.25)]",
+      glow: "group-hover:shadow-[0_12px_24px_-8px_rgba(4,120,87,0.15)]",
     },
     amber: {
       bg: "bg-amber-500/10 border-amber-500/20 text-amber-600 hover:border-amber-500/40",
@@ -344,9 +344,9 @@ function MiniStat({
       glow: "group-hover:shadow-[0_12px_24px_-8px_rgba(244,63,94,0.15)]",
     },
     emerald: {
-      bg: "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 hover:border-emerald-500/40",
-      iconBg: "bg-gradient-to-tr from-emerald-500 to-teal-500 text-white shadow-[0_4px_12px_rgba(16,185,129,0.25)]",
-      glow: "group-hover:shadow-[0_12px_24px_-8px_rgba(16,185,129,0.15)]",
+      bg: "bg-emerald-600/10 border-emerald-600/20 text-emerald-800 hover:border-emerald-600/40",
+      iconBg: "bg-gradient-to-tr from-emerald-700 to-emerald-600 text-white shadow-[0_4px_12px_rgba(4,120,87,0.25)]",
+      glow: "group-hover:shadow-[0_12px_24px_-8px_rgba(4,120,87,0.15)]",
     },
     slate: {
       bg: "bg-slate-500/5 border-slate-500/10 text-slate-500 hover:border-slate-500/20",

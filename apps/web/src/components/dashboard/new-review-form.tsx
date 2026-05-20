@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ interface EligibleTour { tourId: string; title: string; bookingId: string; }
 export function NewReviewForm() {
   const router = useRouter();
   const locale = useLocale();
-  const lang = locale as "ru" | "en" | "tj";
+  const lang = locale as "ru" | "en" | "tr";
   const [eligibleTours, setEligibleTours] = useState<EligibleTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -94,7 +94,7 @@ export function NewReviewForm() {
         <Label htmlFor="tourId">Тур</Label>
         <select
           id="tourId" {...register("tourId")}
-          className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm"
+          className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 transition-all"
         >
           <option value="">— Выберите тур —</option>
           {eligibleTours.map((t) => (
@@ -126,7 +126,7 @@ export function NewReviewForm() {
         <textarea
           id="text" rows={5} {...register("text")}
           placeholder="Расскажите, как прошёл тур, что понравилось, что нет..."
-          className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-950"
+          className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 transition-all"
         />
         {errors.text && <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>}
       </div>

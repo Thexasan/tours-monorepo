@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -19,7 +19,7 @@ const STATUS_FILTERS = [
 export function AdminModerationList() {
   const qc = useQueryClient();
   const locale = useLocale();
-  const lang = locale as "ru" | "en" | "tj";
+  const lang = locale as "ru" | "en" | "tr";
   const [filter, setFilter] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
   const [rejecting, setRejecting] = useState<{ id: string; reason: string } | null>(null);
 
@@ -100,7 +100,7 @@ export function AdminModerationList() {
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
             <span>Автоматическая фильтрация спама активна</span>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function AdminModerationList() {
       {/* ── Content States ──────────────────────────────────────── */}
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3">
-          <RefreshCw className="h-6 w-6 text-indigo-500 animate-spin" />
+          <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
           <p className="text-sm font-semibold">Загружаем список отзывов...</p>
         </div>
       )}
@@ -152,7 +152,7 @@ export function AdminModerationList() {
                       {r.tour && (
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
                           <Compass className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="font-semibold text-slate-600 hover:text-orange-500 transition-colors duration-150 cursor-pointer">
+                          <span className="font-semibold text-slate-600 hover:text-teal-600 transition-colors duration-150 cursor-pointer">
                             {tourTitle}
                           </span>
                         </div>

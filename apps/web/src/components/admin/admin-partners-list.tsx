@@ -65,7 +65,7 @@ export function AdminPartnersList() {
       <div className="flex justify-end">
         <Button
           onClick={() => setCreating(true)}
-          className="bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md shadow-orange-500/20 transition-all shrink-0 hover:scale-103 duration-150 border-0"
+          className="bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md shadow-emerald-500/20 transition-all shrink-0 hover:scale-103 duration-150 border-0"
         >
           <Plus className="w-5 h-5 mr-1.5" /> Добавить партнёра
         </Button>
@@ -95,7 +95,7 @@ export function AdminPartnersList() {
       {/* ── Loading indicator ───────────────────────────────────── */}
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3 select-none">
-          <RefreshCw className="h-6 w-6 text-orange-500 animate-spin" />
+          <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
           <p className="text-sm font-semibold">Загружаем список партнёров...</p>
         </div>
       )}
@@ -130,7 +130,7 @@ export function AdminPartnersList() {
                   <tr key={p.id} className="hover:bg-slate-50/40 transition-colors group">
                     {/* Name & Mail */}
                     <td className="px-5 py-3.5">
-                      <div className="font-bold text-slate-800 group-hover:text-orange-600 duration-150 text-sm leading-snug">{p.fullName}</div>
+                      <div className="font-bold text-slate-800 group-hover:text-teal-600 duration-150 text-sm leading-snug">{p.fullName}</div>
                       <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1 mt-1 font-mono select-all">
                         <Mail className="h-3 w-3 text-slate-400" /> {p.email}
                       </div>
@@ -314,7 +314,7 @@ function CreatePartnerModal({ onClose }: { onClose: () => void }) {
             </Button>
             <Button
               type="submit" disabled={createMutation.isPending}
-              className="bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer border-0"
+              className="bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer border-0"
             >
               {createMutation.isPending ? "Создание..." : "Создать партнёра"}
             </Button>

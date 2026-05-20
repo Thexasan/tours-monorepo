@@ -52,15 +52,15 @@ export function ReferralsPanel() {
   return (
     <div className="space-y-6">
       {/* Hero header */}
-      <header className="relative overflow-hidden p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-orange-950">
+      <header className="relative overflow-hidden p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950">
         {/* Cosmic glow circles */}
-        <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -left-24 -bottom-24 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 top-1/4 w-40 h-40 rounded-full bg-rose-500/5 blur-3xl pointer-events-none animate-pulse" />
+        <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-teal-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -left-24 -bottom-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 top-1/4 w-40 h-40 rounded-full bg-teal-500/5 blur-3xl pointer-events-none animate-pulse" />
 
         <div className="flex flex-col md:flex-row md:items-end gap-6 relative z-10">
           <div className="flex-1 min-w-0">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-orange-400">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-teal-400">
               <Sparkles className="h-3.5 w-3.5 animate-pulse" /> Реферальная программа
             </div>
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
@@ -84,13 +84,13 @@ export function ReferralsPanel() {
             </div>
             <div className="mt-3 h-3 rounded-full bg-black/35 overflow-hidden p-0.5 border border-white/5">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-orange-500 via-rose-500 to-amber-400 transition-all duration-1000 ease-out shadow-sm"
+                className="h-full rounded-full bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-400 transition-all duration-1000 ease-out shadow-sm"
                 style={{ width: `${Math.min(100, data.progressPercent)}%` }}
               />
             </div>
             {data.freeToursAvailable > 0 && (
-              <div className="mt-4 flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-amber-950 text-xs font-extrabold shadow-lg shadow-orange-500/10">
-                <Gift className="h-4.5 w-4.5 text-amber-950 shrink-0 animate-bounce" />
+              <div className="mt-4 flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-400 to-emerald-500 px-4 py-2.5 text-teal-950 text-xs font-extrabold shadow-lg shadow-teal-500/10">
+                <Gift className="h-4.5 w-4.5 text-teal-950 shrink-0 animate-bounce" />
                 Доступно: {data.freeToursAvailable} бесплатный тур!
               </div>
             )}
@@ -122,7 +122,7 @@ export function ReferralsPanel() {
             type="text"
             readOnly
             value={refLink}
-            className="flex-1 h-12 rounded-2xl border border-slate-200/80 px-4 text-xs font-mono bg-slate-50/80 text-slate-700 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all duration-300 font-bold"
+            className="flex-1 h-12 rounded-2xl border border-slate-200/80 px-4 text-xs font-mono bg-slate-50/80 text-slate-700 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 outline-none transition-all duration-300 font-bold"
             onClick={(e) => e.currentTarget.select()}
           />
           <Button onClick={onCopy} variant={copied ? "default" : "outline"} className={`shrink-0 h-12 px-6 rounded-2xl font-bold transition-all duration-300 active:scale-95 ${copied ? "bg-emerald-600 hover:bg-emerald-700 border-transparent text-white" : "hover:bg-slate-100 text-slate-700"}`}>
@@ -192,7 +192,7 @@ export function ReferralsPanel() {
             <p className="font-bold text-slate-900">Хотите зарабатывать 5% комиссии с каждой продажи?</p>
             <p className="text-xs font-medium text-slate-500 mt-1 leading-relaxed">
               Партнёрская программа разработана для тревел-агентов, блогеров и инфлюенсеров с большой аудиторией. Партнёров мы приглашаем в индивидуальном порядке. Напишите нам на{" "}
-              <a href="mailto:support@traveling-tours.local" className="font-extrabold text-orange-600 underline underline-offset-4 hover:text-orange-700 transition-colors">
+              <a href="mailto:support@traveling-tours.local" className="font-extrabold text-teal-600 underline underline-offset-4 hover:text-teal-700 transition-colors">
                 support@traveling-tours.local
               </a>
               , если заинтересованы в постоянном сотрудничестве.
@@ -230,14 +230,14 @@ function StatTile({
 }) {
   const toneCls = {
     teal: {
-      badge: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-      iconBg: "bg-gradient-to-br from-orange-500 to-rose-500 text-white shadow-[0_4px_12px_rgba(249,115,22,0.2)]",
-      hover: "hover:border-orange-500/30 hover:shadow-[0_8px_20px_-6px_rgba(249,115,22,0.1)]",
+      badge: "bg-teal-500/10 text-teal-600 border-teal-500/20",
+      iconBg: "bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-[0_4px_12px_rgba(13,148,136,0.2)]",
+      hover: "hover:border-teal-500/30 hover:shadow-[0_8px_20px_-6px_rgba(13,148,136,0.1)]",
     },
     sky: {
-      badge: "bg-sky-500/10 text-sky-600 border-sky-500/20",
-      iconBg: "bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-[0_4px_12px_rgba(14,165,233,0.2)]",
-      hover: "hover:border-sky-500/30 hover:shadow-[0_8px_20px_-6px_rgba(14,165,233,0.1)]",
+      badge: "bg-teal-500/10 text-teal-600 border-teal-500/20",
+      iconBg: "bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_4px_12px_rgba(13,148,136,0.2)]",
+      hover: "hover:border-teal-500/30 hover:shadow-[0_8px_20px_-6px_rgba(13,148,136,0.1)]",
     },
     emerald: {
       badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -245,9 +245,9 @@ function StatTile({
       hover: "hover:border-emerald-500/30 hover:shadow-[0_8px_20px_-6px_rgba(16,185,129,0.1)]",
     },
     amber: {
-      badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-      iconBg: "bg-gradient-to-br from-amber-500 to-yellow-500 text-white shadow-[0_4px_12px_rgba(245,158,11,0.25)]",
-      hover: "hover:border-amber-500/30 hover:shadow-[0_8px_20px_-6px_rgba(245,158,11,0.1)]",
+      badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+      iconBg: "bg-gradient-to-br from-emerald-500 to-cyan-400 text-white shadow-[0_4px_12px_rgba(16,185,129,0.25)]",
+      hover: "hover:border-emerald-500/30 hover:shadow-[0_8px_20px_-6px_rgba(16,185,129,0.1)]",
     },
     rose: {
       badge: "bg-rose-500/10 text-rose-600 border-rose-500/20",

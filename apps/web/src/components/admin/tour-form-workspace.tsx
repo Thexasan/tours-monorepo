@@ -237,25 +237,25 @@ export function TourFormWorkspace({
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-fade-in-up">
       {/* ── Header actions panel ────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200/60">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200/80">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => router.push("/admin/tours")}
-            className="p-2.5 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-xl text-slate-500 hover:text-slate-800 shadow-2xs hover:shadow-xs transition duration-150 cursor-pointer"
+            className="h-9 w-9 grid place-items-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-slate-700 hover:border-slate-300 transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
                 {isEdit ? "Редактировать тур" : "Создание нового тура"}
               </h2>
               {isEdit && (
                 <span className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[10px] font-bold border",
+                  "px-2 py-0.5 rounded-lg text-[10px] font-semibold border",
                   tour?.isActive
-                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
                     : "bg-slate-100 text-slate-500 border-slate-200"
                 )}>
                   {tour?.isActive ? "Активен" : "В архиве"}
@@ -272,7 +272,7 @@ export function TourFormWorkspace({
           <Button
             type="button"
             onClick={() => router.push("/admin/tours")}
-            className="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-600 font-semibold text-xs transition-all shadow-2xs"
+            className="h-9 px-4 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 font-semibold text-xs rounded-lg shadow-none transition-colors"
           >
             Отмена
           </Button>
@@ -280,7 +280,7 @@ export function TourFormWorkspace({
             type="button"
             disabled={saving}
             onClick={handleSubmit(onSubmit)}
-            className="px-6 py-2.5 bg-gradient-to-br from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold text-xs rounded-xl shadow-md shadow-orange-500/20 hover:scale-[1.02] active:scale-100 border-0 transition-all cursor-pointer"
+            className="h-9 px-5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-lg shadow-none border-0 transition-colors cursor-pointer disabled:opacity-60"
           >
             {saving ? "Сохранение…" : isEdit ? "Сохранить тур" : "Опубликовать тур"}
           </Button>
@@ -292,9 +292,11 @@ export function TourFormWorkspace({
         
         {/* 1. Left Sticky Navigation Stepper (col-span-3) */}
         <div className="lg:col-span-3 lg:sticky lg:top-6 space-y-4">
-          <div className="tv-surface-elevated p-4 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
-            <h3 className="text-slate-800 font-extrabold text-xs uppercase tracking-wider mb-3 px-1">Разделы формы</h3>
-            <nav className="space-y-1.5">
+          <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Разделы формы</p>
+            </div>
+            <nav className="p-2 space-y-0.5">
               {SECTIONS.map((sec) => {
                 const Icon = sec.icon;
                 const isActive = activeSection === sec.id;
@@ -305,22 +307,21 @@ export function TourFormWorkspace({
                     type="button"
                     onClick={() => setActiveSection(sec.id)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-3 rounded-xl text-xs font-bold transition-all duration-200 group cursor-pointer",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer relative",
                       isActive
-                        ? "bg-gradient-to-r from-orange-500/10 to-rose-500/5 text-orange-600 border border-orange-500/20 shadow-3xs"
-                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/70 border border-transparent"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-transparent"
                     )}
                   >
+                    {isActive && (
+                      <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r bg-emerald-600" />
+                    )}
                     <div className="flex items-center gap-2.5">
-                      <Icon className={cn(
-                        "w-4 h-4 transition-transform group-hover:scale-108 duration-200",
-                        isActive ? "text-orange-500" : "text-slate-400 group-hover:text-slate-600"
-                      )} />
+                      <Icon className={cn("w-3.5 h-3.5", isActive ? "text-emerald-600" : "text-slate-400")} />
                       <span>{sec.label}</span>
                     </div>
-
                     {errCount > 0 && (
-                      <span className="flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-rose-500 text-white text-[10px] font-black leading-none animate-pulse-subtle">
+                      <span className="h-4.5 min-w-4.5 px-1 rounded bg-rose-500 text-white text-[9px] font-bold leading-none flex items-center justify-center">
                         {errCount}
                       </span>
                     )}
@@ -330,19 +331,19 @@ export function TourFormWorkspace({
             </nav>
           </div>
 
-          {/* Quick validation progress widget */}
-          <div className="tv-surface p-4 bg-white border border-slate-200/50 shadow-3xs">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Готовность данных</span>
-              <span className="text-xs font-mono font-bold text-orange-600">{progress}%</span>
+          {/* Progress widget */}
+          <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Готовность данных</span>
+              <span className="text-xs font-mono font-bold text-emerald-700">{progress}%</span>
             </div>
-            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden ring-1 ring-slate-200/30">
+            <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-orange-500 to-rose-500 h-2 rounded-full transition-all duration-500"
+                className="bg-emerald-600 h-1.5 rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
+            <p className="text-[10px] text-slate-400 mt-2.5 leading-relaxed">
               * Заполните Slug, Название, Страну, Цену, Описание и Обложку для достижения 100% готовности.
             </p>
           </div>
@@ -350,7 +351,7 @@ export function TourFormWorkspace({
 
         {/* 2. Central Form Component (col-span-5) */}
         <div className="lg:col-span-5 space-y-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="tv-surface-elevated p-6 bg-white border border-slate-200/60 shadow-[0_12px_40px_rgb(0,0,0,0.02)] space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-slate-200/80 rounded-xl shadow-sm p-6 space-y-5">
             {error && (
               <div className="rounded-xl bg-rose-50 ring-1 ring-rose-200 p-4 flex gap-3 text-xs text-rose-700">
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
@@ -452,13 +453,13 @@ export function TourFormWorkspace({
                   </Field>
                 </div>
 
-                <div className="rounded-xl bg-orange-50/50 ring-1 ring-orange-100/60 p-4 flex items-start gap-3">
+                <div className="border border-slate-200/80 rounded-lg p-4 flex items-start gap-3 bg-slate-50/40">
                   <div className="flex items-center h-5">
                     <input
                       type="checkbox"
                       id="isHot"
                       {...register("isHot")}
-                      className="h-4 w-4 rounded text-orange-500 focus:ring-orange-400 border-slate-300"
+                      className="h-4 w-4 rounded text-emerald-700 focus:ring-emerald-600 border-slate-300"
                     />
                   </div>
                   <label htmlFor="isHot" className="text-xs font-semibold text-slate-700 cursor-pointer leading-normal">
@@ -482,7 +483,7 @@ export function TourFormWorkspace({
                       ...prev,
                       { id: `room-${Date.now()}`, title: "", desc: "", priceModifier: 0 },
                     ])}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-[10px] font-bold hover:bg-orange-600 shadow-2xs hover:shadow-xs transition duration-150 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 text-white text-[10px] font-semibold hover:bg-emerald-800 transition-colors cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Добавить
@@ -597,10 +598,10 @@ export function TourFormWorkspace({
                   <p className="text-xs text-slate-400">Укажите списком, что входит в стоимость, а за что придется доплатить.</p>
                 </div>
 
-                <div className="rounded-xl bg-emerald-50/20 border border-emerald-100/60 p-4 space-y-4">
+                <div className="border border-slate-200/80 rounded-lg p-4 space-y-4 bg-slate-50/30">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600" />
-                    <h5 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">В стоимость включено</h5>
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <h5 className="font-semibold text-slate-700 text-xs uppercase tracking-wider">В стоимость включено</h5>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
                     <Field label="На русском — по одному на строку" hint="Пример: Прямой авиаперелет">
@@ -622,10 +623,10 @@ export function TourFormWorkspace({
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-rose-50/20 border border-rose-100/60 p-4 space-y-4">
+                <div className="border border-slate-200/80 rounded-lg p-4 space-y-4 bg-slate-50/30">
                   <div className="flex items-center gap-2">
-                    <XCircle className="h-4.5 w-4.5 text-rose-500" />
-                    <h5 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">Оплачивается отдельно</h5>
+                    <XCircle className="h-4 w-4 text-rose-500" />
+                    <h5 className="font-semibold text-slate-700 text-xs uppercase tracking-wider">Оплачивается отдельно</h5>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
                     <Field label="На русском — по одному на строку" hint="Пример: Оформление визы">
@@ -671,13 +672,13 @@ export function TourFormWorkspace({
                 </Field>
 
                 {isEdit && (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50/30 p-4 flex items-start gap-3 shadow-3xs">
+                  <div className="border border-slate-200/80 rounded-lg p-4 flex items-start gap-3 bg-slate-50/40">
                     <div className="flex items-center h-5">
                       <input
                         type="checkbox"
                         id="isActive"
                         {...register("isActive")}
-                        className="h-4 w-4 rounded text-orange-500 focus:ring-orange-400 border-slate-300"
+                        className="h-4 w-4 rounded text-emerald-700 focus:ring-emerald-600 border-slate-300"
                       />
                     </div>
                     <label htmlFor="isActive" className="text-xs font-semibold text-slate-700 cursor-pointer leading-normal">
@@ -699,12 +700,12 @@ export function TourFormWorkspace({
 
         {/* 3. Right Sticky Live Tour Card Preview (col-span-4) */}
         <div className="lg:col-span-4 lg:sticky lg:top-6 space-y-4">
-          <div className="tv-surface-elevated overflow-hidden bg-white border border-slate-200/60 shadow-[0_12px_40px_rgb(0,0,0,0.02)]">
+          <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
             {/* Live preview header status */}
-            <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Интерактивный предпросмотр</span>
-              <span className="flex items-center gap-1.5 text-[9px] font-extrabold text-orange-600 uppercase tracking-widest bg-orange-500/10 px-2 py-0.5 rounded-md border border-orange-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse-subtle" />
+            <div className="px-5 py-3 bg-slate-50/60 border-b border-slate-100 flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Интерактивный предпросмотр</span>
+              <span className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live Client Card
               </span>
             </div>
@@ -731,7 +732,7 @@ export function TourFormWorkspace({
 
                   {/* Hot Badge */}
                   {formValues.isHot && (
-                    <div className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-rose-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md shadow-orange-500/20 flex items-center gap-1 animate-pulse-subtle">
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md shadow-emerald-500/20 flex items-center gap-1 animate-pulse-subtle">
                       🔥 Горящий
                     </div>
                   )}
@@ -868,15 +869,15 @@ function ValidationMessage({ text, type }: { text: string; type: "error" | "warn
 }
 
 /* ─── HTML Input Class styles ─────────────────── */
-const BASE_INPUT = "w-full rounded-xl text-xs text-slate-900 bg-white ring-1 px-3.5 py-2.5 outline-none transition-all focus:ring-2 focus:ring-orange-500/20 placeholder:text-slate-300";
+const BASE_INPUT = "w-full rounded-lg text-xs text-slate-900 bg-white border px-3.5 py-2.5 outline-none transition-colors placeholder:text-slate-300 focus:ring-2 focus:ring-emerald-600/15";
 
 function fieldCls(hasError: boolean, disabled = false) {
   return cn(
     BASE_INPUT,
     hasError
-      ? "ring-rose-200 border border-rose-300 focus:ring-rose-500/20"
-      : "ring-slate-200 border border-slate-200/50 hover:border-slate-300 focus:border-orange-500/60 focus:ring-orange-500/20",
-    disabled && "opacity-50 cursor-not-allowed bg-slate-50/70 border-slate-200/30 ring-slate-100",
+      ? "border-rose-300 focus:border-rose-400 focus:ring-rose-500/15"
+      : "border-slate-200 hover:border-slate-300 focus:border-emerald-600/50",
+    disabled && "opacity-50 cursor-not-allowed bg-slate-50 border-slate-200",
   );
 }
 
@@ -885,7 +886,7 @@ function textareaCls(hasError: boolean) {
     BASE_INPUT,
     "resize-none leading-relaxed",
     hasError
-      ? "ring-rose-200 border border-rose-300 focus:ring-rose-500/20"
-      : "ring-slate-200 border border-slate-200/50 hover:border-slate-300 focus:border-orange-500/60 focus:ring-orange-500/20",
+      ? "border-rose-300 focus:border-rose-400 focus:ring-rose-500/15"
+      : "border-slate-200 hover:border-slate-300 focus:border-emerald-600/50",
   );
 }

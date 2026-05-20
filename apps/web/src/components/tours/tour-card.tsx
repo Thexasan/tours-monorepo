@@ -18,7 +18,7 @@ interface TourCardProps {
 
 export function TourCard({ tour, extraQuery, variant = "default", featured = false }: TourCardProps) {
   const t = useTranslations("tours");
-  const locale = useLocale() as "ru" | "en" | "tj";
+  const locale = useLocale() as "ru" | "en" | "tr";
   const { currency, convert } = useCurrencyStore();
 
   const price = convert(tour.priceUsd);

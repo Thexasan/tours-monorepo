@@ -1,5 +1,139 @@
 {
   "clientTitle": "Кабинет клиента",
-  "partnerTitle": "Кабинет партнера",
-  "adminTitle": "Панель администратора"
+  "partnerTitle": "Кабинет партнёра",
+  "adminTitle": "Панель администратора",
+
+  "admin": {
+    "checking": "Проверяем доступ к панели…",
+    "role": "Администратор",
+    "logout": "Выйти из панели",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню",
+    "panelTitle": "Админ-панель",
+    "apiConnected": "API Connected",
+    "currentLanguage": "Русский",
+    "nav": {
+      "overview": "Обзор",
+      "dashboard": "Дашборд",
+      "content": "Контент",
+      "tours": "Туры",
+      "moderation": "Модерация",
+      "operations": "Операции",
+      "bookings": "Заявки",
+      "payouts": "Выплаты",
+      "usersGroup": "Пользователи",
+      "users": "Пользователи",
+      "partners": "Партнёры",
+      "account": "Аккаунт",
+      "profile": "Мой профиль"
+    },
+    "breadcrumb": {
+      "root": "Админка",
+      "overview": "Обзор",
+      "tours": "Туры",
+      "moderation": "Модерация",
+      "bookings": "Заявки",
+      "payouts": "Выплаты",
+      "usersList": "Список пользователей",
+      "partners": "Партнёры",
+      "profile": "Мой профиль",
+      "control": "Панель управления"
+    },
+    "dashboard": {
+      "eyebrow": "ПАНЕЛЬ УПРАВЛЕНИЯ",
+      "title": "Обзор",
+      "subtitle": "Сводная статистика по заявкам, турам и партнёрским выплатам.",
+      "statBookings": "Всего заявок",
+      "statBookingsSub": "полный список броней",
+      "statRevenue": "Общая выручка",
+      "statRevenueSub": "оплаченные + завершённые",
+      "statTours": "Активные туры",
+      "statToursSub": "опубликовано на сайте",
+      "statPayouts": "Запросы выплат",
+      "statPayoutsSub": "ожидают обработки",
+      "attentionTitle": "Внимание: {count} заявок требуют рассмотрения",
+      "attentionDesc": "У вас есть необработанные новые заявки, прикреплённые гостевые документы или брони, ожидающие оплаты.",
+      "process": "Обработать",
+      "analyticsTitle": "Аналитика продаж",
+      "analyticsSubtitle": "Динамика выручки и заявок за последние 6 месяцев",
+      "revenueLabel": "Выручка ($)",
+      "bookingsLabel": "Заявки (шт.)",
+      "buildingChart": "Строим график аналитики...",
+      "tooltipRevenue": "Выручка:",
+      "tooltipBookings": "Заявки:",
+      "recentTitle": "Последние бронирования",
+      "allBookings": "Все заявки",
+      "noBookings": "Новых бронирований пока нет",
+      "statusTitle": "Распределение по статусам",
+      "quickTitle": "Быстрые действия",
+      "quickBookings": "Заявки",
+      "quickTours": "Туры",
+      "quickModeration": "Модерация",
+      "quickPayouts": "Выплаты",
+      "quickUsers": "Пользователи",
+      "quickPartners": "Партнёры"
+    },
+    "status": {
+      "NEW": "Новые",
+      "IN_PROGRESS": "В работе",
+      "AWAITING_PAYMENT": "Ждут оплаты",
+      "PAID": "Оплачены",
+      "COMPLETED": "Завершены",
+      "CANCELLED": "Отменены",
+      "DOCUMENTS_REQUESTED": "Ждут документы",
+      "DOCUMENTS_SUBMITTED": "Документы загружены"
+    }
+  },
+
+  "partner": {
+    "checking": "Проверяем доступ…",
+    "badge": "КАБИНЕТ ПАРТНЁРА",
+    "balance": "ДОСТУПНЫЙ БАЛАНС",
+    "categories": "Категории",
+    "nav": {
+      "dashboard": "Дашборд",
+      "dashboardShort": "Дашборд",
+      "finance": "Финансы",
+      "financeShort": "Финансы",
+      "trips": "Мои туры",
+      "tripsShort": "Туры",
+      "notifications": "Уведомления",
+      "notifShort": "Уведомл.",
+      "profile": "Мой профиль",
+      "profileShort": "Профиль",
+      "reviews": "Мои отзывы"
+    },
+    "logout": "Выйти из аккаунта",
+    "limitTitle": "Лимит выплат: $50",
+    "limitDesc": "Комиссионный процент:",
+    "limitRate": "% с каждой продажи."
+  },
+
+  "client": {
+    "checking": "Проверяем авторизацию…",
+    "nav": {
+      "overview": "Обзор",
+      "overviewShort": "Обзор",
+      "profile": "Профиль",
+      "profileShort": "Профиль",
+      "trips": "Мои поездки",
+      "tripsShort": "Поездки",
+      "notifications": "Уведомления",
+      "notifShort": "Уведомл.",
+      "referrals": "Рефералы",
+      "referralsShort": "Рефералы",
+      "reviews": "Мои отзывы"
+    },
+    "roles": {
+      "CLIENT": "Путешественник",
+      "PARTNER": "Партнёр",
+      "ADMIN": "Администратор"
+    },
+    "catalog": "Каталог",
+    "personalCabinet": "Личный кабинет",
+    "logout": "Выйти из кабинета",
+    "referralBadge": "Рефералы",
+    "referralText": "Приведи 5 друзей — получи тур за наш счёт ✨",
+    "referralLink": "Узнать подробнее"
+  }
 }

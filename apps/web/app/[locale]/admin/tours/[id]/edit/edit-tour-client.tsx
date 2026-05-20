@@ -16,7 +16,7 @@ export function EditTourClient({ tourId }: { tourId: string }) {
   if (isLoading) {
     return (
       <div className="tv-surface-elevated p-16 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] flex flex-col items-center justify-center gap-3">
-        <RefreshCw className="h-6 w-6 text-orange-500 animate-spin" />
+        <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
         <p className="text-sm font-semibold">Загружаем информацию о туре...</p>
       </div>
     );

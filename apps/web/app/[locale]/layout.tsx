@@ -2,7 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from "next/navigation";
 
-const supportedLocales = ["ru", "en", "tj"] as const;
+const supportedLocales = ["ru", "en", "tr"] as const;
 
 export default async function LocaleLayout({
   children,

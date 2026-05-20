@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import {
@@ -18,10 +18,11 @@ import { payoutsApi } from "@/src/shared/api/payouts-api";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const { user, isHydrated } = useRequireAuth(["ADMIN"]);
-  const { logout } = useAuth();
+  const { user, isAuthorized } = useRequireAuth(["ADMIN"]);
+  const { logout, isLoading } = useAuth();
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>("");
 
@@ -35,7 +36,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         hour: "2-digit",
         minute: "2-digit",
       };
-      setCurrentTime(d.toLocaleDateString("ru-RU", options));
+      setCurrentTime(d.toLocaleDateString(locale, options));
     };
     updateTime();
     const interval = setInterval(updateTime, 60000);
@@ -72,44 +73,44 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   ).length;
   const pendingReviewsCount = (reviewsData ?? []).length;
 
-  if (!isHydrated || !user) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="py-24 flex items-center justify-center text-slate-500 min-h-screen bg-slate-50">
-        <span className="inline-block h-3 w-3 rounded-full bg-orange-500 animate-pulse mr-2" />
-        Проверяем доступ к панели…
+        <span className="inline-block h-3 w-3 rounded-full bg-teal-500 animate-pulse mr-2" />
+        {t('admin.checking')}
       </div>
     );
   }
 
   const navGroups = [
     {
-      title: "Обзор",
-      items: [{ href: `/${locale}/admin`, label: "Дашборд", icon: LayoutDashboard }],
+      title: t('admin.nav.overview'),
+      items: [{ href: `/${locale}/admin`, label: t('admin.nav.dashboard'), icon: LayoutDashboard }],
     },
     {
-      title: "Контент",
+      title: t('admin.nav.content'),
       items: [
-        { href: `/${locale}/admin/tours`,      label: "Туры",       icon: Briefcase },
-        { href: `/${locale}/admin/moderation`, label: "Модерация",  icon: MessageSquare },
+        { href: `/${locale}/admin/tours`,      label: t('admin.nav.tours'),      icon: Briefcase },
+        { href: `/${locale}/admin/moderation`, label: t('admin.nav.moderation'), icon: MessageSquare },
       ],
     },
     {
-      title: "Операции",
+      title: t('admin.nav.operations'),
       items: [
-        { href: `/${locale}/admin/bookings`, label: "Заявки",  icon: Mail },
-        { href: `/${locale}/admin/payouts`,  label: "Выплаты", icon: Wallet },
+        { href: `/${locale}/admin/bookings`, label: t('admin.nav.bookings'), icon: Mail },
+        { href: `/${locale}/admin/payouts`,  label: t('admin.nav.payouts'),  icon: Wallet },
       ],
     },
     {
-      title: "Пользователи",
+      title: t('admin.nav.usersGroup'),
       items: [
-        { href: `/${locale}/admin/users`,    label: "Пользователи", icon: Users },
-        { href: `/${locale}/admin/partners`, label: "Партнёры",     icon: UserCog },
+        { href: `/${locale}/admin/users`,    label: t('admin.nav.users'),    icon: Users },
+        { href: `/${locale}/admin/partners`, label: t('admin.nav.partners'), icon: UserCog },
       ],
     },
     {
-      title: "Аккаунт",
-      items: [{ href: `/${locale}/admin/profile`, label: "Мой профиль", icon: User }],
+      title: t('admin.nav.account'),
+      items: [{ href: `/${locale}/admin/profile`, label: t('admin.nav.profile'), icon: User }],
     },
   ];
 
@@ -121,30 +122,30 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const getBreadcrumbs = () => {
     if (pathname.endsWith("/admin") || pathname.endsWith("/admin/")) {
-      return [{ label: "Обзор", active: true }];
+      return [{ label: t('admin.breadcrumb.overview'), active: true }];
     }
     if (pathname.includes("/admin/tours")) {
-      return [{ label: "Контент", href: `/${locale}/admin` }, { label: "Туры", active: true }];
+      return [{ label: t('admin.nav.content'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.tours'), active: true }];
     }
     if (pathname.includes("/admin/moderation")) {
-      return [{ label: "Контент", href: `/${locale}/admin` }, { label: "Модерация", active: true }];
+      return [{ label: t('admin.nav.content'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.moderation'), active: true }];
     }
     if (pathname.includes("/admin/bookings")) {
-      return [{ label: "Операции", href: `/${locale}/admin` }, { label: "Заявки", active: true }];
+      return [{ label: t('admin.nav.operations'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.bookings'), active: true }];
     }
     if (pathname.includes("/admin/payouts")) {
-      return [{ label: "Операции", href: `/${locale}/admin` }, { label: "Выплаты", active: true }];
+      return [{ label: t('admin.nav.operations'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.payouts'), active: true }];
     }
     if (pathname.includes("/admin/users")) {
-      return [{ label: "Пользователи", href: `/${locale}/admin` }, { label: "Список пользователей", active: true }];
+      return [{ label: t('admin.nav.usersGroup'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.usersList'), active: true }];
     }
     if (pathname.includes("/admin/partners")) {
-      return [{ label: "Пользователи", href: `/${locale}/admin` }, { label: "Партнёры", active: true }];
+      return [{ label: t('admin.nav.usersGroup'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.partners'), active: true }];
     }
     if (pathname.includes("/admin/profile")) {
-      return [{ label: "Аккаунт", href: `/${locale}/admin` }, { label: "Мой профиль", active: true }];
+      return [{ label: t('admin.nav.account'), href: `/${locale}/admin` }, { label: t('admin.breadcrumb.profile'), active: true }];
     }
-    return [{ label: "Панель управления", active: true }];
+    return [{ label: t('admin.breadcrumb.control'), active: true }];
   };
 
   const SidebarContent = ({ onNav }: { onNav?: () => void }) => (
@@ -153,8 +154,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="p-6 border-b border-slate-800/50 shrink-0">
         <div className="flex items-center gap-3.5">
           <div className="relative shrink-0">
-            <div className="grid place-items-center h-11 w-11 rounded-2xl bg-gradient-to-br from-orange-500 to-rose-600 text-white shadow-lg shadow-orange-500/20 font-bold text-lg">
-              {user.fullName?.[0]?.toUpperCase() ?? "A"}
+            <div className="grid place-items-center h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white shadow-lg shadow-emerald-700/20 font-bold text-lg">
+              {user?.fullName?.[0]?.toUpperCase() ?? "A"}
             </div>
             <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-[#090d16] animate-pulse" />
           </div>
@@ -162,11 +163,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <p className="font-semibold text-white truncate text-sm leading-snug">Console</p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-subtle" />
-              <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">Администратор</span>
+              <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">{t('admin.role')}</span>
             </div>
           </div>
         </div>
-        <p className="mt-3.5 text-xs text-slate-400 truncate bg-slate-800/30 px-2.5 py-1.5 rounded-lg border border-slate-800/40">{user.email}</p>
+        <p className="mt-3.5 text-xs text-slate-400 truncate bg-slate-800/30 px-2.5 py-1.5 rounded-lg border border-slate-800/40">{user?.email}</p>
       </div>
 
       {/* Nav groups */}
@@ -185,7 +186,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 let badge: React.ReactNode = null;
                 if (it.href.endsWith("/bookings") && newBookingsCount > 0) {
                   badge = (
-                    <span className="ml-auto inline-flex items-center justify-center h-5 px-1.5 rounded-full text-[10px] font-bold bg-orange-500/10 text-orange-400 border border-orange-500/25 animate-pulse-subtle">
+                    <span className="ml-auto inline-flex items-center justify-center h-5 px-1.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 animate-pulse-subtle">
                       {newBookingsCount}
                     </span>
                   );
@@ -210,26 +211,26 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     onClick={onNav}
                     className={`group relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
                       active
-                        ? "bg-gradient-to-r from-orange-500/12 to-rose-500/6 text-white font-semibold border border-orange-500/20 shadow-md shadow-black/10"
+                        ? "bg-gradient-to-r from-emerald-600/12 to-emerald-800/6 text-white font-semibold border border-emerald-500/20 shadow-md shadow-black/10"
                         : "text-slate-400 hover:text-white hover:bg-slate-800/40 border border-transparent"
                     }`}
                   >
                     {active && (
                       <span
-                        className="absolute left-0 top-3 bottom-3 w-1 rounded-r-lg bg-gradient-to-b from-orange-400 to-rose-500"
+                        className="absolute left-0 top-3 bottom-3 w-1 rounded-r-lg bg-gradient-to-b from-emerald-500 to-emerald-700"
                         aria-hidden
                       />
                     )}
                     <span className={`grid place-items-center h-8 w-8 rounded-lg transition-all duration-200 shrink-0 ${
                       active
-                        ? "bg-gradient-to-br from-orange-500 to-rose-600 text-white shadow-lg shadow-orange-500/25 scale-105"
+                        ? "bg-gradient-to-br from-emerald-600 to-emerald-800 text-white shadow-lg shadow-emerald-700/25 scale-105"
                         : "bg-slate-800/40 text-slate-400 group-hover:bg-slate-800 group-hover:text-white group-hover:scale-105"
                     }`}>
                       <Icon className="h-4.5 w-4.5" />
                     </span>
                     <span className="flex-1 min-w-0 truncate">{it.label}</span>
                     {badge}
-                    {!badge && active && <ChevronRight className="h-3.5 w-3.5 text-rose-500 shrink-0" />}
+                    {!badge && active && <ChevronRight className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
                   </Link>
                 );
               })}
@@ -245,7 +246,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           onClick={() => void logout()}
           className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white bg-slate-800/30 hover:bg-rose-500/10 hover:text-rose-400 border border-slate-800/60 hover:border-rose-500/25 transition-all duration-200"
         >
-          <LogOut className="w-4 h-4" /> Выйти из панели
+          <LogOut className="w-4 h-4" /> {t('admin.logout')}
         </button>
       </div>
     </div>
@@ -265,7 +266,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-20">
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <span className="text-slate-400">Админка</span>
+            <span className="text-slate-400">{t('admin.breadcrumb.root')}</span>
             {getBreadcrumbs().map((b, i) => (
               <React.Fragment key={i}>
                 <ChevronRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
@@ -283,20 +284,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {/* Right Header Status / Widgets */}
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/50">
-              <Clock className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+              <Clock className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
               <span className="tabular-nums">{currentTime}</span>
             </div>
             
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-slate-500 font-medium select-none">API Connected</span>
+              <span className="text-xs text-slate-500 font-medium select-none">{t('admin.apiConnected')}</span>
             </div>
 
             <div className="h-4 w-px bg-slate-200" />
 
             <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
               <Globe className="h-4 w-4 text-slate-400" />
-              <span>Русский</span>
+              <span>{t('admin.currentLanguage')}</span>
             </div>
           </div>
         </header>
@@ -306,19 +307,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            aria-label="Открыть меню"
-            className="grid place-items-center h-9 w-9 rounded-xl bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors"
+            aria-label={t('admin.openMenu')}
+            className="grid place-items-center h-9 w-9 rounded-xl bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors"
           >
             <Menu className="h-5 w-5" />
           </button>
           
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-            <span className="font-bold text-slate-900 text-sm">Админ-панель</span>
+            <div className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
+            <span className="font-bold text-slate-900 text-sm">{t('admin.panelTitle')}</span>
           </div>
 
           <div className="text-right max-w-[120px]">
-            <span className="text-[10px] text-slate-500 font-mono block truncate">{user.email}</span>
+            <span className="text-[10px] text-slate-500 font-mono block truncate">{user?.email}</span>
           </div>
         </div>
 
@@ -343,7 +344,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => setDrawerOpen(false)}
-              aria-label="Закрыть меню"
+              aria-label={t('admin.closeMenu')}
               className="absolute top-4 right-4 z-10 grid place-items-center h-8 w-8 rounded-xl bg-white/10 text-white hover:bg-white/20 transition"
             >
               <X className="h-4 w-4" />

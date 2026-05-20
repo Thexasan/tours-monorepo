@@ -34,9 +34,9 @@ function StepIndicator({ current, labels }: { current: "email" | "otp" | "detail
               <div
                 className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${
                   done
-                    ? "bg-orange-600 border-orange-600 text-white"
+                    ? "bg-teal-600 border-teal-600 text-white"
                     : active
-                    ? "bg-white border-orange-600 text-orange-700"
+                    ? "bg-white border-teal-600 text-teal-700"
                     : "bg-white border-slate-200 text-slate-400"
                 }`}
               >
@@ -44,17 +44,17 @@ function StepIndicator({ current, labels }: { current: "email" | "otp" | "detail
               </div>
               <span
                 className={`text-xs font-medium whitespace-nowrap ${
-                  active ? "text-orange-700" : done ? "text-slate-600" : "text-slate-400"
+                  active ? "text-teal-700" : done ? "text-slate-600" : "text-slate-400"
                 }`}
               >
                 {s.label}
               </span>
             </div>
-
+ 
             {i < steps.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mt-4 mx-2 transition-colors ${
-                  done ? "bg-orange-500" : "bg-slate-200"
+                  done ? "bg-teal-500" : "bg-slate-200"
                 }`}
               />
             )}
@@ -119,7 +119,7 @@ function OtpBoxes({
           onChange={e => handleChange(i, e)}
           onKeyDown={e => handleKeyDown(i, e)}
           onFocus={e => e.target.select()}
-          className="w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/15 outline-none transition-all"
+          className="w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/15 outline-none transition-all"
         />
       ))}
     </div>
@@ -339,8 +339,8 @@ export function RegisterForm() {
           className="flex flex-col gap-5"
           onSubmit={(e) => { e.preventDefault(); handleOtpContinue(); }}
         >
-          <div className="flex items-center gap-3 rounded-xl bg-orange-50 border border-orange-100 p-4">
-            <div className="grid place-items-center h-10 w-10 rounded-xl bg-orange-600 text-white shrink-0">
+          <div className="flex items-center gap-3 rounded-xl bg-teal-50 border border-teal-100 p-4">
+            <div className="grid place-items-center h-10 w-10 rounded-xl bg-teal-600 text-white shrink-0">
               <Mail className="h-5 w-5" />
             </div>
             <div>
@@ -401,7 +401,7 @@ export function RegisterForm() {
               type="button"
               onClick={handleResendOtp}
               disabled={cooldown > 0 || sendingOtp}
-              className="flex items-center gap-1 text-orange-600 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 text-teal-600 hover:text-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               {cooldown > 0 ? `${t("register.resend")} (${cooldown}с)` : t("register.resend")}

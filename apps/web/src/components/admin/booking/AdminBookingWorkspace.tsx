@@ -21,7 +21,7 @@ import type { BookingStatus, BookingDocument } from "@tours/types";
 const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
   NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
   DOCUMENTS_REQUESTED: { label: "Ждём документы",      cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
-  DOCUMENTS_SUBMITTED: { label: "Документы загружены", cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",  dot: "bg-orange-500" },
+  DOCUMENTS_SUBMITTED: { label: "Документы загружены", cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100",  dot: "bg-teal-500" },
   IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
   AWAITING_PAYMENT:    { label: "Ждём оплату",         cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
   PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
@@ -63,7 +63,7 @@ function DocRow({ doc, bookingId }: { doc: BookingDocument; bookingId: string })
         href={downloadUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-orange-700 hover:bg-orange-50 transition-colors"
+        className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-teal-700 hover:bg-teal-50 transition-colors"
         title="Скачать"
       >
         <Download className="h-4 w-4" />
@@ -74,7 +74,7 @@ function DocRow({ doc, bookingId }: { doc: BookingDocument; bookingId: string })
 
 export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
   const locale = useLocale();
-  const lang = locale as "ru" | "en" | "tj";
+  const lang = locale as "ru" | "en" | "tr";
   const qc = useQueryClient();
 
   const { data: booking, isLoading, isError } = useBooking(bookingId);
@@ -290,7 +290,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
             </div>
             {tour?.country && (
               <p className="text-sm text-slate-500 flex items-center gap-1 mb-3">
-                <MapPin className="h-3.5 w-3.5 text-orange-600" />
+                <MapPin className="h-3.5 w-3.5 text-teal-600" />
                 {tour.country}
               </p>
             )}
@@ -428,7 +428,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
                 <Button
                   onClick={() => handleUpdateStatus("IN_PROGRESS")}
                   disabled={actionPending}
-                  className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white"
                 >
                   {actionPending ? "…" : "✓ Принять заявку"}
                 </Button>
@@ -439,7 +439,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
                     onChange={(e) => setReqNote(e.target.value)}
                     placeholder="Примечание туристу (необязательно)"
                     rows={2}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-orange-500/15 focus:border-orange-500 transition-colors"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:border-teal-500 transition-colors"
                   />
                   {reqError && <p className="text-xs text-rose-600">{reqError}</p>}
                   <Button
@@ -473,7 +473,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
                     onChange={(e) => setReqNote(e.target.value)}
                     placeholder="Примечание туристу (необязательно)"
                     rows={2}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-orange-500/15 focus:border-orange-500 transition-colors"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:border-teal-500 transition-colors"
                   />
                   {reqError && <p className="text-xs text-rose-600">{reqError}</p>}
                   <Button
@@ -687,7 +687,7 @@ export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
               onChange={(e) => setRejectionNote(e.target.value)}
               placeholder="Например: паспорт нечёткий, нужна страница с пропиской"
               rows={4}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-orange-500/15 focus:border-orange-500 transition-colors"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:border-teal-500 transition-colors"
             />
             {rejectError && <p className="text-sm text-rose-600">{rejectError}</p>}
             <div className="flex gap-2 justify-end">

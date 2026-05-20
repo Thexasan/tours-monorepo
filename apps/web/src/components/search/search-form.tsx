@@ -46,22 +46,22 @@ const DEST_LABELS_EN: Record<string, { label: string; sub: string }> = {
   italy:    { label: "Italy",     sub: "Rome · Milan · Venice" },
 };
 
-const DEST_LABELS_TJ: Record<string, { label: string; sub: string }> = {
-  bali:     { label: "Бали",      sub: "Индонезия" },
-  turkey:   { label: "Туркия",    sub: "Анталия · Истанбул" },
-  dubai:    { label: "Дубай",     sub: "ААЭ" },
-  maldives: { label: "Мальдивҳо", sub: "Уқёнуси Ҳинд" },
-  thailand: { label: "Таиланд",   sub: "Бангкок · Пхукет" },
-  egypt:    { label: "Миср",      sub: "Ҳургада · Шарм" },
-  greece:   { label: "Юнон",      sub: "Санторини · Миконос" },
-  japan:    { label: "Япония",    sub: "Токио · Киото" },
-  georgia:  { label: "Гурҷистон", sub: "Тбилисӣ · Батумӣ" },
-  italy:    { label: "Италия",    sub: "Рим · Милан · Венетсия" },
+const DEST_LABELS_TR: Record<string, { label: string; sub: string }> = {
+  bali:     { label: "Bali",       sub: "Endonezya" },
+  turkey:   { label: "Türkiye",    sub: "Antalya · İstanbul" },
+  dubai:    { label: "Dubai",      sub: "BAE" },
+  maldives: { label: "Maldivler",  sub: "Hint Okyanusu" },
+  thailand: { label: "Tayland",    sub: "Bangkok · Phuket" },
+  egypt:    { label: "Mısır",      sub: "Hurgada · Şarm" },
+  greece:   { label: "Yunanistan", sub: "Santorini · Mikonos" },
+  japan:    { label: "Japonya",    sub: "Tokyo · Kyoto" },
+  georgia:  { label: "Gürcistan",  sub: "Tiflis · Batum" },
+  italy:    { label: "İtalya",     sub: "Roma · Milano · Venedik" },
 };
 
 function getLabels(locale: string) {
   if (locale === "en") return DEST_LABELS_EN;
-  if (locale === "tj") return DEST_LABELS_TJ;
+  if (locale === "tr") return DEST_LABELS_TR;
   return DEST_LABELS;
 }
 

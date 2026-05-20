@@ -35,5 +35,8 @@ export function useRequireAuth(allowedRoles?: UserRole[]) {
     }
   }, [allowedRoles, pathname, user, isHydrated, router]);
 
-  return { user, isHydrated };
+  const isAuthorized =
+    isHydrated && !!user && (!allowedRoles?.length || allowedRoles.includes(user.role));
+
+  return { user, isHydrated, isAuthorized };
 }

@@ -1,0 +1,259 @@
+{
+  "catalogTitle": "Tur Kataloğu",
+  "searchPlaceholder": "Nereye gitmek istiyorsunuz?",
+  "labels": {
+    "hotTour": "Fırsatlı Tur",
+    "days": "gün",
+    "from": "itibaren"
+  },
+  "mealPlan": {
+    "ALL_INCLUSIVE": "Her Şey Dahil",
+    "HALF_BOARD": "Yarım Pansiyon",
+    "BREAKFAST": "Kahvaltı",
+    "NO_MEALS": "Yemeksiz"
+  },
+  "catalog": {
+    "hero": {
+      "badge": "Dünya genelinde 50+ destinasyon",
+      "title": "Mükemmel turunuzu bulun.",
+      "subtitle": "Fırsatlı teklifler, güvenilir oteller ve şeffaf fiyatlandırma. Unutulmaz yolculuğunuza hemen başlayın."
+    },
+    "countries": {
+      "all": "Tümü",
+      "Turkey": "Türkiye",
+      "Greece": "Yunanistan",
+      "Japan": "Japonya",
+      "Georgia": "Gürcistan",
+      "Italy": "İtalya",
+      "UAE": "BAE",
+      "Maldives": "Maldivler",
+      "Thailand": "Tayland",
+      "Egypt": "Mısır"
+    },
+    "sort": {
+      "newest": "Önce yeniler",
+      "price_asc": "En ucuz",
+      "price_desc": "En pahalı",
+      "popular": "Popüler"
+    },
+    "filters": {
+      "title": "Filtreler",
+      "reset": "Sıfırla",
+      "country": "Ülke",
+      "countryPlaceholder": "Örn.: Türkiye",
+      "price": "Fiyat, $",
+      "stars": "Otel yıldızı",
+      "starsAny": "Herhangi",
+      "meal": "Yemek planı",
+      "mealAny": "Herhangi",
+      "close": "Kapat",
+      "filters": "Filtreler"
+    },
+    "results": {
+      "found": "Bulundu:",
+      "loading": "Yükleniyor…"
+    },
+    "search": "Arama:",
+    "searchReset": "Aramayı temizle",
+    "pagination": {
+      "prev": "Geri",
+      "next": "İleri",
+      "of": "/"
+    },
+    "empty": {
+      "title": "Tur bulunamadı",
+      "desc": "Ülke veya fiyat değiştirmeyi ya da tüm filtreleri sıfırlamayı deneyin.",
+      "reset": "Filtreleri sıfırla"
+    },
+    "error": "Turlar yüklenemedi. API'nin çalışıp çalışmadığını kontrol edin."
+  },
+  "detail": {
+    "direction": "Destinasyon",
+    "duration": "Süre",
+    "groupSize": "Grup büyüklüğü",
+    "smallGroup": "küçük grup",
+    "people": "kişi",
+    "rating": "Puan",
+    "reviews": "yorum",
+    "days": "gün",
+    "nights": "gece",
+    "included": "Dahil",
+    "excluded": "Dahil değil",
+    "breadcrumbHome": "Ana Sayfa",
+    "breadcrumbTours": "Turlar",
+    "about": "Tur hakkında",
+    "hotel": "Otel",
+    "category": "Kategori",
+    "meal": "Yemek planı",
+    "amenities": "Olanaklar",
+    "amenitiesValue": "Wi-Fi · Havuz · Spa",
+    "reviewsTitle": "Turistler ne diyor",
+    "reviewsCount": "yorum",
+    "hotTourBadge": "Fırsatlı tur",
+    "priceFrom": "itibaren",
+    "perPerson": "kişi başına · tüm vergiler dahil",
+    "itinerary": {
+      "title": "Güzergah",
+      "subtitle": "aktiviteler ve dinlenmeyi dengeleyen zengin program",
+      "expandAll": "Tümünü genişlet",
+      "collapseAll": "Daralt",
+      "dayLabel": "Gün",
+      "day0": "Varış · Karşılama yemeği",
+      "day1": "Tanışma ve yerleşme",
+      "day2": "Ana tur",
+      "day3": "Serbest gün",
+      "day4": "Kültürel program",
+      "day5": "Gastronomi günü",
+      "day6": "Doğa ve aktiviteler",
+      "day7": "Alışveriş ve hediyelik",
+      "day8": "Veda yemeği",
+      "day9": "Eve dönüş",
+      "dayFallbackDesc": "Günün ayrıntılı programı rezervasyondan sonra yöneticinizle kararlaştırılacaktır."
+    }
+  },
+  "hero": {
+    "book": "Rezervasyon yap",
+    "wishlist": "İstek listesine ekle",
+    "wishlisted": "İstek listesinde",
+    "share": "Paylaş"
+  },
+  "sidebar": {
+    "from": "itibaren",
+    "perPerson": "kişi başına · tüm vergiler",
+    "departureDate": "Kalkış tarihi",
+    "persons": "Kişi",
+    "guestOne": "misafir",
+    "guestMany": "misafir",
+    "book": "Rezervasyon yap",
+    "addWishlist": "İstek listesine ekle",
+    "removeWishlist": "İstek listesinde",
+    "freeCancellation": "Onaya kadar ücretsiz iptal · Yönetici 20 dakika içinde yanıtlar",
+    "secureBooking": "Güvenli rezervasyon",
+    "bestPrice": "En iyi fiyat garantisi",
+    "support": "7/24 WhatsApp desteği",
+    "youSave": "Tasarruf edersiniz",
+    "referral": {
+      "badge": "Paylaş ve kazan",
+      "title": "Tavsiye programı",
+      "descPart1": "Bir arkadaşınızı davet edin —",
+      "descPart2": "seyahatinden sonra hesabınıza geçer.",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı"
+    }
+  },
+  "booking": {
+    "close": "Kapat",
+    "decrease": "Azalt",
+    "increase": "Artır",
+    "stepper": {
+      "options": "Seçenekler",
+      "travelers": "Yolcular",
+      "confirm": "Onay"
+    },
+    "step0": {
+      "title": "Tarih ve grup seçin",
+      "durationPrefix": "Sabit süre —",
+      "durationDays": "gün",
+      "durationNights": "gece",
+      "travelers": "Yolcular",
+      "persons": "Kişi sayısı",
+      "perPersonPrefix": "kişi başına",
+      "roomType": "Oda tipi",
+      "included": "dahil"
+    },
+    "step1": {
+      "title": "Yolcu bilgileri",
+      "subtitle": "Pasaportunuzdaki isim — Latin harfleri ile",
+      "nameField": "Ad ve soyad",
+      "passport": "Pasaport numarası (isteğe bağlı)",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "protected": "Verileriniz korunuyor",
+      "protectedDesc": "Veri iletimi TLS 1.3 ile şifrelenir. Pasaport bilgileri yalnızca tur düzenlemesi için kullanılır.",
+      "otherTravelers": "Diğer yolcuların bilgileri",
+      "otherTravelersDesc1": "Rezervasyon onayından sonra diğer",
+      "otherTravelersDesc2": "misafir için e-posta ile form göndereceğiz."
+    },
+    "step2": {
+      "title": "Rezervasyon detaylarını inceleyin",
+      "subtitle": "Yönetici onayından sonra ödeme",
+      "profileData": "Profil verileri",
+      "contactPhone": "İletişim telefonu",
+      "checkIn": "Giriş / Çıkış",
+      "guests": "Misafirler",
+      "room": "Konaklama",
+      "guestName": "Rezervasyon adı",
+      "personOne": "kişi",
+      "personsMany": "kişi",
+      "subtotalPrefix": "Kişi ×",
+      "roomUpgrade": "Oda yükseltme",
+      "taxes": "Vergiler ve ücretler",
+      "total": "Ödenecek toplam",
+      "totalNote": "sigorta ve transfer dahil",
+      "agree": "Kabul ediyorum",
+      "terms": "rezervasyon koşullarını",
+      "and": "ve",
+      "privacy": "gizlilik politikasını",
+      "agreeNote": "Ödeme, yönetici tarafından rezervasyon onayından sonra yapılır."
+    },
+    "success": {
+      "title": "Başvuru gönderildi!",
+      "desc": "Yönetici belirtilen e-posta adresine bir saat içinde ulaşacak.",
+      "referralNote": "+1 tavsiye ödemeden sonra sayılır",
+      "myBookings": "Rezervasyonlarımı görüntüle",
+      "register": "Rezervasyonunuzu takip etmek için kayıt olun",
+      "hasAccount": "Zaten hesabınız var — giriş yapın",
+      "close": "Kapat"
+    },
+    "authGate": {
+      "title": "Rezervasyon için hesap gerekli",
+      "desc": "Giriş yapın veya kayıt olun — tarihleriniz ve tercihleriniz otomatik kaydedilecek.",
+      "register": "Kayıt ol",
+      "hasAccount": "Zaten hesabınız var — giriş yapın",
+      "back": "← Tarih seçimine geri dön"
+    },
+    "bottom": {
+      "amount": "Toplam",
+      "back": "Geri",
+      "continue": "Devam et",
+      "submit": "Onayla ve rezervasyon yap",
+      "submitting": "Gönderiliyor…"
+    },
+    "calendar": {
+      "jan": "Ocak",
+      "feb": "Şubat",
+      "mar": "Mart",
+      "apr": "Nisan",
+      "may": "Mayıs",
+      "jun": "Haziran",
+      "jul": "Temmuz",
+      "aug": "Ağustos",
+      "sep": "Eylül",
+      "oct": "Ekim",
+      "nov": "Kasım",
+      "dec": "Aralık",
+      "janShort": "Oca",
+      "febShort": "Şub",
+      "marShort": "Mar",
+      "aprShort": "Nis",
+      "mayShort": "May",
+      "junShort": "Haz",
+      "julShort": "Tem",
+      "augShort": "Ağu",
+      "sepShort": "Eyl",
+      "octShort": "Eki",
+      "novShort": "Kas",
+      "decShort": "Ara",
+      "mon": "Pt",
+      "tue": "Sa",
+      "wed": "Ça",
+      "thu": "Pe",
+      "fri": "Cu",
+      "sat": "Ct",
+      "sun": "Pz",
+      "navBack": "Geri",
+      "navForward": "İleri"
+    },
+    "error": "Rezervasyon oluşturulamadı"
+  }
+}
