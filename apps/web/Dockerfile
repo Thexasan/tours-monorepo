@@ -6,6 +6,8 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json turbo.json tsconfig.base.json ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/api/package.json ./apps/api/
+COPY packages/db/package.json ./packages/db/
 COPY packages/types/package.json ./packages/types/
 RUN npm ci
 
