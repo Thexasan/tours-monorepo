@@ -126,6 +126,7 @@ export class PayoutsService {
           type: NotificationType.PAYOUT_PROCESSED,
           title: "Выплата подтверждена",
           body: `Ваш запрос на вывод $${Number(payout.amountUsd).toFixed(2)} подтверждён и отправлен на ваши реквизиты.`,
+          metadata: { amount: Number(payout.amountUsd).toFixed(2) },
         });
 
         this.logger.log(`Payout APPROVED: ${payoutId} by admin=${adminId}`);
@@ -164,6 +165,7 @@ export class PayoutsService {
           type: NotificationType.PAYOUT_REJECTED,
           title: "Заявка на вывод отклонена",
           body: `Ваш запрос на вывод $${Number(payout.amountUsd).toFixed(2)} отклонён.${dto.rejectReason ? ` Причина: ${dto.rejectReason}` : ""} Средства возвращены на ваш баланс.`,
+          metadata: { amount: Number(payout.amountUsd).toFixed(2), rejectionNote: dto.rejectReason ?? "" },
         });
 
         this.logger.log(`Payout REJECTED: ${payoutId} by admin=${adminId}, $${payout.amountUsd} returned`);

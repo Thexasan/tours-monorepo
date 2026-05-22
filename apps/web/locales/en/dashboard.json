@@ -417,7 +417,69 @@
       "statusPayment": "Awaiting Payment",
       "statusPaid": "Paid",
       "statusCompleted": "Completed",
-      "statusCancelled": "Cancelled"
+      "statusCancelled": "Cancelled",
+      "backLink": "My Trips",
+      "noPhoto": "No photo",
+      "guestsLabel": "guests",
+      "statusDescNew": "Booking received, manager will contact you soon",
+      "statusDescDocsRequested": "Upload the requested documents below",
+      "statusDescDocsSubmitted": "Manager is reviewing your documents",
+      "statusDescInProgress": "Documents confirmed, booking is being processed",
+      "statusDescAwaitingPayment": "Transfer payment and upload a receipt",
+      "statusDescPaid": "Payment received, getting ready for the trip!",
+      "statusDescCompleted": "Trip completed. Hope you enjoyed it!",
+      "statusDescCancelled": "Booking cancelled",
+      "stepRequest": "Booking",
+      "stepDocs": "Documents",
+      "stepPayment": "Payment",
+      "stepDone": "Trip",
+      "kindForeignPassport": "Foreign Passport",
+      "kindInternalPassport": "Internal Passport",
+      "kindPaymentReceipt": "Payment Receipt",
+      "kindOther": "Other Document",
+      "docConfirmed": "Confirmed by manager",
+      "docRejected": "Corrections needed:",
+      "docPending": "Under review",
+      "ticketTitle": "Your Ticket",
+      "ticketPresent": "Present together with passport",
+      "ticketTour": "Tour",
+      "ticketGuests": "Guests",
+      "ticketAmount": "Amount",
+      "ticketDate": "Tour Date",
+      "ticketPaid": "Paid",
+      "ticketDateTBD": "TBD",
+      "ticketScanHint": "Scan to open booking",
+      "ticketDownloading": "Generating PDF…",
+      "ticketDownload": "Download PDF Ticket",
+      "ticketDownloadError": "Failed to download ticket. Try again later.",
+      "paymentTitle": "Payment Details",
+      "paymentBankLabel": "Bank:",
+      "paymentCardLabel": "Card/Account:",
+      "paymentAmountLabel": "Amount:",
+      "receiptUploaded": "Receipt uploaded — awaiting confirmation",
+      "uploadReceiptHint": "Upload a screenshot of the transfer",
+      "receiptClickToSelect": "Click to select a file",
+      "receiptFileTypes": "JPEG, PNG, PDF — up to 10 MB",
+      "sendReceiptBtn": "Send Receipt",
+      "uploadingLabel": "Uploading…",
+      "selectReceiptError": "Select a receipt file",
+      "receiptUploadedToast": "Receipt uploaded — manager will verify and confirm payment",
+      "receiptUploadErrorLabel": "Receipt upload error",
+      "docsTitle": "Documents",
+      "docsRequestedHint": "Manager requested documents. Upload passport(s) — it is safe, files are visible only to you and the manager.",
+      "docTypeLabel": "Document Type",
+      "docOwnerLabel": "Whose document? (optional)",
+      "docOwnerPlaceholder": "E.g.: Ivan's passport",
+      "docFileLabel": "File (JPEG, PNG, PDF, up to 10 MB)",
+      "docClickToSelect": "Click to select a file",
+      "selectDocError": "Select a file",
+      "uploadDocBtn": "Upload Document",
+      "docUploadedToast": "Document uploaded",
+      "docUploadErrorLabel": "Document upload error",
+      "managerWillReview": "Manager will review the booking shortly and request documents if needed.",
+      "noDocs": "No documents uploaded",
+      "historyTitle": "Booking History",
+      "detailLoadError": "Failed to load data. Try refreshing the page."
     },
     "referrals": {
       "shareText": "Hey! Check out these tours, amazing deals 🌍",
@@ -499,7 +561,57 @@
       "unread": "Unread:",
       "markAllRead": "Mark all as read",
       "read": "Read",
-      "showingLast": "Showing last {count} notifications"
+      "showingLast": "Showing last {count} notifications",
+      "types": {
+        "BOOKING_ACCEPTED": {
+          "title": "Booking accepted",
+          "body": "Manager has started processing your trip «{tourTitle}»."
+        },
+        "BOOKING_DOCUMENTS_REQUESTED": {
+          "title": "Documents required",
+          "body": "Please upload your passport(s) for tour «{tourTitle}» in your cabinet."
+        },
+        "BOOKING_DOCUMENTS_CONFIRMED": {
+          "title": "Documents accepted",
+          "body": "Your documents for «{tourTitle}» have been confirmed. Await payment details."
+        },
+        "BOOKING_DOCUMENTS_REJECTED": {
+          "title": "Corrections needed",
+          "body": "Please correct documents for «{tourTitle}»: {rejectionNote}"
+        },
+        "BOOKING_PAYMENT_REQUESTED": {
+          "title": "Invoice issued",
+          "body": "An invoice of ${amount} has been issued for «{tourTitle}». Transfer payment and upload receipt."
+        },
+        "BOOKING_PAID": {
+          "title": "Payment confirmed",
+          "body": "Payment for tour «{tourTitle}» confirmed. Getting ready for the trip!"
+        },
+        "BOOKING_COMPLETED": {
+          "title": "Trip completed",
+          "body": "Your trip «{tourTitle}» is complete. Thank you! Please leave a review."
+        },
+        "BOOKING_CANCELLED": {
+          "title": "Booking cancelled",
+          "body": "Unfortunately, your booking for tour «{tourTitle}» was cancelled."
+        },
+        "COMMISSION_EARNED": {
+          "title": "Commission credited",
+          "body": "${amount} ({rate}% of order ${totalPrice}) has been added to your balance."
+        },
+        "PAYOUT_PROCESSED": {
+          "title": "Payout confirmed",
+          "body": "Your withdrawal request of ${amount} has been approved and sent to your bank details."
+        },
+        "PAYOUT_REJECTED": {
+          "title": "Payout rejected",
+          "body": "Your withdrawal request of ${amount} was rejected. Funds have been returned to your balance."
+        },
+        "WISHLIST_PRICE_DROP": {
+          "title": "Price dropped!",
+          "body": "Tour «{tourTitle}» now costs ${newPrice} — cheaper than when you added it to favourites."
+        }
+      }
     }
   },
   "pages": {

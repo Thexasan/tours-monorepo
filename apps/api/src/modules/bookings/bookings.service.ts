@@ -335,6 +335,7 @@ export class BookingsService {
           title: notifTemplate.title,
           body: notifTemplate.body(tourTitleRu),
           bookingId: id,
+          metadata: { tourTitle: tourTitleRu },
         });
       }
     }
@@ -430,6 +431,7 @@ export class BookingsService {
         title: "Выставлен счёт на оплату",
         body: `По заявке «${tourTitleRu}» выставлен счёт на $${paymentDetails.amount}. Переведите оплату и загрузите квитанцию.`,
         bookingId: id,
+        metadata: { tourTitle: tourTitleRu, amount: String(paymentDetails.amount) },
       });
     }
 
@@ -522,6 +524,11 @@ export class BookingsService {
         type: NotificationType.COMMISSION_EARNED,
         title: "Комиссия начислена",
         body: `На ваш баланс начислено $${Number(commission).toFixed(2)} (${(rate * 100).toFixed(0)}% от заявки $${totalPriceUsd}).`,
+        metadata: {
+          amount: Number(commission).toFixed(2),
+          rate: (rate * 100).toFixed(0),
+          totalPrice: String(totalPriceUsd),
+        },
       });
       this.logger.log(`Reward (PARTNER): user=${referrerId}, +$${commission} (rate=${rate})`);
       return { type: "partner", details: { commission: Number(commission) } };

@@ -417,7 +417,69 @@
       "statusPayment": "Ожидает оплаты",
       "statusPaid": "Оплачена",
       "statusCompleted": "Завершена",
-      "statusCancelled": "Отменена"
+      "statusCancelled": "Отменена",
+      "backLink": "Мои поездки",
+      "noPhoto": "Без фото",
+      "guestsLabel": "гостей",
+      "statusDescNew": "Заявка получена, менеджер скоро свяжется",
+      "statusDescDocsRequested": "Загрузите запрошенные документы ниже",
+      "statusDescDocsSubmitted": "Менеджер проверяет ваши документы",
+      "statusDescInProgress": "Документы подтверждены, заявка в обработке",
+      "statusDescAwaitingPayment": "Переведите оплату по реквизитам и загрузите квитанцию",
+      "statusDescPaid": "Оплата получена, готовимся к поездке!",
+      "statusDescCompleted": "Поездка завершена. Надеемся, вам понравилось!",
+      "statusDescCancelled": "Заявка отменена",
+      "stepRequest": "Заявка",
+      "stepDocs": "Документы",
+      "stepPayment": "Оплата",
+      "stepDone": "Поездка",
+      "kindForeignPassport": "Заграничный паспорт",
+      "kindInternalPassport": "Внутренний паспорт",
+      "kindPaymentReceipt": "Квитанция об оплате",
+      "kindOther": "Другой документ",
+      "docConfirmed": "Подтверждён менеджером",
+      "docRejected": "Нужны исправления:",
+      "docPending": "На проверке",
+      "ticketTitle": "Ваш тикет",
+      "ticketPresent": "Предъявите вместе с паспортом",
+      "ticketTour": "Тур",
+      "ticketGuests": "Гостей",
+      "ticketAmount": "Сумма",
+      "ticketDate": "Дата тура",
+      "ticketPaid": "Оплачено",
+      "ticketDateTBD": "Уточняется",
+      "ticketScanHint": "Сканируйте для открытия заявки",
+      "ticketDownloading": "Формируем PDF…",
+      "ticketDownload": "Скачать PDF-тикет",
+      "ticketDownloadError": "Не удалось скачать тикет. Попробуйте позже.",
+      "paymentTitle": "Реквизиты для оплаты",
+      "paymentBankLabel": "Банк:",
+      "paymentCardLabel": "Карта/счёт:",
+      "paymentAmountLabel": "Сумма:",
+      "receiptUploaded": "Квитанция загружена — ожидаем подтверждения",
+      "uploadReceiptHint": "Загрузите скриншот перевода",
+      "receiptClickToSelect": "Нажмите для выбора файла",
+      "receiptFileTypes": "JPEG, PNG, PDF — до 10 МБ",
+      "sendReceiptBtn": "Отправить квитанцию",
+      "uploadingLabel": "Загрузка…",
+      "selectReceiptError": "Выберите файл квитанции",
+      "receiptUploadedToast": "Квитанция загружена — менеджер проверит и подтвердит оплату",
+      "receiptUploadErrorLabel": "Ошибка загрузки квитанции",
+      "docsTitle": "Документы",
+      "docsRequestedHint": "Менеджер запросил документы. Загрузите паспорт(а) — это безопасно, файлы видны только вам и менеджеру.",
+      "docTypeLabel": "Тип документа",
+      "docOwnerLabel": "Чей документ? (необязательно)",
+      "docOwnerPlaceholder": "Например: Загранник Ивана",
+      "docFileLabel": "Файл (JPEG, PNG, PDF, до 10 МБ)",
+      "docClickToSelect": "Нажмите для выбора файла",
+      "selectDocError": "Выберите файл",
+      "uploadDocBtn": "Загрузить документ",
+      "docUploadedToast": "Документ загружен",
+      "docUploadErrorLabel": "Ошибка загрузки документа",
+      "managerWillReview": "Менеджер скоро рассмотрит заявку и при необходимости запросит документы.",
+      "noDocs": "Документы не загружались",
+      "historyTitle": "История заявки",
+      "detailLoadError": "Не удалось загрузить данные. Попробуйте обновить страницу."
     },
     "referrals": {
       "shareText": "Привет! Зацени туры на этом сайте, очень крутые предложения 🌍",
@@ -499,7 +561,57 @@
       "unread": "Непрочитанных:",
       "markAllRead": "Прочитать все",
       "read": "Прочитанные",
-      "showingLast": "Показаны последние {count} уведомлений"
+      "showingLast": "Показаны последние {count} уведомлений",
+      "types": {
+        "BOOKING_ACCEPTED": {
+          "title": "Заявка принята",
+          "body": "Менеджер приступил к оформлению вашей поездки «{tourTitle}»."
+        },
+        "BOOKING_DOCUMENTS_REQUESTED": {
+          "title": "Требуются документы",
+          "body": "Для тура «{tourTitle}» загрузите паспорт(а) в личном кабинете."
+        },
+        "BOOKING_DOCUMENTS_CONFIRMED": {
+          "title": "Документы приняты",
+          "body": "Ваши документы для тура «{tourTitle}» подтверждены. Ожидайте информацию об оплате."
+        },
+        "BOOKING_DOCUMENTS_REJECTED": {
+          "title": "Нужны исправления",
+          "body": "Исправьте документы для тура «{tourTitle}»: {rejectionNote}"
+        },
+        "BOOKING_PAYMENT_REQUESTED": {
+          "title": "Выставлен счёт на оплату",
+          "body": "По заявке «{tourTitle}» выставлен счёт на ${amount}. Переведите оплату и загрузите квитанцию."
+        },
+        "BOOKING_PAID": {
+          "title": "Оплата получена",
+          "body": "Оплата за тур «{tourTitle}» подтверждена. Готовимся к поездке!"
+        },
+        "BOOKING_COMPLETED": {
+          "title": "Поездка завершена",
+          "body": "Ваша поездка «{tourTitle}» завершена. Спасибо! Оставьте отзыв."
+        },
+        "BOOKING_CANCELLED": {
+          "title": "Заявка отменена",
+          "body": "К сожалению, ваша заявка на тур «{tourTitle}» была отменена."
+        },
+        "COMMISSION_EARNED": {
+          "title": "Комиссия начислена",
+          "body": "На ваш баланс начислено ${amount} ({rate}% от заявки ${totalPrice})."
+        },
+        "PAYOUT_PROCESSED": {
+          "title": "Выплата подтверждена",
+          "body": "Ваш запрос на вывод ${amount} подтверждён и отправлен на ваши реквизиты."
+        },
+        "PAYOUT_REJECTED": {
+          "title": "Заявка на вывод отклонена",
+          "body": "Ваш запрос на вывод ${amount} отклонён. Средства возвращены на ваш баланс."
+        },
+        "WISHLIST_PRICE_DROP": {
+          "title": "Цена снизилась!",
+          "body": "Тур «{tourTitle}» теперь стоит ${newPrice} — дешевле, чем когда вы добавили его в избранное."
+        }
+      }
     }
   },
   "pages": {

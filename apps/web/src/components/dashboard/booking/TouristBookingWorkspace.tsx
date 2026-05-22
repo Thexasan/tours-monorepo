@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowLeft, FileText, Check, ChevronRight, MapPin, Users,
   DollarSign, Calendar, Upload, X, AlertCircle, Clock, CreditCard, Receipt,
@@ -31,23 +31,16 @@ async function triggerPdfDownload(bookingId: string) {
   URL.revokeObjectURL(url);
 }
 
-const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string; description: string }> = {
-  NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500",     description: "Заявка получена, менеджер скоро свяжется" },
-  DOCUMENTS_REQUESTED: { label: "Нужны документы",    cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",   dot: "bg-violet-500",  description: "Загрузите запрошенные документы ниже" },
-  DOCUMENTS_SUBMITTED: { label: "Документы на проверке", cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100", dot: "bg-teal-500", description: "Менеджер проверяет ваши документы" },
-  IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",      dot: "bg-amber-500",   description: "Документы подтверждены, заявка в обработке" },
-  AWAITING_PAYMENT:    { label: "Ожидает оплаты",      cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",            dot: "bg-sky-500",     description: "Переведите оплату по реквизитам и загрузите квитанцию" },
-  PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500", description: "Оплата получена, готовимся к поездке!" },
-  COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",     dot: "bg-slate-500",   description: "Поездка завершена. Надеемся, вам понравилось!" },
-  CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",         dot: "bg-rose-500",    description: "Заявка отменена" },
+const STATUS_STYLES: Record<BookingStatus, { cls: string; dot: string }> = {
+  NEW:                  { cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",            dot: "bg-sky-500"     },
+  DOCUMENTS_REQUESTED:  { cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",    dot: "bg-violet-500"  },
+  DOCUMENTS_SUBMITTED:  { cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100",          dot: "bg-teal-500"    },
+  IN_PROGRESS:          { cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",       dot: "bg-amber-500"   },
+  AWAITING_PAYMENT:     { cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",             dot: "bg-sky-500"     },
+  PAID:                 { cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+  COMPLETED:            { cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",      dot: "bg-slate-500"   },
+  CANCELLED:            { cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",          dot: "bg-rose-500"    },
 };
-
-const STEPPER_STEPS = [
-  { key: "request", label: "Заявка",     statuses: ["NEW", "DOCUMENTS_REQUESTED", "DOCUMENTS_SUBMITTED"] },
-  { key: "docs",    label: "Документы",  statuses: ["IN_PROGRESS"] },
-  { key: "payment", label: "Оплата",     statuses: ["PAID"] },
-  { key: "done",    label: "Поездка",    statuses: ["COMPLETED"] },
-] as const;
 
 function getStepIndex(status: BookingStatus): number {
   if (status === "NEW" || status === "DOCUMENTS_REQUESTED" || status === "DOCUMENTS_SUBMITTED") return 0;
@@ -58,16 +51,17 @@ function getStepIndex(status: BookingStatus): number {
   return 0;
 }
 
-const KIND_LABEL: Record<BookingDocumentKind, string> = {
-  PASSPORT_INTERNAL: "Внутренний паспорт",
-  PASSPORT_FOREIGN:  "Заграничный паспорт",
-  PAYMENT_RECEIPT:   "Квитанция об оплате",
-  OTHER:             "Другой документ",
-};
-
 function DocRow({ doc }: { doc: BookingDocument }) {
+  const t = useTranslations("dashboard");
   const confirmed = !!doc.confirmedAt;
   const rejected = !!doc.rejectionNote && !doc.confirmedAt;
+
+  const kindLabels: Record<BookingDocumentKind, string> = {
+    PASSPORT_INTERNAL: t("client.trips.kindInternalPassport"),
+    PASSPORT_FOREIGN:  t("client.trips.kindForeignPassport"),
+    PAYMENT_RECEIPT:   t("client.trips.kindPaymentReceipt"),
+    OTHER:             t("client.trips.kindOther"),
+  };
 
   return (
     <div className={`flex items-start gap-3 p-3 rounded-xl border ${confirmed ? "border-emerald-100 bg-emerald-50/60" : rejected ? "border-rose-100 bg-rose-50/60" : "border-slate-100 bg-slate-50/60"}`}>
@@ -75,22 +69,22 @@ function DocRow({ doc }: { doc: BookingDocument }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-800 truncate">{doc.fileName}</p>
         <p className="text-xs text-slate-500 mt-0.5">
-          {KIND_LABEL[doc.kind] ?? doc.kind}
+          {kindLabels[doc.kind] ?? doc.kind}
           {doc.description && <> · <span className="italic">{doc.description}</span></>}
         </p>
         {confirmed && (
           <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
-            <Check className="h-3 w-3" /> Подтверждён менеджером
+            <Check className="h-3 w-3" /> {t("client.trips.docConfirmed")}
           </p>
         )}
         {rejected && (
           <p className="text-xs text-rose-600 mt-1">
-            Нужны исправления: {doc.rejectionNote}
+            {t("client.trips.docRejected")} {doc.rejectionNote}
           </p>
         )}
         {!confirmed && !rejected && (
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <Clock className="h-3 w-3" /> На проверке
+            <Clock className="h-3 w-3" /> {t("client.trips.docPending")}
           </p>
         )}
       </div>
@@ -110,6 +104,7 @@ interface TicketCardProps {
 
 function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd, preferredDate, paidAt }: TicketCardProps) {
   const locale = useLocale();
+  const t = useTranslations("dashboard");
   const [downloading, setDownloading] = useState(false);
   const qrUrl = typeof window !== "undefined"
     ? `${window.location.origin}/${locale}/dashboard/trips/${bookingId}`
@@ -120,7 +115,7 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
     try {
       await triggerPdfDownload(bookingId);
     } catch {
-      toast.error("Не удалось скачать тикет. Попробуйте позже.");
+      toast.error(t("client.trips.ticketDownloadError"));
     } finally {
       setDownloading(false);
     }
@@ -128,7 +123,6 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
 
   return (
     <div className="tv-surface-elevated overflow-hidden">
-      {/* Top accent bar */}
       <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 to-teal-500" />
 
       <div className="p-5">
@@ -137,15 +131,14 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
             <QrCode className="h-4 w-4 text-emerald-600" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Ваш тикет</h2>
-            <p className="text-xs text-slate-500">Предъявите вместе с паспортом</p>
+            <h2 className="text-sm font-bold text-slate-900">{t("client.trips.ticketTitle")}</h2>
+            <p className="text-xs text-slate-500">{t("client.trips.ticketPresent")}</p>
           </div>
           <span className="ml-auto text-[10px] font-mono font-bold text-slate-400 tracking-widest">
             #{bookingId.slice(0, 8).toUpperCase()}
           </span>
         </div>
 
-        {/* Perforated divider */}
         <div className="relative my-4 flex items-center">
           <div className="absolute -left-5 h-5 w-5 rounded-full bg-slate-100" />
           <div className="flex-1 border-t-2 border-dashed border-slate-200 mx-2" />
@@ -153,10 +146,9 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
         </div>
 
         <div className="flex flex-col sm:flex-row gap-5 items-start">
-          {/* Left: booking details */}
           <div className="flex-1 space-y-3 min-w-0">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 mb-0.5">Тур</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 mb-0.5">{t("client.trips.ticketTour")}</p>
               <p className="text-base font-bold text-slate-900 leading-tight line-clamp-2">{tourTitle}</p>
               {country && (
                 <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
@@ -167,35 +159,34 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Гостей</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">{t("client.trips.ticketGuests")}</p>
                 <p className="text-sm font-semibold text-slate-800 flex items-center gap-1">
-                  <Users className="h-3.5 w-3.5 text-slate-400" />{guestsCount} чел.
+                  <Users className="h-3.5 w-3.5 text-slate-400" />{guestsCount} {t("client.trips.guestsLabel")}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Сумма</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">{t("client.trips.ticketAmount")}</p>
                 <p className="text-sm font-bold text-emerald-700">${totalPriceUsd}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Дата тура</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">{t("client.trips.ticketDate")}</p>
                 <p className="text-sm font-semibold text-slate-800">
                   {preferredDate
-                    ? new Date(preferredDate).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })
-                    : "Уточняется"}
+                    ? new Date(preferredDate).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })
+                    : t("client.trips.ticketDateTBD")}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Оплачено</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">{t("client.trips.ticketPaid")}</p>
                 <p className="text-sm font-semibold text-slate-800">
                   {paidAt
-                    ? new Date(paidAt).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })
+                    ? new Date(paidAt).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })
                     : "—"}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Right: QR code */}
           <div className="flex flex-col items-center gap-2 shrink-0">
             <div className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
               <QRCodeSVG
@@ -207,12 +198,11 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
               />
             </div>
             <p className="text-[10px] text-slate-400 text-center max-w-[120px] leading-tight">
-              Сканируйте для открытия заявки
+              {t("client.trips.ticketScanHint")}
             </p>
           </div>
         </div>
 
-        {/* Perforated divider */}
         <div className="relative my-4 flex items-center">
           <div className="absolute -left-5 h-5 w-5 rounded-full bg-slate-100" />
           <div className="flex-1 border-t-2 border-dashed border-slate-200 mx-2" />
@@ -225,7 +215,7 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
           className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
         >
           <Download className="h-4 w-4" />
-          {downloading ? "Формируем PDF…" : "Скачать PDF-тикет"}
+          {downloading ? t("client.trips.ticketDownloading") : t("client.trips.ticketDownload")}
         </Button>
       </div>
     </div>
@@ -235,7 +225,33 @@ function TicketCard({ bookingId, tourTitle, country, guestsCount, totalPriceUsd,
 export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips" }: { bookingId: string; backPath?: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tr";
+  const t = useTranslations("dashboard");
   const qc = useQueryClient();
+
+  const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string; description: string }> = {
+    NEW:                 { label: t("client.trips.statusNew"),        cls: STATUS_STYLES.NEW.cls,                 dot: STATUS_STYLES.NEW.dot,                 description: t("client.trips.statusDescNew")              },
+    DOCUMENTS_REQUESTED: { label: t("client.trips.statusDocsNeeded"), cls: STATUS_STYLES.DOCUMENTS_REQUESTED.cls, dot: STATUS_STYLES.DOCUMENTS_REQUESTED.dot, description: t("client.trips.statusDescDocsRequested")    },
+    DOCUMENTS_SUBMITTED: { label: t("client.trips.statusDocsReview"), cls: STATUS_STYLES.DOCUMENTS_SUBMITTED.cls, dot: STATUS_STYLES.DOCUMENTS_SUBMITTED.dot, description: t("client.trips.statusDescDocsSubmitted")    },
+    IN_PROGRESS:         { label: t("client.trips.statusInProgress"), cls: STATUS_STYLES.IN_PROGRESS.cls,         dot: STATUS_STYLES.IN_PROGRESS.dot,         description: t("client.trips.statusDescInProgress")       },
+    AWAITING_PAYMENT:    { label: t("client.trips.statusPayment"),    cls: STATUS_STYLES.AWAITING_PAYMENT.cls,    dot: STATUS_STYLES.AWAITING_PAYMENT.dot,    description: t("client.trips.statusDescAwaitingPayment")  },
+    PAID:                { label: t("client.trips.statusPaid"),       cls: STATUS_STYLES.PAID.cls,                dot: STATUS_STYLES.PAID.dot,                description: t("client.trips.statusDescPaid")             },
+    COMPLETED:           { label: t("client.trips.statusCompleted"),  cls: STATUS_STYLES.COMPLETED.cls,           dot: STATUS_STYLES.COMPLETED.dot,           description: t("client.trips.statusDescCompleted")        },
+    CANCELLED:           { label: t("client.trips.statusCancelled"),  cls: STATUS_STYLES.CANCELLED.cls,           dot: STATUS_STYLES.CANCELLED.dot,           description: t("client.trips.statusDescCancelled")        },
+  };
+
+  const STEPPER_STEPS = [
+    { key: "request", label: t("client.trips.stepRequest") },
+    { key: "docs",    label: t("client.trips.stepDocs")    },
+    { key: "payment", label: t("client.trips.stepPayment") },
+    { key: "done",    label: t("client.trips.stepDone")    },
+  ];
+
+  const KIND_LABEL: Record<BookingDocumentKind, string> = {
+    PASSPORT_INTERNAL: t("client.trips.kindInternalPassport"),
+    PASSPORT_FOREIGN:  t("client.trips.kindForeignPassport"),
+    PAYMENT_RECEIPT:   t("client.trips.kindPaymentReceipt"),
+    OTHER:             t("client.trips.kindOther"),
+  };
 
   const { data: booking, isLoading, isError } = useBooking(bookingId);
 
@@ -251,10 +267,6 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
   const [receiptPending, setReceiptPending] = useState(false);
   const [receiptError, setReceiptError] = useState("");
 
-  const showToast = (msg: string) => {
-    toast.success(msg);
-  };
-
   const invalidate = () => qc.invalidateQueries({ queryKey: ["booking", bookingId] });
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -265,7 +277,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
 
   async function handleUpload() {
     if (!selectedFile) {
-      setUploadError("Выберите файл");
+      setUploadError(t("client.trips.selectDocError"));
       return;
     }
     setUploadPending(true);
@@ -276,11 +288,11 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
       setDescription("");
       if (fileInputRef.current) fileInputRef.current.value = "";
       await invalidate();
-      showToast("Документ загружен");
+      toast.success(t("client.trips.docUploadedToast"));
     } catch (e) {
       const msg = extractErrorMessage(e);
       setUploadError(msg);
-      toast.error("Ошибка загрузки документа", { description: msg });
+      toast.error(t("client.trips.docUploadErrorLabel"), { description: msg });
     } finally {
       setUploadPending(false);
     }
@@ -288,21 +300,21 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
 
   async function handleReceiptUpload() {
     if (!selectedReceipt) {
-      setReceiptError("Выберите файл квитанции");
+      setReceiptError(t("client.trips.selectReceiptError"));
       return;
     }
     setReceiptPending(true);
     setReceiptError("");
     try {
-      await bookingDocumentsApi.uploadDocument(bookingId, selectedReceipt, "PAYMENT_RECEIPT", "Квитанция об оплате");
+      await bookingDocumentsApi.uploadDocument(bookingId, selectedReceipt, "PAYMENT_RECEIPT", t("client.trips.kindPaymentReceipt"));
       setSelectedReceipt(null);
       if (receiptInputRef.current) receiptInputRef.current.value = "";
       await invalidate();
-      showToast("Квитанция загружена — менеджер проверит и подтвердит оплату");
+      toast.success(t("client.trips.receiptUploadedToast"));
     } catch (e) {
       const msg = extractErrorMessage(e);
       setReceiptError(msg);
-      toast.error("Ошибка загрузки квитанции", { description: msg });
+      toast.error(t("client.trips.receiptUploadErrorLabel"), { description: msg });
     } finally {
       setReceiptPending(false);
     }
@@ -322,7 +334,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
     return (
       <div className="tv-surface p-8 text-center text-rose-600">
         <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-        Не удалось загрузить данные. Попробуйте обновить страницу.
+        {t("client.trips.detailLoadError")}
       </div>
     );
   }
@@ -346,7 +358,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
         className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Мои поездки
+        {t("client.trips.backLink")}
       </Link>
 
       {/* Header card */}
@@ -356,7 +368,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
             {tour?.coverImage ? (
               <Image src={tour.coverImage} alt="" fill className="object-cover" sizes="112px" />
             ) : (
-              <div className="absolute inset-0 grid place-items-center text-slate-400 text-xs">Без фото</div>
+              <div className="absolute inset-0 grid place-items-center text-slate-400 text-xs">{t("client.trips.noPhoto")}</div>
             )}
           </div>
           <div className="flex-1 min-w-0">
@@ -377,7 +389,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
             <div className="flex flex-wrap gap-4 mt-3 text-sm text-slate-600">
               <span className="flex items-center gap-1.5">
                 <Users className="h-3.5 w-3.5 text-slate-400" />
-                {booking.guestsCount} гостей
+                {booking.guestsCount} {t("client.trips.guestsLabel")}
               </span>
               <span className="flex items-center gap-1.5 font-semibold text-emerald-700">
                 <DollarSign className="h-3.5 w-3.5" />
@@ -385,7 +397,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
               </span>
               <span className="flex items-center gap-1.5 text-slate-400 text-xs">
                 <Calendar className="h-3 w-3" />
-                {new Date(booking.createdAt).toLocaleDateString("ru-RU")}
+                {new Date(booking.createdAt).toLocaleDateString(locale)}
               </span>
             </div>
           </div>
@@ -398,7 +410,6 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
           {STEPPER_STEPS.map((step, i) => {
             const done = stepIndex > i;
             const active = stepIndex === i && status !== "CANCELLED";
-            const disabled = stepIndex < i || status === "CANCELLED";
             return (
               <div key={step.key} className="flex items-center flex-1 min-w-0">
                 <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
@@ -424,7 +435,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
         </div>
       </div>
 
-      {/* ── Ticket card — PAID / COMPLETED ── */}
+      {/* Ticket card — PAID / COMPLETED */}
       {isPaidOrDone && (
         <TicketCard
           bookingId={bookingId}
@@ -437,7 +448,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
         />
       )}
 
-      {/* Payment block — shown only in AWAITING_PAYMENT */}
+      {/* Payment block — AWAITING_PAYMENT */}
       {canUploadReceipt && pd && (
         <div
           className="tv-surface-elevated p-5 space-y-4"
@@ -445,19 +456,19 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
         >
           <h2 className="text-base font-semibold text-sky-900 flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-sky-600" />
-            Реквизиты для оплаты
+            {t("client.trips.paymentTitle")}
           </h2>
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-sky-600 font-semibold w-20 shrink-0">Банк:</span>
+              <span className="text-sky-600 font-semibold w-20 shrink-0">{t("client.trips.paymentBankLabel")}</span>
               <span className="text-sky-900 font-medium">{pd.bankName}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sky-600 font-semibold w-20 shrink-0">Карта/счёт:</span>
+              <span className="text-sky-600 font-semibold w-20 shrink-0">{t("client.trips.paymentCardLabel")}</span>
               <span className="text-sky-900 font-bold tracking-wider">{pd.cardNumber}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sky-600 font-semibold w-20 shrink-0">Сумма:</span>
+              <span className="text-sky-600 font-semibold w-20 shrink-0">{t("client.trips.paymentAmountLabel")}</span>
               <span className="text-sky-900 font-bold">${pd.amount}</span>
             </div>
             {pd.instructions && (
@@ -470,14 +481,14 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
           {receiptDocs.length > 0 ? (
             <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center">
               <p className="text-sm font-medium text-emerald-700 flex items-center justify-center gap-1.5">
-                <Check className="h-4 w-4" /> Квитанция загружена — ожидаем подтверждения
+                <Check className="h-4 w-4" /> {t("client.trips.receiptUploaded")}
               </p>
             </div>
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-sky-800 font-medium flex items-center gap-1.5">
                 <Receipt className="h-4 w-4 text-sky-600" />
-                Загрузите скриншот перевода
+                {t("client.trips.uploadReceiptHint")}
               </p>
               <div
                 className="border-2 border-dashed border-sky-200 rounded-xl p-6 text-center cursor-pointer hover:border-sky-400 hover:bg-sky-50 transition-all"
@@ -498,8 +509,8 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                 ) : (
                   <>
                     <Upload className="h-7 w-7 text-sky-300 mx-auto mb-2" />
-                    <p className="text-sm text-sky-600">Нажмите для выбора файла</p>
-                    <p className="text-xs text-sky-400 mt-1">JPEG, PNG, PDF — до 10 МБ</p>
+                    <p className="text-sm text-sky-600">{t("client.trips.receiptClickToSelect")}</p>
+                    <p className="text-xs text-sky-400 mt-1">{t("client.trips.receiptFileTypes")}</p>
                   </>
                 )}
               </div>
@@ -520,7 +531,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                 disabled={receiptPending || !selectedReceipt}
                 className="w-full bg-sky-600 hover:bg-sky-700 text-white"
               >
-                {receiptPending ? "Загрузка…" : "Отправить квитанцию"}
+                {receiptPending ? t("client.trips.uploadingLabel") : t("client.trips.sendReceiptBtn")}
               </Button>
             </div>
           )}
@@ -531,7 +542,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
       <div className="tv-surface-elevated p-5 space-y-4">
         <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
           <FileText className="h-4 w-4 text-slate-400" />
-          Документы
+          {t("client.trips.docsTitle")}
         </h2>
 
         {passportDocs.length > 0 && (
@@ -545,12 +556,11 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
         {canUpload ? (
           <div className="space-y-3 pt-2">
             <p className="text-sm text-violet-700 bg-violet-50 rounded-xl px-4 py-3 border border-violet-100">
-              Менеджер запросил документы. Загрузите паспорт(а) — это безопасно, файлы видны только вам и менеджеру.
+              {t("client.trips.docsRequestedHint")}
             </p>
 
-            {/* Kind selector */}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Тип документа</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("client.trips.docTypeLabel")}</label>
               <div className="flex flex-wrap gap-2">
                 {(["PASSPORT_FOREIGN", "PASSPORT_INTERNAL", "OTHER"] as BookingDocumentKind[]).map((k) => (
                   <button
@@ -569,24 +579,22 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
               </div>
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Чей документ? (необязательно)
+                {t("client.trips.docOwnerLabel")}
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Например: Загранник Ивана"
+                placeholder={t("client.trips.docOwnerPlaceholder")}
                 maxLength={200}
                 className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:border-teal-500 transition-colors"
               />
             </div>
 
-            {/* File picker */}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Файл (JPEG, PNG, PDF, до 10 МБ)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("client.trips.docFileLabel")}</label>
               <div
                 className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-all"
                 onClick={() => fileInputRef.current?.click()}
@@ -606,7 +614,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                 ) : (
                   <>
                     <Upload className="h-7 w-7 text-slate-300 mx-auto mb-2" />
-                    <p className="text-sm text-slate-500">Нажмите для выбора файла</p>
+                    <p className="text-sm text-slate-500">{t("client.trips.docClickToSelect")}</p>
                   </>
                 )}
               </div>
@@ -626,22 +634,22 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
             )}
 
             <Button onClick={handleUpload} disabled={uploadPending || !selectedFile} className="w-full">
-              {uploadPending ? "Загрузка…" : "Загрузить документ"}
+              {uploadPending ? t("client.trips.uploadingLabel") : t("client.trips.uploadDocBtn")}
             </Button>
           </div>
         ) : status === "NEW" ? (
           <p className="text-sm text-slate-400 py-4 text-center">
-            Менеджер скоро рассмотрит заявку и при необходимости запросит документы.
+            {t("client.trips.managerWillReview")}
           </p>
         ) : passportDocs.length === 0 && !canUpload ? (
-          <p className="text-sm text-slate-400 py-4 text-center">Документы не загружались</p>
+          <p className="text-sm text-slate-400 py-4 text-center">{t("client.trips.noDocs")}</p>
         ) : null}
       </div>
 
       {/* Status history */}
       {booking.statusHistory.length > 0 && (
         <div className="tv-surface-elevated p-5">
-          <h2 className="text-base font-semibold text-slate-900 mb-4">История заявки</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-4">{t("client.trips.historyTitle")}</h2>
           <div className="relative">
             {booking.statusHistory.map((h, i) => {
               const toMeta = STATUS_META[h.toStatus];
@@ -670,7 +678,7 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
                       <p className="text-xs text-slate-500 mt-1 italic">«{h.note}»</p>
                     )}
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {new Date(h.createdAt).toLocaleString("ru-RU")}
+                      {new Date(h.createdAt).toLocaleString(locale)}
                     </p>
                   </div>
                 </div>
@@ -679,7 +687,6 @@ export function TouristBookingWorkspace({ bookingId, backPath = "dashboard/trips
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -108,7 +108,17 @@ export type NotificationType =
   | "BOOKING_CANCELLED"
   | "COMMISSION_EARNED"
   | "PAYOUT_PROCESSED"
-  | "PAYOUT_REJECTED";
+  | "PAYOUT_REJECTED"
+  | "WISHLIST_PRICE_DROP";
+
+export interface NotificationMetadata {
+  tourTitle?: string;
+  amount?: string | number;
+  rate?: string | number;
+  totalPrice?: string | number;
+  newPrice?: string | number;
+  rejectionNote?: string;
+}
 
 export interface Notification {
   id: string;
@@ -119,6 +129,7 @@ export interface Notification {
   bookingId: string | null;
   isRead: boolean;
   createdAt: string;
+  metadata?: NotificationMetadata | null;
 }
 
 export interface NotificationsListResponse {

@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Bell, Check, ChevronRight, Plane, FileText, DollarSign, Star, XCircle, TrendingUp, Ban } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useNotifications } from "@/src/hooks/use-notifications";
-import type { NotificationType } from "@tours/types";
+import type { NotificationType, NotificationMetadata } from "@tours/types";
 
 const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string }> = {
   BOOKING_ACCEPTED:            { icon: Check,      dot: "bg-teal-500" },
@@ -19,13 +19,40 @@ const TYPE_META: Record<NotificationType, { icon: React.ElementType; dot: string
   COMMISSION_EARNED:           { icon: TrendingUp, dot: "bg-emerald-500" },
   PAYOUT_PROCESSED:            { icon: Check,      dot: "bg-teal-500" },
   PAYOUT_REJECTED:             { icon: Ban,        dot: "bg-rose-500" },
+  WISHLIST_PRICE_DROP:         { icon: TrendingUp, dot: "bg-amber-500" },
 };
+
+function useNotifContent(t: ReturnType<typeof useTranslations<"dashboard">>) {
+  return function getContent(type: NotificationType, meta: NotificationMetadata | null | undefined, fallbackTitle: string, fallbackBody: string) {
+    const typeKey = `client.notifications.types.${type}` as const;
+    if (meta) {
+      try {
+        return {
+          title: t(`${typeKey}.title` as Parameters<typeof t>[0]),
+          body: t(`${typeKey}.body` as Parameters<typeof t>[0], meta as Record<string, string>),
+        };
+      } catch {
+        // key missing — fall through to fallback
+      }
+    }
+    // For notifications without metadata (created before this change), translate only the title
+    try {
+      return {
+        title: t(`${typeKey}.title` as Parameters<typeof t>[0]),
+        body: fallbackBody,
+      };
+    } catch {
+      return { title: fallbackTitle, body: fallbackBody };
+    }
+  };
+}
 
 export function NotificationsList({ basePath = "dashboard" }: { basePath?: string }) {
   const { notifications, unread, isLoading, markRead, markAllRead } = useNotifications();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('dashboard');
+  const t = useTranslations("dashboard");
+  const getContent = useNotifContent(t);
 
   if (isLoading) {
     return (
@@ -77,6 +104,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
           {unreadItems.map((n) => {
             const meta = TYPE_META[n.type] ?? { icon: Bell, dot: "bg-slate-400" };
             const Icon = meta.icon;
+            const { title, body } = getContent(n.type, n.metadata, n.title, n.body);
             return (
               <div
                 key={n.id}
@@ -91,12 +119,12 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-900 leading-snug">{n.title}</p>
+                    <p className="text-sm font-semibold text-slate-900 leading-snug">{title}</p>
                     <span className="h-2 w-2 rounded-full bg-teal-500 shrink-0 mt-1.5" />
                   </div>
-                  <p className="text-sm text-slate-600 mt-0.5 leading-snug">{n.body}</p>
+                  <p className="text-sm text-slate-600 mt-0.5 leading-snug">{body}</p>
                   <p className="text-xs text-slate-400 mt-1.5">
-                    {new Date(n.createdAt).toLocaleString("ru-RU", {
+                    {new Date(n.createdAt).toLocaleString(locale, {
                       day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
                     })}
                   </p>
@@ -118,6 +146,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
           {readItems.map((n) => {
             const meta = TYPE_META[n.type] ?? { icon: Bell, dot: "bg-slate-400" };
             const Icon = meta.icon;
+            const { title, body } = getContent(n.type, n.metadata, n.title, n.body);
             return (
               <div
                 key={n.id}
@@ -130,10 +159,10 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
                   <Icon className="h-4 w-4 text-slate-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-600 leading-snug">{n.title}</p>
-                  <p className="text-sm text-slate-500 mt-0.5 leading-snug">{n.body}</p>
+                  <p className="text-sm font-medium text-slate-600 leading-snug">{title}</p>
+                  <p className="text-sm text-slate-500 mt-0.5 leading-snug">{body}</p>
                   <p className="text-xs text-slate-400 mt-1.5">
-                    {new Date(n.createdAt).toLocaleString("ru-RU", {
+                    {new Date(n.createdAt).toLocaleString(locale, {
                       day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
                     })}
                   </p>

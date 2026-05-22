@@ -225,6 +225,7 @@ export class BookingDocumentsService {
         title: "Требуются документы",
         body: `Для тура «${tourTitle}» загрузите паспорт(а) в личном кабинете.`,
         bookingId,
+        metadata: { tourTitle },
       });
     }
 
@@ -441,6 +442,7 @@ export class BookingDocumentsService {
         title: "Документы приняты",
         body: `Ваши документы для тура «${tourTitle}» подтверждены. Ожидайте информацию об оплате.`,
         bookingId,
+        metadata: { tourTitle },
       });
     }
 
@@ -500,6 +502,7 @@ export class BookingDocumentsService {
         title: "Нужны исправления",
         body: `Исправьте документы для тура «${tourTitle}»: ${dto.rejectionNote}`,
         bookingId,
+        metadata: { tourTitle, rejectionNote: dto.rejectionNote },
       });
     }
 

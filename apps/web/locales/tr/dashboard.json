@@ -417,7 +417,69 @@
       "statusPayment": "Ödeme Bekliyor",
       "statusPaid": "Ödendi",
       "statusCompleted": "Tamamlandı",
-      "statusCancelled": "İptal Edildi"
+      "statusCancelled": "İptal Edildi",
+      "backLink": "Seyahatlerim",
+      "noPhoto": "Fotoğraf yok",
+      "guestsLabel": "misafir",
+      "statusDescNew": "Rezervasyon alındı, yönetici yakında sizinle iletişime geçecek",
+      "statusDescDocsRequested": "Talep edilen belgeleri aşağıya yükleyin",
+      "statusDescDocsSubmitted": "Yönetici belgelerinizi inceliyor",
+      "statusDescInProgress": "Belgeler onaylandı, rezervasyon işleme alındı",
+      "statusDescAwaitingPayment": "Ödemeyi yapın ve makbuzu yükleyin",
+      "statusDescPaid": "Ödeme alındı, yolculuğa hazırlanıyoruz!",
+      "statusDescCompleted": "Yolculuk tamamlandı. Umarız beğendinizdir!",
+      "statusDescCancelled": "Rezervasyon iptal edildi",
+      "stepRequest": "Rezervasyon",
+      "stepDocs": "Belgeler",
+      "stepPayment": "Ödeme",
+      "stepDone": "Yolculuk",
+      "kindForeignPassport": "Yabancı Pasaport",
+      "kindInternalPassport": "İç Pasaport",
+      "kindPaymentReceipt": "Ödeme Makbuzu",
+      "kindOther": "Diğer Belge",
+      "docConfirmed": "Yönetici tarafından onaylandı",
+      "docRejected": "Düzeltmeler gerekiyor:",
+      "docPending": "İncelemede",
+      "ticketTitle": "Biletiniz",
+      "ticketPresent": "Pasaportunuzla birlikte ibraz edin",
+      "ticketTour": "Tur",
+      "ticketGuests": "Misafirler",
+      "ticketAmount": "Tutar",
+      "ticketDate": "Tur Tarihi",
+      "ticketPaid": "Ödendi",
+      "ticketDateTBD": "Belirleniyor",
+      "ticketScanHint": "Rezervasyonu açmak için tarayın",
+      "ticketDownloading": "PDF oluşturuluyor…",
+      "ticketDownload": "PDF Bilet İndir",
+      "ticketDownloadError": "Bilet indirilemedi. Daha sonra tekrar deneyin.",
+      "paymentTitle": "Ödeme Bilgileri",
+      "paymentBankLabel": "Banka:",
+      "paymentCardLabel": "Kart/Hesap:",
+      "paymentAmountLabel": "Tutar:",
+      "receiptUploaded": "Makbuz yüklendi — onay bekleniyor",
+      "uploadReceiptHint": "Transfer ekran görüntüsü yükleyin",
+      "receiptClickToSelect": "Dosya seçmek için tıklayın",
+      "receiptFileTypes": "JPEG, PNG, PDF — 10 MB'a kadar",
+      "sendReceiptBtn": "Makbuzu Gönder",
+      "uploadingLabel": "Yükleniyor…",
+      "selectReceiptError": "Makbuz dosyası seçin",
+      "receiptUploadedToast": "Makbuz yüklendi — yönetici kontrol edip ödemeyi onaylayacak",
+      "receiptUploadErrorLabel": "Makbuz yükleme hatası",
+      "docsTitle": "Belgeler",
+      "docsRequestedHint": "Yönetici belge talep etti. Pasaportunuzu yükleyin — güvenli, dosyalar yalnızca siz ve yönetici tarafından görülebilir.",
+      "docTypeLabel": "Belge Türü",
+      "docOwnerLabel": "Kimin belgesi? (isteğe bağlı)",
+      "docOwnerPlaceholder": "Örn.: Ahmet'in pasaportu",
+      "docFileLabel": "Dosya (JPEG, PNG, PDF, 10 MB'a kadar)",
+      "docClickToSelect": "Dosya seçmek için tıklayın",
+      "selectDocError": "Dosya seçin",
+      "uploadDocBtn": "Belge Yükle",
+      "docUploadedToast": "Belge yüklendi",
+      "docUploadErrorLabel": "Belge yükleme hatası",
+      "managerWillReview": "Yönetici rezervasyonu yakında inceleyecek ve gerekirse belge talep edecek.",
+      "noDocs": "Belge yüklenmedi",
+      "historyTitle": "Rezervasyon Geçmişi",
+      "detailLoadError": "Veriler yüklenemedi. Sayfayı yenilemeyi deneyin."
     },
     "referrals": {
       "shareText": "Merhaba! Bu turdaki fırsatlara bak, harika teklifler var 🌍",
@@ -499,7 +561,57 @@
       "unread": "Okunmamış:",
       "markAllRead": "Tümünü okundu işaretle",
       "read": "Okundu",
-      "showingLast": "Son {count} bildirim gösteriliyor"
+      "showingLast": "Son {count} bildirim gösteriliyor",
+      "types": {
+        "BOOKING_ACCEPTED": {
+          "title": "Rezervasyon kabul edildi",
+          "body": "Yönetici «{tourTitle}» turunuzu işlemeye başladı."
+        },
+        "BOOKING_DOCUMENTS_REQUESTED": {
+          "title": "Belge gerekli",
+          "body": "«{tourTitle}» turu için pasaportunuzu kabine yükleyin."
+        },
+        "BOOKING_DOCUMENTS_CONFIRMED": {
+          "title": "Belgeler onaylandı",
+          "body": "«{tourTitle}» için belgeleriniz onaylandı. Ödeme bilgilerini bekleyin."
+        },
+        "BOOKING_DOCUMENTS_REJECTED": {
+          "title": "Düzeltme gerekiyor",
+          "body": "«{tourTitle}» için belgelerinizi düzeltin: {rejectionNote}"
+        },
+        "BOOKING_PAYMENT_REQUESTED": {
+          "title": "Fatura kesildi",
+          "body": "«{tourTitle}» için ${amount} tutarında fatura kesildi. Ödemeyi yapın ve makbuzu yükleyin."
+        },
+        "BOOKING_PAID": {
+          "title": "Ödeme onaylandı",
+          "body": "«{tourTitle}» turu için ödeme onaylandı. Yolculuğa hazırlanıyoruz!"
+        },
+        "BOOKING_COMPLETED": {
+          "title": "Yolculuk tamamlandı",
+          "body": "«{tourTitle}» yolculuğunuz tamamlandı. Teşekkürler! Lütfen yorum bırakın."
+        },
+        "BOOKING_CANCELLED": {
+          "title": "Rezervasyon iptal edildi",
+          "body": "Maalesef «{tourTitle}» turu için rezervasyonunuz iptal edildi."
+        },
+        "COMMISSION_EARNED": {
+          "title": "Komisyon eklendi",
+          "body": "Bakiyenize ${amount} (%{rate}, ${totalPrice} sipariş) eklendi."
+        },
+        "PAYOUT_PROCESSED": {
+          "title": "Ödeme onaylandı",
+          "body": "${amount} tutarındaki para çekme talebiniz onaylandı ve banka bilgilerinize gönderildi."
+        },
+        "PAYOUT_REJECTED": {
+          "title": "Ödeme reddedildi",
+          "body": "${amount} tutarındaki para çekme talebiniz reddedildi. Fonlar bakiyenize iade edildi."
+        },
+        "WISHLIST_PRICE_DROP": {
+          "title": "Fiyat düştü!",
+          "body": "«{tourTitle}» turu artık ${newPrice} — favorilere eklediğinizden daha ucuz."
+        }
+      }
     }
   },
   "pages": {

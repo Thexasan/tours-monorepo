@@ -89,6 +89,7 @@ export class WishlistsService {
           type: NotificationType.WISHLIST_PRICE_DROP,
           title: "Цена снизилась!",
           body: `Тур «${title}» теперь стоит $${Number(newPrice).toLocaleString()} — дешевле, чем когда вы добавили его в избранное.`,
+          metadata: { tourTitle: title, newPrice: String(newPrice) },
         });
       }),
     );
