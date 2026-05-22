@@ -1,6 +1,7 @@
 import { Plane } from "lucide-react";
 import { TouristBookingWorkspace } from "@/src/components/dashboard/booking/TouristBookingWorkspace";
 import { PageHeader } from "@/src/components/dashboard/page-header";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ locale: string; id: string }>;
@@ -8,12 +9,13 @@ interface Props {
 
 export default async function PartnerTripDetailPage({ params }: Props) {
   const { id } = await params;
+  const t = await getTranslations('dashboard');
   return (
     <div>
       <PageHeader
-        eyebrow="Заявки"
-        title="Моя поездка"
-        description="Детали заявки, статус документов и история изменений."
+        eyebrow={t('pages.partner.tripDetail.eyebrow')}
+        title={t('pages.partner.tripDetail.title')}
+        description={t('pages.partner.tripDetail.description')}
         icon={<Plane className="h-5 w-5" />}
       />
       <TouristBookingWorkspace bookingId={id} backPath="partner/trips" />

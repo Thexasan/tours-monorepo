@@ -55,14 +55,14 @@ export function TourHighlightsBar({
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 rounded-2xl overflow-hidden ring-1 ring-slate-200 shadow-[0_20px_40px_-20px_rgba(15,23,42,0.25)]">
           {items.map((h, i) => (
-            <div key={i} className="bg-white px-6 py-6 flex items-center gap-4">
-              <div className={`grid place-items-center h-11 w-11 rounded-2xl bg-slate-50 ring-1 ring-slate-100 ${h.tone} shrink-0`}>
-                <h.Ic className="h-5 w-5" />
+            <div key={i} className="bg-white px-3 py-4 md:px-6 md:py-6 flex items-center gap-2 md:gap-4">
+              <div className={`grid place-items-center h-8 w-8 md:h-11 md:w-11 rounded-xl md:rounded-2xl bg-slate-50 ring-1 ring-slate-100 ${h.tone} shrink-0`}>
+                <h.Ic className="h-4 w-4 md:h-5 md:w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">{h.lbl}</p>
-                <p className="font-bold text-slate-900 text-[15px] leading-tight mt-0.5 truncate">{h.val}</p>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">{h.sub}</p>
+                <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.10em] md:tracking-[0.12em] text-slate-400 truncate">{h.lbl}</p>
+                <p className="font-bold text-slate-900 text-[12px] md:text-[15px] leading-tight mt-0.5 truncate">{h.val}</p>
+                <p className="text-[10px] md:text-xs text-slate-500 mt-0.5 truncate">{h.sub}</p>
               </div>
             </div>
           ))}

@@ -56,21 +56,21 @@ export function PageHeader({
     >
       <div className="flex items-start gap-3 min-w-0">
         {icon && (
-          <div className="grid place-items-center h-12 w-12 rounded-2xl bg-linear-to-br from-teal-500 to-emerald-600 text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.6)]">
+          <div className="grid place-items-center h-9 w-9 sm:h-12 sm:w-12 shrink-0 rounded-xl sm:rounded-2xl bg-linear-to-br from-teal-500 to-emerald-600 text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.6)]">
             {icon}
           </div>
         )}
         <div className="min-w-0">
           {eyebrow && (
-            <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-teal-700">
+            <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-semibold text-teal-700">
               {eyebrow}
             </p>
           )}
-          <h1 className="text-2xl md:text-[28px] font-bold tracking-tight text-slate-900 leading-tight">
+          <h1 className="text-lg sm:text-2xl md:text-[28px] font-bold tracking-tight text-slate-900 leading-tight">
             {title}
           </h1>
           {description && (
-            <p className="mt-1 text-slate-500 text-[15px] leading-relaxed">
+            <p className="mt-1 text-slate-500 text-sm sm:text-[15px] leading-relaxed">
               {description}
             </p>
           )}

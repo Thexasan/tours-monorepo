@@ -2,7 +2,6 @@
   "clientTitle": "Client Cabinet",
   "partnerTitle": "Partner Cabinet",
   "adminTitle": "Admin Panel",
-
   "admin": {
     "checking": "Checking panel access…",
     "role": "Administrator",
@@ -235,7 +234,6 @@
       "create": "Create Partner"
     }
   },
-
   "partner": {
     "checking": "Checking access…",
     "badge": "PARTNER CABINET",
@@ -337,7 +335,6 @@
       "successTitle": "Payout request submitted"
     }
   },
-
   "client": {
     "checking": "Checking authorization…",
     "nav": {
@@ -503,6 +500,132 @@
       "markAllRead": "Mark all as read",
       "read": "Read",
       "showingLast": "Showing last {count} notifications"
+    }
+  },
+  "pages": {
+    "client": {
+      "home": {
+        "title": "My Cabinet",
+        "description": "Overview of your trips, referrals and activity"
+      },
+      "profile": {
+        "eyebrow": "Personal Cabinet",
+        "title": "Profile",
+        "description": "Manage your data — it is used when booking tours."
+      },
+      "trips": {
+        "eyebrow": "History",
+        "title": "My Trips",
+        "description": "All your bookings and statuses in one place."
+      },
+      "tripDetail": {
+        "eyebrow": "Bookings",
+        "title": "My Trip",
+        "description": "Booking details, document status and change history."
+      },
+      "notifications": {
+        "eyebrow": "Personal Cabinet",
+        "title": "Notifications",
+        "description": "Updates on your bookings and trips."
+      },
+      "reviews": {
+        "eyebrow": "Reviews",
+        "title": "My Reviews",
+        "description": "Share your impressions — it helps other travelers."
+      }
+    },
+    "admin": {
+      "home": {
+        "eyebrow": "Control Panel",
+        "title": "Overview",
+        "description": "Summary statistics for bookings, tours and partner payouts."
+      },
+      "tours": {
+        "eyebrow": "Catalog",
+        "title": "Tour Management",
+        "description": "Create, edit and publish tours. Changes are instantly visible on the site."
+      },
+      "createTour": {
+        "eyebrow": "Catalog",
+        "title": "New Tour",
+        "description": "Fill in the tour information. It will be instantly compiled into a live preview card on the right."
+      },
+      "editTour": {
+        "eyebrow": "Catalog",
+        "title": "Edit Tour",
+        "description": "Make changes to the fields below. The preview card on the right will instantly reflect the updated appearance."
+      },
+      "bookings": {
+        "eyebrow": "Operations",
+        "title": "Bookings",
+        "description": "Main workspace. When the status changes to Paid, a referral reward trigger fires automatically."
+      },
+      "bookingDetail": {
+        "eyebrow": "Bookings",
+        "title": "Workspace",
+        "description": "Manage documents and statuses for a specific booking."
+      },
+      "moderation": {
+        "eyebrow": "Content",
+        "title": "Review Moderation",
+        "description": "Approve reviews — they will appear on the tour page and in the Latest Reviews block on the homepage."
+      },
+      "payouts": {
+        "eyebrow": "Finance",
+        "title": "Payout Requests",
+        "description": "Confirm after bank transfer — or reject, and funds will be returned to the partner's balance."
+      },
+      "users": {
+        "eyebrow": "Audience",
+        "title": "Users",
+        "description": "All registered users. Filter by role and search by name or email."
+      },
+      "partners": {
+        "eyebrow": "Partners",
+        "title": "Partner Management",
+        "description": "Add partners manually. The partner receives a temporary password by email and logs into their cabinet."
+      },
+      "profile": {
+        "eyebrow": "Account",
+        "title": "My Profile",
+        "description": "Manage your personal data."
+      }
+    },
+    "partner": {
+      "profile": {
+        "eyebrow": "Account",
+        "title": "My Profile",
+        "description": "Manage your personal data."
+      },
+      "trips": {
+        "eyebrow": "Bookings",
+        "title": "My Tours",
+        "description": "All your tour bookings — statuses, documents, trip details."
+      },
+      "tripDetail": {
+        "eyebrow": "Bookings",
+        "title": "My Trip",
+        "description": "Booking details, document status and change history."
+      },
+      "notifications": {
+        "eyebrow": "Cabinet",
+        "title": "Notifications",
+        "description": "Updates on bookings, commission accruals and payouts."
+      },
+      "reviews": {
+        "eyebrow": "Reviews",
+        "title": "My Reviews",
+        "description": "Share your impressions — it helps other travelers."
+      },
+      "newReview": {
+        "eyebrow": "Reviews",
+        "title": "Write a Review",
+        "description": "You can only leave a review for a tour you have already paid for. It will be published after moderation."
+      },
+      "finance": {
+        "title": "Finance",
+        "description": "Your transactions, balance and withdrawal requests."
+      }
     }
   }
 }

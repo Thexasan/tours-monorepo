@@ -13,6 +13,7 @@ import { useAuthStore } from "@/src/shared/store/auth-store";
 interface Props {
   tourId: string;
   title: string;
+  durationDays: number;
   country: string;
   city: string | null;
   region?: string;
@@ -36,8 +37,12 @@ export function TourHero({
   const discount = oldPriceUsd ? Math.round((1 - priceUsd / oldPriceUsd) * 100) : 0;
   const loc = region || [city, country].filter(Boolean).join(", ");
 
+  const dashIdx = title.indexOf(" — ");
+  const titleMain = dashIdx > -1 ? title.slice(0, dashIdx) : title;
+  const titleSub = dashIdx > -1 ? title.slice(dashIdx + 3) : null;
+
   return (
-    <section className="relative -mt-16 h-[62vh] sm:h-[78vh] md:h-[88vh] min-h-[420px] sm:min-h-[560px] md:min-h-[640px] overflow-hidden bg-slate-900">
+    <section className="relative -mt-16 h-[62vh] sm:h-[78vh] md:h-[88vh] min-h-[500px] sm:min-h-[560px] md:min-h-[640px] overflow-hidden bg-slate-900">
       <Image
         src={coverImage}
         alt={title}
@@ -84,32 +89,42 @@ export function TourHero({
 
           <h1
             className="font-bold text-white leading-[0.95] tracking-[-0.02em] drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] max-w-5xl"
-            style={{ fontSize: "clamp(40px, 7vw, 84px)" }}
+            style={{ fontSize: "clamp(26px, 5vw, 84px)" }}
           >
-            {title}
+            {titleMain}
           </h1>
+          {titleSub && (
+            <div className="mt-2 md:mt-3">
+              <span
+                className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/15 text-white/90 font-semibold backdrop-blur ring-1 ring-white/20"
+                style={{ fontSize: "clamp(13px, 2vw, 26px)" }}
+              >
+                {titleSub}
+              </span>
+            </div>
+          )}
 
-          <div className="mt-6 flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-3">
             <div className="text-white">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60 mb-1">{t("detail.priceFrom")}</p>
-              <div className="flex items-baseline gap-2.5">
-                <p className="text-5xl font-bold tabular-nums tracking-tight">${priceUsd.toLocaleString()}</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-4xl md:text-5xl font-bold tabular-nums tracking-tight">${priceUsd.toLocaleString()}</p>
                 {oldPriceUsd && (
-                  <p className="text-lg text-white/50 line-through tabular-nums">${oldPriceUsd.toLocaleString()}</p>
+                  <p className="text-base md:text-lg text-white/50 line-through tabular-nums">${oldPriceUsd.toLocaleString()}</p>
                 )}
               </div>
               <p className="text-xs text-white/70 mt-1">{t("detail.perPerson")}</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               {isAdmin ? (
                 <>
                   <Link
                     href={`/${locale}/admin/tours/${tourId}/edit`}
-                    className="group inline-flex items-center gap-2 px-7 py-4 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
+                    className="group inline-flex items-center gap-1.5 md:gap-2 px-5 py-3 md:px-7 md:py-4 rounded-full text-sm md:text-base font-bold text-white transition-all hover:-translate-y-0.5"
                     style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 18px 36px -12px rgba(124,58,237,0.45)" }}
                   >
-                    <Pencil className="h-[18px] w-[18px]" />
+                    <Pencil className="h-4 w-4 md:h-[18px] md:w-[18px]" />
                     Редактировать тур
                   </Link>
                   <button
@@ -119,10 +134,10 @@ export function TourHero({
                         navigator.share({ title, url: typeof window !== "undefined" ? window.location.href : "" }).catch(() => {});
                       }
                     }}
-                    className="grid place-items-center h-14 w-14 rounded-full bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition"
+                    className="grid place-items-center h-11 w-11 md:h-14 md:w-14 rounded-full bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition"
                     aria-label={t("hero.share")}
                   >
-                    <Share2 className="h-5 w-5" />
+                    <Share2 className="h-4 w-4 md:h-5 md:w-5" />
                   </button>
                 </>
               ) : (
@@ -130,17 +145,18 @@ export function TourHero({
                   <button
                     type="button"
                     onClick={onBook}
-                    className="group inline-flex items-center gap-2 px-7 py-4 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
+                    className="group inline-flex items-center gap-1.5 md:gap-2 px-5 py-3 md:px-7 md:py-4 rounded-full text-sm md:text-base font-bold text-white transition-all hover:-translate-y-0.5"
                     style={{ background: "linear-gradient(135deg, #10b981, #0d9488)", boxShadow: "0 18px 36px -12px rgba(16,185,129,0.50)" }}
                   >
                     {t("hero.book")}
-                    <ArrowRight className="h-[18px] w-[18px] transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 md:h-[18px] md:w-[18px] transition-transform group-hover:translate-x-1" />
                   </button>
                   <WishlistButton
                     tourId={tourId}
                     variant="hero"
                     label={t("hero.wishlist")}
                     labelActive={t("hero.wishlisted")}
+                    className="px-4 py-3 text-xs md:px-5 md:py-4 md:text-sm"
                   />
                   <button
                     type="button"
@@ -149,10 +165,10 @@ export function TourHero({
                         navigator.share({ title, url: typeof window !== "undefined" ? window.location.href : "" }).catch(() => {});
                       }
                     }}
-                    className="grid place-items-center h-14 w-14 rounded-full bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition"
+                    className="grid place-items-center h-11 w-11 md:h-14 md:w-14 rounded-full bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition"
                     aria-label={t("hero.share")}
                   >
-                    <Share2 className="h-5 w-5" />
+                    <Share2 className="h-4 w-4 md:h-5 md:w-5" />
                   </button>
                 </>
               )}

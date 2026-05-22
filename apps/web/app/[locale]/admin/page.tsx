@@ -1,14 +1,16 @@
 import { LayoutDashboard } from "lucide-react";
 import { AdminDashboard } from "@/src/components/admin/admin-dashboard";
 import { AdminPageHeader } from "@/src/components/admin/admin-page-header";
+import { getTranslations } from "next-intl/server";
 
-export default function AdminIndexPage() {
+export default async function AdminIndexPage() {
+  const t = await getTranslations('dashboard');
   return (
     <div>
       <AdminPageHeader
-        eyebrow="Панель управления"
-        title="Обзор"
-        description="Сводная статистика по заявкам, турам и партнёрским выплатам."
+        eyebrow={t('pages.admin.home.eyebrow')}
+        title={t('pages.admin.home.title')}
+        description={t('pages.admin.home.description')}
         icon={<LayoutDashboard className="h-5 w-5" />}
       />
       <AdminDashboard />

@@ -2,7 +2,6 @@
   "clientTitle": "Müşteri Paneli",
   "partnerTitle": "Partner Paneli",
   "adminTitle": "Yönetici Paneli",
-
   "admin": {
     "checking": "Panel erişimi kontrol ediliyor…",
     "role": "Yönetici",
@@ -235,7 +234,6 @@
       "create": "Partner Oluştur"
     }
   },
-
   "partner": {
     "checking": "Erişim kontrol ediliyor…",
     "badge": "PARTNER PANELİ",
@@ -337,7 +335,6 @@
       "successTitle": "Ödeme talebi gönderildi"
     }
   },
-
   "client": {
     "checking": "Yetkilendirme kontrol ediliyor…",
     "nav": {
@@ -503,6 +500,132 @@
       "markAllRead": "Tümünü okundu işaretle",
       "read": "Okundu",
       "showingLast": "Son {count} bildirim gösteriliyor"
+    }
+  },
+  "pages": {
+    "client": {
+      "home": {
+        "title": "Kabinim",
+        "description": "Seyahatlerinize, referanslarınıza ve etkinliğinize genel bakış"
+      },
+      "profile": {
+        "eyebrow": "Kişisel Kabin",
+        "title": "Profil",
+        "description": "Verilerinizi yönetin — tur rezervasyonlarında kullanılır."
+      },
+      "trips": {
+        "eyebrow": "Geçmiş",
+        "title": "Seyahatlerim",
+        "description": "Tüm rezervasyonlarınız ve durumları tek bir yerde."
+      },
+      "tripDetail": {
+        "eyebrow": "Rezervasyonlar",
+        "title": "Seyahatim",
+        "description": "Rezervasyon detayları, belge durumu ve değişiklik geçmişi."
+      },
+      "notifications": {
+        "eyebrow": "Kişisel Kabin",
+        "title": "Bildirimler",
+        "description": "Rezervasyonlarınız ve seyahatleriniz hakkında güncellemeler."
+      },
+      "reviews": {
+        "eyebrow": "Yorumlar",
+        "title": "Yorumlarım",
+        "description": "İzlenimlerinizi paylaşın — diğer gezginlere yardımcı olur."
+      }
+    },
+    "admin": {
+      "home": {
+        "eyebrow": "Kontrol Paneli",
+        "title": "Genel Bakış",
+        "description": "Rezervasyonlar, turlar ve partner ödemeleri özet istatistikleri."
+      },
+      "tours": {
+        "eyebrow": "Katalog",
+        "title": "Tur Yönetimi",
+        "description": "Tur oluşturun, düzenleyin ve yayınlayın. Değişiklikler hemen sitede görünür."
+      },
+      "createTour": {
+        "eyebrow": "Katalog",
+        "title": "Yeni Tur",
+        "description": "Tur bilgilerini doldurun. Sağdaki canlı önizleme kartında anında derlenecek."
+      },
+      "editTour": {
+        "eyebrow": "Katalog",
+        "title": "Turu Düzenle",
+        "description": "Aşağıdaki alanlarda değişiklik yapın. Sağdaki önizleme kartı güncellenmiş görünümü anında yansıtacak."
+      },
+      "bookings": {
+        "eyebrow": "Operasyonlar",
+        "title": "Rezervasyonlar",
+        "description": "Ana çalışma alanı. Durum Ödendi olarak değiştiğinde referans ödülü tetikleyicisi otomatik olarak çalışır."
+      },
+      "bookingDetail": {
+        "eyebrow": "Rezervasyonlar",
+        "title": "Çalışma Alanı",
+        "description": "Belirli bir rezervasyon için belge ve durum yönetimi."
+      },
+      "moderation": {
+        "eyebrow": "İçerik",
+        "title": "Yorum Moderasyonu",
+        "description": "Yorumları onaylayın — tur sayfasında ve ana sayfadaki Son Yorumlar bölümünde görünecek."
+      },
+      "payouts": {
+        "eyebrow": "Finans",
+        "title": "Ödeme Talepleri",
+        "description": "Banka transferinden sonra onaylayın — veya reddedip fonları partnerın bakiyesine iade edin."
+      },
+      "users": {
+        "eyebrow": "Kitle",
+        "title": "Kullanıcılar",
+        "description": "Tüm kayıtlı kullanıcılar. Role göre filtrele ve ada veya e-postaya göre ara."
+      },
+      "partners": {
+        "eyebrow": "Partnerler",
+        "title": "Partner Yönetimi",
+        "description": "Partnerleri manuel olarak ekleyin. Partner geçici şifreyi e-posta ile alır ve kabinine giriş yapar."
+      },
+      "profile": {
+        "eyebrow": "Hesap",
+        "title": "Profilim",
+        "description": "Kişisel verilerinizi yönetin."
+      }
+    },
+    "partner": {
+      "profile": {
+        "eyebrow": "Hesap",
+        "title": "Profilim",
+        "description": "Kişisel verilerinizi yönetin."
+      },
+      "trips": {
+        "eyebrow": "Rezervasyonlar",
+        "title": "Turlarım",
+        "description": "Tüm tur rezervasyonlarınız — durumlar, belgeler, seyahat detayları."
+      },
+      "tripDetail": {
+        "eyebrow": "Rezervasyonlar",
+        "title": "Seyahatim",
+        "description": "Rezervasyon detayları, belge durumu ve değişiklik geçmişi."
+      },
+      "notifications": {
+        "eyebrow": "Kabin",
+        "title": "Bildirimler",
+        "description": "Rezervasyon güncellemeleri, komisyon tahakkukları ve ödemeler."
+      },
+      "reviews": {
+        "eyebrow": "Yorumlar",
+        "title": "Yorumlarım",
+        "description": "İzlenimlerinizi paylaşın — diğer gezginlere yardımcı olur."
+      },
+      "newReview": {
+        "eyebrow": "Yorumlar",
+        "title": "Yorum Yaz",
+        "description": "Yalnızca ödeme yaptığınız bir tur için yorum bırakabilirsiniz. Moderasyon sonrası yayınlanacak."
+      },
+      "finance": {
+        "title": "Finans",
+        "description": "İşlemleriniz, bakiyeniz ve para çekme talepleriniz."
+      }
     }
   }
 }
