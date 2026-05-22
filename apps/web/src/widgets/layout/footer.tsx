@@ -25,11 +25,11 @@ export function Footer() {
           <div className="col-span-2 md:col-span-5">
             <Link href="/ru" className="inline-flex items-center gap-2.5 font-bold">
               <span className="grid place-items-center h-10 w-10 rounded-xl text-white shrink-0"
-                style={{ background: "linear-gradient(135deg, #0d9488, #059669)", boxShadow: "0 6px 16px -6px rgba(13,148,136,0.6)" }}>
+                style={{ background: "linear-gradient(135deg, #027455, #03956a)", boxShadow: "0 6px 16px -6px rgba(2,116,85,0.6)" }}>
                 <Compass className="h-5 w-5" />
               </span>
               <span className="text-lg text-white">
-                Traveling<span className="text-teal-400"> Tours</span>
+                Traveling<span className="text-[#4aad8a]"> Tours</span>
               </span>
             </Link>
 

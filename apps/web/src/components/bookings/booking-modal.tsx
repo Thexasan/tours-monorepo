@@ -16,6 +16,7 @@ import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
 import { useAuth } from "@/src/shared/hooks/use-auth";
+import { useBodyScrollLock } from "@/src/shared/hooks/use-body-scroll-lock";
 import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
 
@@ -333,6 +334,7 @@ export function BookingModal({
   const locale = useLocale();
   const t = useTranslations("tours");
   const { user, isAuthenticated } = useAuth();
+  useBodyScrollLock(open);
 
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -543,7 +545,7 @@ export function BookingModal({
                     href={`/${locale}/dashboard/trips`}
                     onClick={handleClose}
                     className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
-                    style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+                    style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
                   >
                     {t("booking.success.myBookings")}
                     <ArrowRight className="h-4 w-4" />
@@ -593,7 +595,7 @@ export function BookingModal({
                 <Link
                   href={`/${locale}/register`}
                   className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl text-sm font-bold text-white hover:-translate-y-0.5 transition-all"
-                  style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+                  style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
                 >
                   <UserPlus className="h-4 w-4" />
                   {t("booking.authGate.register")}
@@ -903,7 +905,7 @@ export function BookingModal({
                     disabled={step === 0 ? !canStep0 : !canStep1}
                     onClick={nextStep}
                     className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
-                    style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+                    style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
                   >
                     {t("booking.bottom.continue")}
                     <ArrowRight className="h-4 w-4 shrink-0" />
@@ -913,7 +915,7 @@ export function BookingModal({
                     type="submit"
                     disabled={!agreed || submitting || (isAuthenticated && watchedPhone.length < 6)}
                     className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
-                    style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+                    style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
                   >
                     {submitting ? (
                       t("booking.bottom.submitting")

@@ -12,6 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
+import { useBodyScrollLock } from "@/src/shared/hooks/use-body-scroll-lock";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
@@ -25,6 +26,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const locale = useLocale();
   const t = useTranslations('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useBodyScrollLock(drawerOpen);
   const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {

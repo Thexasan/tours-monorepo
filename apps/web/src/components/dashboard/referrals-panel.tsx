@@ -133,18 +133,24 @@ export function ReferralsPanel() {
 
         <div className="mt-6">
           <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">{t('client.referrals.shareTitle')}</p>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             <ShareLink
               href={`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`}
               className="bg-[#229ED9] hover:bg-[#1e8ec3] shadow-[#229ED9]/15 hover:shadow-[#229ED9]/30"
-              icon={<Send className="h-4 w-4" />}
+              icon={<Send className="h-3.5 w-3.5" />}
               label="Telegram"
             />
             <ShareLink
               href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${refLink}`)}`}
               className="bg-[#25D366] hover:bg-[#21be5c] shadow-[#25D366]/15 hover:shadow-[#25D366]/30"
-              icon={<MessageCircle className="h-4 w-4" />}
+              icon={<MessageCircle className="h-3.5 w-3.5" />}
               label="WhatsApp"
+            />
+            <ShareLink
+              href={`https://vk.com/share.php?url=${encodeURIComponent(refLink)}&title=${encodeURIComponent(shareText)}`}
+              className="bg-[#0077FF] hover:bg-[#006ae6] shadow-[#0077FF]/15 hover:shadow-[#0077FF]/30"
+              icon={<svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.204.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .643.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.49-.085.745-.576.745z"/></svg>}
+              label="VK"
             />
           </div>
         </div>
@@ -204,7 +210,7 @@ function ShareLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-2.5 px-5 py-3.5 rounded-2xl text-white text-xs font-extrabold tracking-wider uppercase shadow-md hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-[11px] font-extrabold tracking-wider uppercase shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 ${className}`}
     >
       {icon} <span>{label}</span>
     </a>

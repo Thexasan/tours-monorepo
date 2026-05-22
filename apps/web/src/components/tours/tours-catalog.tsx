@@ -13,6 +13,7 @@ import {
 import type { Tour } from "@tours/types";
 import { apiClient } from "@/src/shared/api/apiClient";
 import { TourCard, TourCardSkeleton } from "./tour-card";
+import { useBodyScrollLock } from "@/src/shared/hooks/use-body-scroll-lock";
 
 interface ListResponse {
   items: Tour[];
@@ -171,14 +172,14 @@ export function ToursCatalog() {
             )}
 
             {isLoading ? (
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-5">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-2 md:gap-5">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <TourCardSkeleton key={i} />
                 ))}
               </div>
             ) : data && data.items.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-5">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-2 md:gap-5">
                   {data.items.map((tour) => <TourCard key={tour.id} tour={tour} extraQuery={bookingQuery} />)}
                 </div>
 
@@ -307,6 +308,8 @@ function FiltersPanel({
   mealOptions: { value: string; label: string }[];
   t: TFunc;
 }) {
+  useBodyScrollLock(mobileOpen);
+
   const content = (
     <>
       <div className="flex items-center justify-between mb-5">
@@ -380,12 +383,12 @@ function FiltersPanel({
                 onClick={() => update("hotelStars", v)}
                 className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   active
-                    ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+                    ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200"
                     : "bg-slate-50 text-slate-700 hover:bg-slate-100"
                 }`}
               >
                 {label}
-                {v && <Star className={`h-3 w-3 ${active ? "fill-amber-400 text-amber-400" : ""}`} />}
+                {v && <Star className={`h-3 w-3 ${active ? "fill-teal-500 text-teal-500" : ""}`} />}
               </button>
             );
           })}
@@ -393,24 +396,27 @@ function FiltersPanel({
       </FilterGroup>
 
       <FilterGroup label={t("catalog.filters.meal")}>
-        <div className="flex flex-col gap-1.5">
-          {mealOptions.map((m) => {
-            const active = filters.mealPlan === m.value;
-            return (
-              <button
-                key={m.value}
-                type="button"
-                onClick={() => update("mealPlan", m.value)}
-                className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  active
-                    ? "bg-orange-50 text-orange-700 ring-1 ring-orange-200"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
-              >
-                {m.label}
-              </button>
-            );
-          })}
+        <div className="relative">
+          <div className="flex flex-col gap-1.5 max-h-[138px] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#d1d5db_transparent] pr-0.5">
+            {mealOptions.map((m) => {
+              const active = filters.mealPlan === m.value;
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  onClick={() => update("mealPlan", m.value)}
+                  className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    active
+                      ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200"
+                      : "text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="pointer-events-none absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-white to-transparent rounded-b-lg" />
         </div>
       </FilterGroup>
     </>
@@ -425,22 +431,110 @@ function FiltersPanel({
       </aside>
 
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <div className="relative ml-auto w-[88%] max-w-sm bg-white h-full overflow-y-auto p-6 shadow-2xl">
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              className="absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600"
-              aria-label={t("catalog.filters.close")}
-            >
-              <X className="h-4 w-4" />
-            </button>
-            {content}
+          <div className="relative bg-white rounded-t-3xl max-h-[65vh] flex flex-col shadow-[0_-8px_40px_-8px_rgba(0,0,0,0.18)] animate-in slide-in-from-bottom duration-300">
+            {/* Handle */}
+            <div className="flex justify-center pt-3 pb-1 shrink-0">
+              <div className="h-1 w-10 rounded-full bg-slate-200" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pt-1 pb-3 shrink-0">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4 text-teal-600" />
+                {t("catalog.filters.title")}
+                {activeCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white">
+                    {activeCount}
+                  </span>
+                )}
+              </h3>
+              <div className="flex items-center gap-3">
+                {activeCount > 0 && (
+                  <button type="button" onClick={reset} className="text-xs font-semibold text-rose-500">
+                    {t("catalog.filters.reset")}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="grid place-items-center h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600"
+                  aria-label={t("catalog.filters.close")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable content — hide the duplicate header from `content` */}
+            <div className="overflow-y-auto flex-1 px-5 pb-2">
+              <FilterGroup label={t("catalog.filters.country")}>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={filters.country}
+                    onChange={(e) => update("country", e.target.value)}
+                    placeholder={t("catalog.filters.countryPlaceholder")}
+                    className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+                  />
+                </div>
+              </FilterGroup>
+
+              <FilterGroup label={t("catalog.filters.price")}>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="number" min={0} value={filters.minPrice} onChange={(e) => update("minPrice", e.target.value)} placeholder="от" className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15" />
+                  <input type="number" min={0} value={filters.maxPrice} onChange={(e) => update("maxPrice", e.target.value)} placeholder="до" className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15" />
+                </div>
+              </FilterGroup>
+
+              <FilterGroup label={t("catalog.filters.stars")}>
+                <div className="flex flex-wrap gap-1.5">
+                  {[{ v: "", label: t("catalog.filters.starsAny") }, { v: "3", label: "3" }, { v: "4", label: "4" }, { v: "5", label: "5" }].map(({ v, label }) => {
+                    const active = filters.hotelStars === v;
+                    return (
+                      <button key={v} type="button" onClick={() => update("hotelStars", v)} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${active ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+                        {label}{v && <Star className={`h-3 w-3 ${active ? "fill-teal-500 text-teal-500" : ""}`} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterGroup>
+
+              <FilterGroup label={t("catalog.filters.meal")}>
+                <div className="relative">
+                  <div className="flex flex-col gap-1 max-h-[138px] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#d1d5db_transparent] pr-0.5">
+                    {mealOptions.map((m) => {
+                      const active = filters.mealPlan === m.value;
+                      return (
+                        <button key={m.value} type="button" onClick={() => update("mealPlan", m.value)} className={`text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${active ? "bg-teal-50 text-teal-700 ring-1 ring-teal-200" : "text-slate-700 hover:bg-slate-50"}`}>
+                          {m.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="pointer-events-none absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-white to-transparent rounded-b-lg" />
+                </div>
+              </FilterGroup>
+            </div>
+
+            {/* Apply footer */}
+            <div className="shrink-0 px-5 py-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="w-full py-3.5 rounded-2xl text-sm font-bold text-white"
+                style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
+              >
+                {t("catalog.filters.apply", { fallback: "Показать результаты" })}
+                {activeCount > 0 && ` · ${activeCount}`}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -567,8 +661,8 @@ function Pagination({
         type="button"
         disabled={page * pageSize >= total}
         onClick={onNext}
-        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(16,185,129,0.40)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
-        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(2,116,85,0.40)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
+        style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
       >
         {t("catalog.pagination.next")}
         <ChevronRight className="h-4 w-4" />
@@ -581,8 +675,8 @@ function EmptyState({ onReset, t }: { onReset: () => void; t: TFunc }) {
   return (
     <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-14 text-center">
       <div
-        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(16,185,129,0.40)]"
-        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(2,116,85,0.40)]"
+        style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
       >
         <Compass className="h-7 w-7" />
       </div>
@@ -593,8 +687,8 @@ function EmptyState({ onReset, t }: { onReset: () => void; t: TFunc }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.40)] hover:-translate-y-0.5 transition-all"
-        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
+        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(2,116,85,0.40)] hover:-translate-y-0.5 transition-all"
+        style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
       >
         <ArrowUpRight className="h-4 w-4" />
         {t("catalog.empty.reset")}

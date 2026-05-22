@@ -171,7 +171,7 @@ export function TourBookingSidebar({
               type="button"
               onClick={() => setOpen(true)}
               className="mt-4 w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
-              style={{ background: "linear-gradient(135deg, #10b981, #0d9488)", boxShadow: "0 18px 36px -12px rgba(16,185,129,0.50)" }}
+              style={{ background: "linear-gradient(135deg, #03956a, #027455)", boxShadow: "0 18px 36px -12px rgba(2,116,85,0.50)" }}
             >
               {t("sidebar.book")}
               <ArrowRight className="h-[18px] w-[18px]" />
@@ -199,8 +199,8 @@ export function TourBookingSidebar({
         <div
           className="relative overflow-hidden rounded-3xl text-white p-5"
           style={{
-            background: "linear-gradient(135deg, #059669 0%, #0d9488 60%, #134e4a 100%)",
-            boxShadow: "0 22px 48px -20px rgba(16,185,129,0.40)",
+            background: "linear-gradient(135deg, #03956a 0%, #027455 60%, #015e44 100%)",
+            boxShadow: "0 22px 48px -20px rgba(2,116,85,0.40)",
           }}
         >
           <div aria-hidden className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white/15 blur-2xl" />

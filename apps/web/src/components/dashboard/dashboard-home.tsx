@@ -250,7 +250,7 @@ export function DashboardHome() {
                       className="h-full rounded-full transition-all duration-1000 ease-out"
                       style={{
                         width: `${Math.min(stats.progressPercent, 100)}%`,
-                        background: "linear-gradient(90deg, #047857, #10b981, #34d399)",
+                        background: "linear-gradient(90deg, #015e44, #027455, #03956a)",
                       }}
                     />
                   </div>

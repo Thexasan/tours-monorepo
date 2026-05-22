@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Star, MapPin, Clock, ArrowUpRight, Flame } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { type Tour } from "@tours/types";
-import { Card, CardContent } from "@/src/components/ui/card";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useCurrencyStore } from "@/src/shared/store/currency-store";
 
@@ -140,76 +139,68 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
   }
 
   /* ─────────────────────────────────────────────
-     DEFAULT variant — premium inset card layout
+     DEFAULT variant — clean minimal card (aviasales-style)
   ───────────────────────────────────────────── */
   return (
     <Link href={href} className="group block h-full">
-      <div className="bg-white rounded-xl sm:rounded-[2rem] p-2 sm:p-3 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 h-full flex flex-col">
+      <div className="bg-white rounded-xl overflow-hidden border border-slate-100/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col">
 
-        {/* Image wrapped in a rounded container with padding */}
-        <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shrink-0 bg-slate-100">
+        {/* Image — square on mobile, 4:3 on desktop */}
+        <div className="relative w-full aspect-square sm:aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
           <Image
             src={tour.coverImage}
             alt={titleLocalized || "Tour Image"}
             fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
-          
-          {/* Subtle top gradient for icons */}
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
 
           {tour.isHot && (
-            <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full bg-rose-500 text-white px-3 py-1 text-[11px] font-bold shadow-lg shadow-rose-500/30 tracking-wide uppercase">
-              <Flame className="h-3.5 w-3.5" />
-              HOT
+            <div className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 rounded-full bg-rose-500 text-white px-2 py-0.5 text-[10px] font-bold shadow-md shadow-rose-500/30 uppercase tracking-wide">
+              <Flame className="h-2.5 w-2.5" /> HOT
             </div>
           )}
 
-          {/* Action Button */}
-          <div className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 shadow-sm opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-white hover:text-slate-900">
-            <ArrowUpRight className="h-5 w-5" />
-          </div>
+          {/* Rating pill — bottom right of image */}
+          {tour.avgRating > 0 && (
+            <div className="absolute bottom-2 right-2 z-10 inline-flex items-center gap-0.5 rounded-full bg-black/50 backdrop-blur-sm text-white px-1.5 py-0.5 text-[10px] font-bold">
+              <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+              {tour.avgRating.toFixed(1)}
+            </div>
+          )}
         </div>
 
-        {/* Content */}
-        <div className="px-2 sm:px-3 pt-3 sm:pt-5 pb-2 sm:pb-3 flex flex-col grow">
-          <div className="flex items-center justify-between mb-1.5 sm:mb-3">
-            {tour.country && (
-              <span className="inline-flex items-center gap-0.5 text-[9px] sm:text-[10px] font-black tracking-[0.1em] uppercase text-teal-600 bg-teal-50 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md truncate max-w-[60%]">
-                <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" /> {tour.country}
-              </span>
-            )}
-            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-              <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-amber-400 text-amber-400" />
-              <span className="text-xs sm:text-sm font-bold text-slate-900">
-                {tour.avgRating > 0 ? tour.avgRating.toFixed(1) : "Новый"}
-              </span>
-            </div>
-          </div>
+        {/* Content — minimal */}
+        <div className="p-2.5 sm:p-4 flex flex-col grow">
+          {/* Country */}
+          {tour.country && (
+            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.12em] text-teal-600 mb-1 truncate">
+              {tour.country}
+            </p>
+          )}
 
-          <h3 className="text-[13px] sm:text-[19px] font-black text-slate-900 leading-tight sm:leading-[1.3] mb-2 sm:mb-4 group-hover:text-teal-600 transition-colors line-clamp-2">
+          {/* Title */}
+          <h3 className="text-[12px] sm:text-[15px] font-bold text-slate-900 leading-snug line-clamp-2 mb-1.5 sm:mb-2.5 group-hover:text-teal-600 transition-colors">
             {titleLocalized}
           </h3>
 
-          <div className="flex flex-wrap items-center gap-1 sm:gap-3 text-slate-500 font-medium mb-2 sm:mb-6">
-            {tour.durationDays && (
-              <span className="flex items-center gap-1 bg-slate-50 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-sm">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400" /> {tour.durationDays} {t("labels.days", { fallback: "дн." })}
-              </span>
-            )}
-            <span className="flex items-center gap-1 bg-slate-50 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-sm">
-              {t(`mealPlan.${tour.mealPlan}`, { fallback: tour.mealPlan })}
+          {/* Duration + meal — one line, muted */}
+          <p className="text-[10px] sm:text-xs text-slate-400 mb-2 sm:mb-3 flex items-center gap-1">
+            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
+            {tour.durationDays} {t("labels.days", { fallback: "дн." })}
+            <span className="hidden sm:inline">
+              · {t(`mealPlan.${tour.mealPlan}`, { fallback: tour.mealPlan })}
             </span>
-          </div>
+          </p>
 
           {/* Price */}
-          <div className="mt-auto pt-2 sm:pt-4 border-t border-slate-100">
-            <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-0.5">
+          <div className="mt-auto">
+            <p className="text-[10px] text-slate-400 font-medium leading-none mb-0.5">
               {t("labels.from", { fallback: "от" })}
             </p>
-            <p className="text-base sm:text-2xl font-black text-slate-900 flex items-baseline gap-1">
-              {formattedPrice} <span className="text-[10px] sm:text-sm font-medium text-slate-500">/чел</span>
+            <p className="text-sm sm:text-xl font-black text-slate-900 leading-none">
+              {formattedPrice}
+              <span className="text-[9px] sm:text-xs font-medium text-slate-400 ml-1">/чел</span>
             </p>
           </div>
         </div>
@@ -220,20 +211,15 @@ export function TourCard({ tour, extraQuery, variant = "default", featured = fal
 
 export function TourCardSkeleton() {
   return (
-    <Card className="flex flex-col h-full overflow-hidden rounded-xl sm:rounded-[2rem]">
+    <div className="bg-white rounded-xl overflow-hidden border border-slate-100/80 flex flex-col">
       <Skeleton className="w-full aspect-square sm:aspect-[4/3] shrink-0 rounded-none" />
-      <CardContent className="flex flex-col p-2 sm:p-4 gap-1.5 sm:gap-2">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-3 w-14 sm:w-20" />
-          <Skeleton className="h-3 w-8 sm:h-5 sm:w-12 rounded-lg" />
-        </div>
-        <Skeleton className="h-4 sm:h-5 w-full" />
-        <Skeleton className="h-4 sm:h-5 w-3/4" />
-        <div className="mt-auto pt-2 sm:pt-3 border-t border-slate-100">
-          <Skeleton className="h-2.5 w-6 mb-1" />
-          <Skeleton className="h-5 sm:h-7 w-20" />
-        </div>
-      </CardContent>
-    </Card>
+      <div className="p-2.5 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
+        <Skeleton className="h-2.5 w-12" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-3 w-3/4" />
+        <Skeleton className="h-2 w-16 mt-1" />
+        <Skeleton className="h-5 w-20 mt-0.5" />
+      </div>
+    </div>
   );
 }

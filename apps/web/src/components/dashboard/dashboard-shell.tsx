@@ -109,7 +109,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="relative p-5 pb-4 select-none">
               <div
                 className="absolute inset-x-0 top-0 h-24 -z-0 opacity-95 transition-opacity"
-                style={{ background: "linear-gradient(135deg, #059669 0%, #115e59 100%)" }}
+                style={{ background: "linear-gradient(135deg, #027455 0%, #015e44 100%)" }}
                 aria-hidden
               />
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 blur-xl rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />

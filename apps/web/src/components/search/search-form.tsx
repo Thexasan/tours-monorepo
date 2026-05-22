@@ -296,8 +296,8 @@ export function SearchForm() {
         {/* ── Search Button ── */}
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 px-8 py-2.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-white text-[15px] sm:text-[16px] transition-all hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-teal-500/30"
-          style={{ background: "linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%)" }}
+          className="w-full flex items-center justify-center gap-2 px-8 py-2.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-white text-[15px] sm:text-[16px] transition-all hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-[#027455]/30"
+          style={{ background: "linear-gradient(135deg, #03956a 0%, #027455 100%)" }}
         >
           {t("buttonSearch")}
           <ArrowRight className="h-5 w-5" />

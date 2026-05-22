@@ -68,7 +68,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <Button type="submit" disabled={isLoading} className="mt-2">
+      <Button type="submit" disabled={isLoading} size="lg" className="mt-1 w-full rounded-xl">
         {isLoading ? t("login.loading") : t("login.submit")}
       </Button>
     </form>

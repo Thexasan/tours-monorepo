@@ -69,7 +69,7 @@ export function TourHero({
             {isHot && (
               <span
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white shadow-[0_8px_20px_-6px_rgba(16,185,129,0.45)]"
-                style={{ background: "linear-gradient(135deg, #10b981, #0d9488)" }}
+                style={{ background: "linear-gradient(135deg, #03956a, #027455)" }}
               >
                 <Sparkles className="h-3 w-3" />
                 {t("detail.hotTourBadge")}{discount > 0 ? ` · −${discount}%` : ""}
@@ -146,7 +146,7 @@ export function TourHero({
                     type="button"
                     onClick={onBook}
                     className="group inline-flex items-center gap-1.5 md:gap-2 px-5 py-3 md:px-7 md:py-4 rounded-full text-sm md:text-base font-bold text-white transition-all hover:-translate-y-0.5"
-                    style={{ background: "linear-gradient(135deg, #10b981, #0d9488)", boxShadow: "0 18px 36px -12px rgba(16,185,129,0.50)" }}
+                    style={{ background: "linear-gradient(135deg, #03956a, #027455)", boxShadow: "0 18px 36px -12px rgba(2,116,85,0.50)" }}
                   >
                     {t("hero.book")}
                     <ArrowRight className="h-4 w-4 md:h-[18px] md:w-[18px] transition-transform group-hover:translate-x-1" />

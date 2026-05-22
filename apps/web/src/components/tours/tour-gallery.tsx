@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useBodyScrollLock } from "@/src/shared/hooks/use-body-scroll-lock";
 import Image from "next/image";
 import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -16,6 +17,7 @@ const TILE_CLS = [
 
 export function TourGallery({ images, title }: { images: string[]; title: string }) {
   const [lightbox, setLightbox] = useState(-1);
+  useBodyScrollLock(lightbox >= 0);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

@@ -235,8 +235,8 @@ export function AdminDashboard() {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#047857" stopOpacity={0.18}/>
-                    <stop offset="95%" stopColor="#047857" stopOpacity={0.01}/>
+                    <stop offset="5%" stopColor="#027455" stopOpacity={0.18}/>
+                    <stop offset="95%" stopColor="#027455" stopOpacity={0.01}/>
                   </linearGradient>
                   <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.12}/>
@@ -248,7 +248,7 @@ export function AdminDashboard() {
                 <YAxis yAxisId="left" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip revenueLabel={t('admin.dashboard.tooltipRevenue')} bookingsLabel={t('admin.dashboard.tooltipBookings')} />} />
-                <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#047857" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
+                <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#027455" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
                 <Area yAxisId="right" type="monotone" dataKey="bookings" stroke="#38bdf8" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" />
               </AreaChart>
             </ResponsiveContainer>

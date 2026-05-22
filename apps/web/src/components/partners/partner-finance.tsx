@@ -83,8 +83,8 @@ export function PartnerFinance() {
       <section
         className="relative overflow-hidden rounded-3xl p-7 md:p-9 text-white"
         style={{
-          background: "linear-gradient(135deg, #115e59 0%, #0d9488 50%, #0f766e 100%)",
-          boxShadow: "0 20px 40px -12px rgba(13,148,136,0.35)",
+          background: "linear-gradient(135deg, #03956a 0%, #027455 50%, #015e44 100%)",
+          boxShadow: "0 20px 40px -12px rgba(2,116,85,0.35)",
         }}
       >
         {/* card texture & glowing spots */}
@@ -169,11 +169,11 @@ export function PartnerFinance() {
           onClick={() => setShowPayoutModal(true)}
           className={`relative z-10 shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
             canRequest
-              ? "text-white hover:scale-105 active:scale-95 shadow-[0_8px_16px_-6px_rgba(13,148,136,0.35)] hover:shadow-[0_10px_20px_-4px_rgba(13,148,136,0.45)]"
+              ? "text-white hover:scale-105 active:scale-95 shadow-[0_8px_16px_-6px_rgba(2,116,85,0.35)] hover:shadow-[0_10px_20px_-4px_rgba(2,116,85,0.45)]"
               : "bg-slate-50 text-slate-400 border border-slate-200"
           }`}
           style={canRequest ? {
-            background: "linear-gradient(135deg, #0d9488, #0f766e)",
+            background: "linear-gradient(135deg, #03956a, #027455)",
           } : undefined}
         >
           {canRequest ? (
