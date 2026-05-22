@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Copy, Check, Send, MessageCircle, Share2, Gift,
+  Copy, Check, Send, MessageCircle, Gift,
   MousePointerClick, UserPlus, ShoppingBag, TrendingUp, Sparkles,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -145,12 +145,6 @@ export function ReferralsPanel() {
               className="bg-[#25D366] hover:bg-[#21be5c] shadow-[#25D366]/15 hover:shadow-[#25D366]/30"
               icon={<MessageCircle className="h-4 w-4" />}
               label="WhatsApp"
-            />
-            <ShareLink
-              href={`https://vk.com/share.php?url=${encodeURIComponent(refLink)}&title=${encodeURIComponent(shareText)}`}
-              className="bg-[#0077FF] hover:bg-[#006be5] shadow-[#0077FF]/15 hover:shadow-[#0077FF]/30"
-              icon={<Share2 className="h-4 w-4" />}
-              label="VK"
             />
           </div>
         </div>
