@@ -16,9 +16,9 @@ import { Label } from "@/src/components/ui/label";
 import { MultiImageUploader } from "@/src/components/ui/multi-image-uploader";
 
 const schema = z.object({
-  tourId: z.string().min(1, "Выберите тур"),
+  tourId: z.string().min(1),
   rating: z.coerce.number().int().min(1).max(5),
-  text: z.string().min(10, "Минимум 10 символов").max(2000),
+  text: z.string().min(10).max(2000),
 });
 type Inp = z.input<typeof schema>;
 type Out = z.output<typeof schema>;
@@ -68,12 +68,12 @@ export function NewReviewForm() {
         text: v.text,
         photoUrls,
       });
-      toast.success("Отзыв отправлен на модерацию");
+      toast.success(t('client.newReview.toastSuccess'));
       router.push(`/${locale}/dashboard/reviews`);
     } catch (e) {
       const msg = extractErrorMessage(e);
       setError(msg);
-      toast.error("Не удалось отправить отзыв", { description: msg });
+      toast.error(t('client.newReview.toastError'), { description: msg });
     } finally {
       setSubmitting(false);
     }
@@ -102,7 +102,7 @@ export function NewReviewForm() {
             <option key={t.tourId} value={t.tourId}>{t.title}</option>
           ))}
         </select>
-        {errors.tourId && <p className="mt-1 text-xs text-red-600">{errors.tourId.message}</p>}
+        {errors.tourId && <p className="mt-1 text-xs text-red-600">{t('client.newReview.errorSelectTour')}</p>}
       </div>
 
       <div>
@@ -129,7 +129,7 @@ export function NewReviewForm() {
           placeholder={t('client.newReview.textPlaceholder')}
           className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 transition-all"
         />
-        {errors.text && <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>}
+        {errors.text && <p className="mt-1 text-xs text-red-600">{t('client.newReview.errorMinText')}</p>}
       </div>
 
       <div>
@@ -139,6 +139,11 @@ export function NewReviewForm() {
           max={10}
           value={photoUrls}
           onChange={setPhotoUrls}
+          addLabel={t('client.newReview.addPhoto')}
+          addAriaLabel={t('client.newReview.addPhotoAriaLabel')}
+          removeAriaLabel={t('client.newReview.removePhotoAriaLabel')}
+          uploadErrorText={t('client.newReview.uploadError')}
+          counterSuffix={t('client.newReview.photoCounter')}
         />
       </div>
 

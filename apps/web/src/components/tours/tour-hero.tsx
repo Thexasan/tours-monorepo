@@ -125,7 +125,7 @@ export function TourHero({
                     style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 18px 36px -12px rgba(124,58,237,0.45)" }}
                   >
                     <Pencil className="h-4 w-4 md:h-[18px] md:w-[18px]" />
-                    Редактировать тур
+                    {t("hero.editTour")}
                   </Link>
                   <button
                     type="button"

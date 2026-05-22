@@ -2,7 +2,7 @@
 
 import { Heart } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { useWishlistStatus, useWishlistToggle } from "@/src/shared/hooks/use-wishlist";
 import { cn } from "@/src/lib/utils";
@@ -20,6 +20,7 @@ export function WishlistButton({ tourId, variant = "sidebar", className, label, 
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("common");
 
   const { data } = useWishlistStatus(tourId);
   const toggle = useWishlistToggle(tourId);
@@ -40,7 +41,7 @@ export function WishlistButton({ tourId, variant = "sidebar", className, label, 
         type="button"
         onClick={handleClick}
         disabled={toggle.isPending}
-        aria-label={wishlisted ? (labelActive ?? "В избранном") : (label ?? "В избранное")}
+        aria-label={wishlisted ? (labelActive ?? t("wishlist.addedAriaLabel")) : (label ?? t("wishlist.addAriaLabel"))}
         className={cn(
           "grid place-items-center h-11 w-11 md:h-14 md:w-14 rounded-full",
           "bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition",
@@ -69,7 +70,7 @@ export function WishlistButton({ tourId, variant = "sidebar", className, label, 
       )}
     >
       <Heart className={cn("h-4 w-4", wishlisted && "fill-rose-500 text-rose-500")} />
-      {wishlisted ? (labelActive ?? "В избранном") : (label ?? "Добавить в избранное")}
+      {wishlisted ? (labelActive ?? t("wishlist.addedLabel")) : (label ?? t("wishlist.addLabel"))}
     </button>
   );
 }

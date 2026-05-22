@@ -47,7 +47,8 @@
       "meal": "Yemek planı",
       "mealAny": "Herhangi",
       "close": "Kapat",
-      "filters": "Filtreler"
+      "filters": "Filtreler",
+      "apply": "Sonuçları göster"
     },
     "results": {
       "found": "Bulundu:",
@@ -111,11 +112,27 @@
       "dayFallbackDesc": "Günün ayrıntılı programı rezervasyondan sonra yöneticinizle kararlaştırılacaktır."
     }
   },
+  "gallery": {
+    "title": "Geziden fotoğraflar",
+    "subtitle": "Son 6 aydan gerçek misafir fotoğrafları",
+    "allPhotos": "Tüm {count} fotoğraf",
+    "morePhotos": "+{count} fotoğraf",
+    "photo": "fotoğraf",
+    "close": "Kapat",
+    "prev": "Önceki",
+    "next": "Sonraki"
+  },
+  "similar": {
+    "badge": "Benzer turlar",
+    "title": "Bunlar da ilginizi çekebilir",
+    "allTours": "Tüm turlar"
+  },
   "hero": {
     "book": "Rezervasyon yap",
     "wishlist": "İstek listesine ekle",
     "wishlisted": "İstek listesinde",
-    "share": "Paylaş"
+    "share": "Paylaş",
+    "editTour": "Turu düzenle"
   },
   "sidebar": {
     "from": "itibaren",
@@ -139,7 +156,11 @@
       "descPart2": "seyahatinden sonra hesabınıza geçer.",
       "copy": "Kopyala",
       "copied": "Kopyalandı"
-    }
+    },
+    "adminTitle": "Tur Yönetimi",
+    "adminPrice": "/ kişi · {days} gün",
+    "editTour": "Turu düzenle",
+    "tourBookings": "Tur rezervasyonları"
   },
   "booking": {
     "close": "Kapat",
@@ -252,7 +273,12 @@
       "sat": "Ct",
       "sun": "Pz",
       "navBack": "Geri",
-      "navForward": "İleri"
+      "navForward": "İleri",
+      "clear": "Temizle",
+      "today": "Bugün",
+      "inputPlaceholder": "GG.AA.YYYY veya YYYY-AA-GG",
+      "invalidFormat": "Tarihi GG.AA.YYYY formatında girin",
+      "ariaLabel": "Kalkış tarihi"
     },
     "error": "Rezervasyon oluşturulamadı"
   }

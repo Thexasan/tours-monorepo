@@ -16,13 +16,18 @@ interface MultiImageUploaderProps {
   max?: number;
   hint?: string;
   label?: string;
+  addLabel?: string;
+  addAriaLabel?: string;
+  removeAriaLabel?: string;
+  uploadErrorText?: string;
+  counterSuffix?: string;
 }
 
 function toServerUrls(items: Item[]): string[] {
   return items.map(it => it.serverUrl).filter((u): u is string => u !== null);
 }
 
-export function MultiImageUploader({ value, onChange, max = 20, hint, label }: MultiImageUploaderProps) {
+export function MultiImageUploader({ value, onChange, max = 20, hint, label, addLabel = "Add", addAriaLabel = "Add photo", removeAriaLabel = "Remove", uploadErrorText = "Failed to upload one or more files.", counterSuffix = "photos" }: MultiImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<Item[]>(() =>
     value.map(url => ({ localUrl: url, serverUrl: url }))
@@ -60,7 +65,7 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
         } catch {
           const filtered = itemsRef.current.filter(it => it.localUrl !== localUrl);
           setItems(filtered);
-          setError("Ошибка загрузки одного или нескольких файлов.");
+          setError(uploadErrorText);
         }
       })
     );
@@ -97,7 +102,7 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
             className="relative group h-20 w-20 rounded-lg overflow-hidden ring-1 ring-slate-200 shrink-0 bg-slate-100"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={item.localUrl} alt={`фото ${idx + 1}`} className="w-full h-full object-cover" />
+            <img src={item.localUrl} alt={`${idx + 1}`} className="w-full h-full object-cover" />
             {!item.serverUrl ? (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                 <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -107,7 +112,7 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
                 type="button"
                 onClick={() => remove(item.localUrl)}
                 className="absolute top-0.5 right-0.5 h-5 w-5 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80"
-                aria-label="Удалить"
+                aria-label={removeAriaLabel}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -128,10 +133,10 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
                 ? "border-orange-400 bg-orange-50/60 text-orange-500"
                 : "border-slate-200 bg-slate-50/40 hover:border-orange-300 hover:bg-orange-50/30"
             )}
-            aria-label="Добавить фото"
+            aria-label={addAriaLabel}
           >
             <ImagePlus className="h-5 w-5" />
-            <span className="text-[10px] leading-tight text-center">Добавить</span>
+            <span className="text-[10px] leading-tight text-center">{addLabel}</span>
           </button>
         )}
       </div>
@@ -148,7 +153,7 @@ export function MultiImageUploader({ value, onChange, max = 20, hint, label }: M
       {hint && <p className="text-xs text-slate-400">{hint}</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}
       {items.length > 0 && (
-        <p className="text-xs text-slate-400">{items.length} / {max} фото</p>
+        <p className="text-xs text-slate-400">{items.length} / {max} {counterSuffix}</p>
       )}
     </div>
   );

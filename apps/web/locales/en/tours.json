@@ -47,7 +47,8 @@
       "meal": "Meal plan",
       "mealAny": "Any",
       "close": "Close",
-      "filters": "Filters"
+      "filters": "Filters",
+      "apply": "Show results"
     },
     "results": {
       "found": "Found:",
@@ -111,11 +112,27 @@
       "dayFallbackDesc": "Detailed day programme will be agreed with your manager after booking."
     }
   },
+  "gallery": {
+    "title": "Photos from the trip",
+    "subtitle": "Real guest photos from the last 6 months",
+    "allPhotos": "All {count} photos",
+    "morePhotos": "+{count} photos",
+    "photo": "photo",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "similar": {
+    "badge": "Similar tours",
+    "title": "You may also like",
+    "allTours": "All tours"
+  },
   "hero": {
     "book": "Book now",
     "wishlist": "Add to wishlist",
     "wishlisted": "In wishlist",
-    "share": "Share"
+    "share": "Share",
+    "editTour": "Edit tour"
   },
   "sidebar": {
     "from": "from",
@@ -139,7 +156,11 @@
       "descPart2": "to your account after their trip.",
       "copy": "Copy",
       "copied": "Copied"
-    }
+    },
+    "adminTitle": "Tour Management",
+    "adminPrice": "/ pax · {days} days",
+    "editTour": "Edit tour",
+    "tourBookings": "Tour bookings"
   },
   "booking": {
     "close": "Close",
@@ -252,7 +273,12 @@
       "sat": "Sa",
       "sun": "Su",
       "navBack": "Back",
-      "navForward": "Forward"
+      "navForward": "Forward",
+      "clear": "Clear",
+      "today": "Today",
+      "inputPlaceholder": "DD.MM.YYYY or YYYY-MM-DD",
+      "invalidFormat": "Enter date as DD.MM.YYYY",
+      "ariaLabel": "Departure date"
     },
     "error": "Could not create booking"
   }

@@ -3,12 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { ChevronLeft, ChevronRight, CalendarDays, X } from "lucide-react";
-
-const RU_MONTHS = [
-  "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-  "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
-];
-const RU_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+import { useTranslations, useLocale } from "next-intl";
 
 function toIso(d: Date) {
   const y = d.getFullYear();
@@ -23,20 +18,14 @@ function parseIso(iso: string): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
-function formatDisplay(iso: string) {
-  const d = parseIso(iso);
-  if (!d) return "";
-  return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-}
-
 function parseTyped(raw: string): string | null {
   const s = raw.trim();
-  // ГГГГ-ММ-ДД
+  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
     const d = new Date(s + "T00:00:00");
     return isNaN(d.getTime()) ? null : toIso(d);
   }
-  // ДД.ММ.ГГГГ
+  // DD.MM.YYYY
   const dm = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
   if (dm && dm[1] && dm[2] && dm[3]) {
     const d = new Date(`${dm[3]}-${dm[2].padStart(2, "0")}-${dm[1].padStart(2, "0")}T00:00:00`);
@@ -68,12 +57,32 @@ export function DatePickerInput({
   value,
   onChange,
   min,
-  placeholder = "Выбрать дату",
+  placeholder,
   isActive,
   onOpenChange,
 }: DatePickerInputProps) {
+  const t = useTranslations("tours");
+  const locale = useLocale();
   const today = new Date();
   const minDate = min ? parseIso(min) : null;
+
+  const MONTHS = [
+    t("booking.calendar.jan"), t("booking.calendar.feb"), t("booking.calendar.mar"),
+    t("booking.calendar.apr"), t("booking.calendar.may"), t("booking.calendar.jun"),
+    t("booking.calendar.jul"), t("booking.calendar.aug"), t("booking.calendar.sep"),
+    t("booking.calendar.oct"), t("booking.calendar.nov"), t("booking.calendar.dec"),
+  ];
+  const DAYS = [
+    t("booking.calendar.mon"), t("booking.calendar.tue"), t("booking.calendar.wed"),
+    t("booking.calendar.thu"), t("booking.calendar.fri"), t("booking.calendar.sat"),
+    t("booking.calendar.sun"),
+  ];
+
+  const formatDisplay = (iso: string) => {
+    const d = parseIso(iso);
+    if (!d) return "";
+    return d.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+  };
 
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(() => {
@@ -149,7 +158,6 @@ export function DatePickerInput({
     ...Array(firstDow).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-  // pad to complete last row
   while (cells.length % 7 !== 0) cells.push(null);
 
   const selectedDate = parseIso(value);
@@ -182,7 +190,7 @@ export function DatePickerInput({
       <PopoverPrimitive.Trigger asChild>
         <button
           type="button"
-          aria-label="Дата вылета"
+          aria-label={t("booking.calendar.ariaLabel")}
           className="w-full text-left outline-none"
         >
           <span
@@ -220,7 +228,7 @@ export function DatePickerInput({
                 value={inputText}
                 onChange={(e) => handleTextChange(e.target.value)}
                 onBlur={handleTextBlur}
-                placeholder="ДД.ММ.ГГГГ или ГГГГ-ММ-ДД"
+                placeholder={t("booking.calendar.inputPlaceholder")}
                 className="flex-1 bg-transparent text-[13px] font-medium text-slate-800 placeholder:text-slate-400 outline-none"
               />
               {inputText && (
@@ -235,7 +243,7 @@ export function DatePickerInput({
             </div>
             {inputError && (
               <p className="text-[11px] text-rose-500 mt-1 ml-1">
-                Введите дату в формате ДД.ММ.ГГГГ
+                {t("booking.calendar.invalidFormat")}
               </p>
             )}
           </div>
@@ -245,16 +253,18 @@ export function DatePickerInput({
             <button
               type="button"
               onClick={prevMonth}
+              aria-label={t("booking.calendar.navBack")}
               className="grid place-items-center h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <span className="text-[14px] font-bold text-slate-800 select-none">
-              {RU_MONTHS[viewMonth]} {viewYear}
+              {MONTHS[viewMonth]} {viewYear}
             </span>
             <button
               type="button"
               onClick={nextMonth}
+              aria-label={t("booking.calendar.navForward")}
               className="grid place-items-center h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
             >
               <ChevronRight className="h-4 w-4" />
@@ -263,7 +273,7 @@ export function DatePickerInput({
 
           {/* Day-of-week headers */}
           <div className="grid grid-cols-7 px-3 mb-1">
-            {RU_DAYS.map((d) => (
+            {DAYS.map((d) => (
               <div
                 key={d}
                 className="text-center text-[11px] font-bold text-slate-400 uppercase tracking-wide py-1"
@@ -310,7 +320,7 @@ export function DatePickerInput({
               onClick={() => { onChange(""); setInputText(""); handleOpenChange(false); }}
               className="text-[12px] font-semibold text-slate-400 hover:text-rose-500 transition-colors"
             >
-              Очистить
+              {t("booking.calendar.clear")}
             </button>
             <button
               type="button"
@@ -323,7 +333,7 @@ export function DatePickerInput({
               }}
               className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 transition-colors"
             >
-              Сегодня
+              {t("booking.calendar.today")}
             </button>
           </div>
         </PopoverPrimitive.Content>

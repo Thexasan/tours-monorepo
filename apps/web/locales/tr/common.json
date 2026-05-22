@@ -119,5 +119,71 @@
       "subtitle": "Kişisel linkiniz aracılığıyla arkadaşlarınızı davet edin ve rezervasyonlarından bonus kazanın. Yeterince bonus biriktirin ve tatile bizim hesabımıza gidin!",
       "cta": "Kulübe katıl"
     }
+  },
+  "wishlist": {
+    "backToTours": "Turlara dön",
+    "title": "Favoriler",
+    "subtitle": "Kaydedilen turlar — fiyat düştüğünde sizi bilgilendireceğiz",
+    "countBadge": "{count} tur",
+    "priceDropBanner": "{count} turda fiyat düştü!",
+    "emptyTitle": "Liste boş",
+    "emptyDesc": "Kaydetmek için herhangi bir turda ♡ simgesine tıklayın. Fiyat düşerse sizi bilgilendiririz.",
+    "browseTours": "Turlara göz at",
+    "hotBadge": "Fırsatlı",
+    "duration": "{days} gün",
+    "perPerson": "/ kişi",
+    "cheaper": "Daha ucuz!",
+    "book": "Rezervasyon yap",
+    "removeAriaLabel": "Favorilerden çıkar",
+    "addLabel": "Favorilere ekle",
+    "addedLabel": "Favorilerde",
+    "addAriaLabel": "Favorilere ekle",
+    "addedAriaLabel": "Favorilerde"
+  },
+  "userMenu": {
+    "loginLabel": "Giriş",
+    "registerLabel": "Kayıt ol",
+    "roleClient": "Müşteri",
+    "rolePartner": "Partner",
+    "roleAdmin": "Yönetici",
+    "clientCabinet": "Hesabım",
+    "partnerCabinet": "Partner Paneli",
+    "adminPanel": "Yönetici Paneli",
+    "myProfile": "Profilim",
+    "referral": "Tavsiye Programı",
+    "wishlist": "Favoriler",
+    "logout": "Çıkış"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Fırsatlı turları ilk siz öğrenin",
+      "subtitle": "Haftada bir. Yalnızca en iyisi, spam yok."
+    },
+    "brandDesc": "En iyi turları rezerve edin, arkadaşlarınızla seyahat edin ve tavsiye programımız sayesinde ücretsiz seyahat kazanın.",
+    "stats": {
+      "clients": "Müşteri",
+      "countries": "Ülke",
+      "rating": "Puan"
+    },
+    "tours": {
+      "title": "Turlar",
+      "catalog": "Katalog",
+      "bali": "Bali",
+      "turkey": "Türkiye",
+      "maldives": "Maldivler",
+      "hotTours": "Fırsatlı Turlar"
+    },
+    "company": {
+      "title": "Şirket",
+      "referral": "Tavsiye Programı",
+      "support": "Destek"
+    },
+    "contacts": {
+      "title": "İletişim",
+      "city": "Taşkent · Almatı · Bişkek"
+    },
+    "copyright": "Tüm hakları saklıdır",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları"
   }
 }

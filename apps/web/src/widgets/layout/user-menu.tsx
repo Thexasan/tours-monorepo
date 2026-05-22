@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, User, Briefcase, ShieldCheck, LogOut, LogIn, Heart } from "lucide-react";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { useAuth } from "@/src/shared/hooks/use-auth";
@@ -13,10 +13,10 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const { logout } = useAuth();
   const locale = useLocale();
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  // Закрыть по клику вне
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -25,9 +25,8 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // Пока auth не отгидрейтился — не рендерим (избегаем мигания)
   if (!isHydrated) {
-    return <div className="w-24 h-9" />; // placeholder той же высоты
+    return <div className="w-24 h-9" />;
   }
 
   if (!user) {
@@ -42,10 +41,10 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
           }`}
         >
           <LogIn className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline">Войти</span>
+          <span className="hidden sm:inline">{t("userMenu.loginLabel")}</span>
         </Link>
         <Link href={`/${locale}/register`} className="hidden sm:block">
-          <Button size="sm">Регистрация</Button>
+          <Button size="sm">{t("userMenu.registerLabel")}</Button>
         </Link>
       </div>
     );
@@ -54,28 +53,28 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
   const roleConfig = (() => {
     if (user.role === "ADMIN") {
       return {
-        label: "Админ",
+        label: t("userMenu.roleAdmin"),
         cls: "bg-blue-100 text-blue-700",
         icon: ShieldCheck,
         primaryHref: `/${locale}/admin/tours`,
-        primaryLabel: "Админ-панель",
+        primaryLabel: t("userMenu.adminPanel"),
       };
     }
     if (user.role === "PARTNER") {
       return {
-        label: "Партнёр",
+        label: t("userMenu.rolePartner"),
         cls: "bg-emerald-100 text-emerald-700",
         icon: Briefcase,
         primaryHref: `/${locale}/partner/dashboard`,
-        primaryLabel: "Кабинет партнёра",
+        primaryLabel: t("userMenu.partnerCabinet"),
       };
     }
     return {
-      label: "Клиент",
+      label: t("userMenu.roleClient"),
       cls: "bg-zinc-100 text-zinc-700",
       icon: User,
       primaryHref: `/${locale}/dashboard/profile`,
-      primaryLabel: "Личный кабинет",
+      primaryLabel: t("userMenu.clientCabinet"),
     };
   })();
 
@@ -115,7 +114,7 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-64 max-w-[min(256px,calc(100vw-8px))] bg-white border border-zinc-200 rounded-lg shadow-xl py-1 z-[9999]" style={{ isolation: "isolate" }}>
+        <div className="absolute right-0 top-full mt-2 w-64 max-w-[min(256px,calc(100vw-8px))] bg-white border border-zinc-200 rounded-lg shadow-xl py-1 z-[9999] overflow-hidden" style={{ isolation: "isolate" }}>
           <div className="px-4 py-3 border-b border-zinc-100">
             <p className="text-sm font-medium text-zinc-900 truncate">{user.fullName}</p>
             <p className="text-xs text-zinc-500 truncate">{user.email}</p>
@@ -130,7 +129,6 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
             <span className="font-medium">{roleConfig.primaryLabel}</span>
           </Link>
 
-          {/* Кросс-ссылки в другие разделы */}
           {user.role === "ADMIN" && (
             <Link
               href={`/${locale}/admin/profile`}
@@ -138,7 +136,7 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
               className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
             >
               <User className="w-4 h-4" />
-              <span>Мой профиль</span>
+              <span>{t("userMenu.myProfile")}</span>
             </Link>
           )}
           {user.role === "PARTNER" && (
@@ -148,10 +146,9 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
               className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
             >
               <User className="w-4 h-4" />
-              <span>Мой профиль</span>
+              <span>{t("userMenu.myProfile")}</span>
             </Link>
           )}
-
 
           {user.role === "CLIENT" && (
             <Link
@@ -160,7 +157,7 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
               className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
             >
               <Briefcase className="w-4 h-4" />
-              <span>Реферальная программа</span>
+              <span>{t("userMenu.referral")}</span>
             </Link>
           )}
 
@@ -170,7 +167,7 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
             className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
           >
             <Heart className="w-4 h-4 text-rose-500" />
-            <span>Избранное</span>
+            <span>{t("userMenu.wishlist")}</span>
           </Link>
 
           <div className="border-t border-zinc-100 mt-1">
@@ -180,7 +177,7 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
               className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
             >
               <LogOut className="w-4 h-4" />
-              <span>Выйти</span>
+              <span>{t("userMenu.logout")}</span>
             </button>
           </div>
         </div>

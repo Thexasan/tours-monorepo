@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import {
-  Briefcase, Mail, Users, ShieldCheck, LogOut, Wallet,
+  Briefcase, Mail, Users, LogOut, Wallet,
   MessageSquare, UserCog, ChevronRight, User, LayoutDashboard, Menu, X,
   Clock,
 } from "lucide-react";
@@ -163,7 +163,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-[#090d16] animate-pulse" />
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-white truncate text-sm leading-snug">Console</p>
+            <p className="font-semibold text-white truncate text-sm leading-snug">{user?.fullName ?? user?.email}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-subtle" />
               <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">{t('admin.role')}</span>
@@ -313,9 +313,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <span className="font-bold text-slate-900 text-sm">{t('admin.panelTitle')}</span>
           </div>
 
-          <div className="text-right max-w-[120px]">
-            <span className="text-[10px] text-slate-500 font-mono block truncate">{user?.email}</span>
-          </div>
+          <LanguageSwitcher />
         </div>
 
         {/* ── Mobile drawer backdrop ───────────────────────────────── */}

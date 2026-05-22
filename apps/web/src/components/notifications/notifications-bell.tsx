@@ -2,11 +2,40 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Bell } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { useNotifications } from "@/src/hooks/use-notifications";
 import { useAuthStore } from "@/src/shared/store/auth-store";
+import type { NotificationType, NotificationMetadata } from "@tours/types";
+
+function getContent(
+  t: ReturnType<typeof useTranslations<"dashboard">>,
+  type: NotificationType,
+  meta: NotificationMetadata | null | undefined,
+  fallbackTitle: string,
+  fallbackBody: string,
+) {
+  const typeKey = `client.notifications.types.${type}` as const;
+  if (meta) {
+    try {
+      return {
+        title: t(`${typeKey}.title` as Parameters<typeof t>[0]),
+        body: t(`${typeKey}.body` as Parameters<typeof t>[0], meta as Record<string, string>),
+      };
+    } catch {
+      // fall through
+    }
+  }
+  try {
+    return {
+      title: t(`${typeKey}.title` as Parameters<typeof t>[0]),
+      body: fallbackBody,
+    };
+  } catch {
+    return { title: fallbackTitle, body: fallbackBody };
+  }
+}
 
 export function NotificationsBell({ transparent }: { transparent?: boolean }) {
   const { user, isHydrated } = useAuthStore();
@@ -15,6 +44,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("dashboard");
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -37,7 +67,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
             ? "text-white/80 hover:text-white hover:bg-white/10"
             : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
         )}
-        aria-label="Уведомления"
+        aria-label={t("client.notifications.title")}
       >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
@@ -51,9 +81,11 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
         <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/60 z-[9999] overflow-hidden" style={{ isolation: "isolate" }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-900">
-              Уведомления
+              {t("client.notifications.title")}
               {unread > 0 && (
-                <span className="ml-2 text-xs font-normal text-slate-400">{unread} непрочитанных</span>
+                <span className="ml-2 text-xs font-normal text-slate-400">
+                  {unread} {t("client.notifications.unreadCountSuffix")}
+                </span>
               )}
             </span>
             {unread > 0 && (
@@ -61,7 +93,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
                 onClick={() => markAllRead()}
                 className="text-xs text-teal-700 hover:underline"
               >
-                Прочитать все
+                {t("client.notifications.markAllRead")}
               </button>
             )}
           </div>
@@ -70,46 +102,49 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
             {notifications.length === 0 ? (
               <div className="py-10 text-center">
                 <Bell className="h-8 w-8 mx-auto mb-2 text-slate-200" />
-                <p className="text-sm text-slate-400">Нет уведомлений</p>
+                <p className="text-sm text-slate-400">{t("client.notifications.noNotifications")}</p>
               </div>
             ) : (
-              notifications.map((n) => (
-                <div
-                  key={n.id}
-                  className={cn(
-                    "px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer",
-                    !n.isRead && "bg-teal-50/40",
-                  )}
-                  onClick={() => {
-                    if (!n.isRead) markRead(n.id);
-                    if (n.bookingId) {
-                      router.push(`/${locale}/dashboard/trips/${n.bookingId}`);
-                    }
-                    setOpen(false);
-                  }}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span
-                      className={cn(
-                        "h-2 w-2 rounded-full shrink-0 mt-1.5",
-                        !n.isRead ? "bg-teal-500" : "bg-transparent",
-                      )}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 leading-snug">{n.title}</p>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-snug">{n.body}</p>
-                      <p className="text-[11px] text-slate-400 mt-1">
-                        {new Date(n.createdAt).toLocaleString("ru-RU", {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+              notifications.map((n) => {
+                const { title, body } = getContent(t, n.type, n.metadata, n.title, n.body);
+                return (
+                  <div
+                    key={n.id}
+                    className={cn(
+                      "px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer",
+                      !n.isRead && "bg-teal-50/40",
+                    )}
+                    onClick={() => {
+                      if (!n.isRead) markRead(n.id);
+                      if (n.bookingId) {
+                        router.push(`/${locale}/dashboard/trips/${n.bookingId}`);
+                      }
+                      setOpen(false);
+                    }}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span
+                        className={cn(
+                          "h-2 w-2 rounded-full shrink-0 mt-1.5",
+                          !n.isRead ? "bg-teal-500" : "bg-transparent",
+                        )}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900 leading-snug">{title}</p>
+                        <p className="text-xs text-slate-500 mt-0.5 leading-snug">{body}</p>
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          {new Date(n.createdAt).toLocaleString(locale, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

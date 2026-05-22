@@ -78,10 +78,10 @@ export function TourBookingSidebar({
         <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(124,58,237,0.20)]">
           <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-violet-500 via-indigo-500 to-violet-600" />
           <div className="p-6">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">Управление туром</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">{t("sidebar.adminTitle")}</p>
             <div className="flex items-baseline gap-2 mb-5">
               <p className="text-3xl font-bold text-slate-900 tabular-nums">${pricePerPerson.toLocaleString()}</p>
-              <p className="text-sm text-slate-400">/ чел · {durationDays} дн.</p>
+              <p className="text-sm text-slate-400">{t("sidebar.adminPrice", { days: durationDays })}</p>
             </div>
             <div className="space-y-2.5">
               <Link
@@ -90,14 +90,14 @@ export function TourBookingSidebar({
                 style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 14px 28px -10px rgba(124,58,237,0.40)" }}
               >
                 <Pencil className="h-4 w-4" />
-                Редактировать тур
+                {t("sidebar.editTour")}
               </Link>
               <Link
                 href={`/${locale}/admin/bookings`}
                 className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-bold text-slate-700 bg-slate-50 ring-1 ring-slate-200 hover:bg-slate-100 transition-all"
               >
                 <BookOpen className="h-4 w-4 text-slate-400" />
-                Заявки по туру
+                {t("sidebar.tourBookings")}
               </Link>
             </div>
           </div>

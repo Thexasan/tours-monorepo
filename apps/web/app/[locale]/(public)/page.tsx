@@ -253,10 +253,11 @@ export default async function HomePage() {
               {hotTours.slice(0, 4).map((tour, index) => {
                 const tourTitle    = tour.title[locale as keyof typeof tour.title] ?? tour.title.ru;
                 const tourLocation = [tour.city, tour.country].filter(Boolean).join(", ");
+                const isSmall = index >= 2;
                 let spanClasses = "";
                 if (index === 0) spanClasses = "col-span-2 h-[230px] sm:h-[340px] md:col-span-2 md:row-span-2 md:h-[620px]";
                 else if (index === 1) spanClasses = "col-span-2 h-[180px] sm:h-[240px] md:col-span-2 md:row-span-1 md:h-[300px]";
-                else spanClasses = "col-span-1 h-[160px] sm:h-[200px] md:col-span-1 md:row-span-1 md:h-[300px]";
+                else spanClasses = "col-span-1 h-[170px] sm:h-[200px] md:col-span-1 md:row-span-1 md:h-[300px]";
                 return (
                   <div key={tour.id} className={`group relative rounded-2xl sm:rounded-[2rem] overflow-hidden transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(243,24,70,0.15)] cursor-pointer ${spanClasses}`}>
                     {tour.coverImage
@@ -267,21 +268,22 @@ export default async function HomePage() {
                     <div className="absolute top-2.5 left-2.5 sm:top-5 sm:left-5 bg-rose-500 text-white text-[9px] sm:text-[10px] font-black tracking-widest px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center gap-1 sm:gap-1.5 shadow-[0_0_20px_rgba(243,24,70,0.4)]">
                       <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> HOT
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6 md:p-8 flex flex-col justify-end">
+                    <div className={`absolute inset-x-0 bottom-0 flex flex-col justify-end ${isSmall ? "p-3 sm:p-6 md:p-8" : "p-4 sm:p-6 md:p-8"}`}>
                       <div className="transform translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
                         <p className="text-teal-400 text-[9px] sm:text-[10px] font-black tracking-[0.15em] uppercase mb-1 sm:mb-3 flex items-center gap-1 sm:gap-1.5 drop-shadow-md">
                           <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> {tourLocation}
                         </p>
-                        <h3 className={`font-black text-white leading-[1.15] mb-2 sm:mb-6 drop-shadow-lg ${index === 0 ? "text-lg sm:text-3xl md:text-5xl" : "text-sm sm:text-2xl"}`}>{tourTitle}</h3>
-                        <div className="flex items-end justify-between pt-2 sm:pt-5 border-t border-white/10">
-                          <div>
+                        <h3 className={`font-black text-white leading-[1.15] mb-2 sm:mb-6 drop-shadow-lg ${index === 0 ? "text-lg sm:text-3xl md:text-5xl" : isSmall ? "text-xs sm:text-2xl" : "text-sm sm:text-2xl"}`}>{tourTitle}</h3>
+                        <div className="flex items-center justify-between pt-2 sm:pt-5 border-t border-white/10 gap-2">
+                          <div className="min-w-0">
                             <p className="hidden sm:block text-[10px] text-white/50 uppercase tracking-[0.15em] font-bold mb-1">{t("hotTours.costLabel")}</p>
-                            <p className="text-lg sm:text-3xl font-black text-white flex items-baseline gap-1">
-                              ${tour.priceUsd} <span className="text-xs sm:text-sm font-medium text-white/50">{t("hotTours.perPerson")}</span>
+                            <p className={`font-black text-white flex items-baseline gap-1 ${isSmall ? "text-base sm:text-3xl" : "text-lg sm:text-3xl"}`}>
+                              ${tour.priceUsd}
+                              <span className="text-[10px] sm:text-sm font-medium text-white/50 truncate">{t("hotTours.perPerson")}</span>
                             </p>
                           </div>
-                          <Link href={`/${locale}/tours/${tour.slug}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border border-white/20 text-white flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 group-hover:border-transparent transition-all duration-300 shrink-0">
-                            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" />
+                          <Link href={`/${locale}/tours/${tour.slug}`} className={`rounded-full border border-white/20 text-white flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 group-hover:border-transparent transition-all duration-300 shrink-0 ${isSmall ? "w-7 h-7 sm:w-12 sm:h-12" : "w-9 h-9 sm:w-12 sm:h-12"}`}>
+                            <ArrowRight className="w-3.5 h-3.5 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" />
                           </Link>
                         </div>
                       </div>

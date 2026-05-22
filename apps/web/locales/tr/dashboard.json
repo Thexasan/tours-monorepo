@@ -257,6 +257,7 @@
     "limitDesc": "Komisyon oranı:",
     "limitRate": "% her satıştan.",
     "dashboard": {
+      "pageTitle": "Ortak Panosu",
       "sectionTitle": "Partner Bölümü",
       "statsTitle": "30 günlük istatistikleriniz",
       "statsSubtitle": "Aktiviteyi, bağlantı tıklamalarını ve ödenen rezervasyonları takip edin. Her işlemden %5 komisyon kazanın!",
@@ -553,9 +554,20 @@
       "photosLabel": "Fotoğraflar (isteğe bağlı)",
       "photosHint": "10 adede kadar fotoğraf · JPEG / PNG / WebP her biri 8 MB'a kadar",
       "submitting": "Gönderiliyor…",
-      "submit": "Moderasyona Gönder"
+      "submit": "Moderasyona Gönder",
+      "toastSuccess": "Yorum moderasyona gönderildi",
+      "toastError": "Yorum gönderilemedi",
+      "errorSelectTour": "Tur seçin",
+      "errorMinText": "En az 10 karakter",
+      "addPhoto": "Ekle",
+      "addPhotoAriaLabel": "Fotoğraf ekle",
+      "removePhotoAriaLabel": "Kaldır",
+      "uploadError": "Bir veya daha fazla dosya yüklenemedi.",
+      "photoCounter": "fotoğraf"
     },
     "notifications": {
+      "title": "Bildirimler",
+      "unreadCountSuffix": "okunmamış",
       "noNotifications": "Bildirim yok",
       "noNotificationsHint": "Rezervasyonlarınızdaki güncellemeler burada görünecek.",
       "unread": "Okunmamış:",
@@ -644,6 +656,11 @@
         "eyebrow": "Yorumlar",
         "title": "Yorumlarım",
         "description": "İzlenimlerinizi paylaşın — diğer gezginlere yardımcı olur."
+      },
+      "newReview": {
+        "eyebrow": "Yorumlar",
+        "title": "Yorum Yaz",
+        "description": "Yalnızca ödeme yaptığınız bir tur için yorum bırakabilirsiniz. Yönetici moderasyonundan sonra yayınlanacak."
       }
     },
     "admin": {

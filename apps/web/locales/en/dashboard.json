@@ -257,6 +257,7 @@
     "limitDesc": "Commission rate:",
     "limitRate": "% per sale.",
     "dashboard": {
+      "pageTitle": "Partner Dashboard",
       "sectionTitle": "Partner Section",
       "statsTitle": "Your stats for 30 days",
       "statsSubtitle": "Track activity, link clicks and paid bookings. Earn 5% commission from every deal!",
@@ -553,9 +554,20 @@
       "photosLabel": "Photos (optional)",
       "photosHint": "Up to 10 photos · JPEG / PNG / WebP up to 8 MB each",
       "submitting": "Submitting…",
-      "submit": "Submit for Moderation"
+      "submit": "Submit for Moderation",
+      "toastSuccess": "Review submitted for moderation",
+      "toastError": "Failed to submit review",
+      "errorSelectTour": "Please select a tour",
+      "errorMinText": "Minimum 10 characters",
+      "addPhoto": "Add",
+      "addPhotoAriaLabel": "Add photo",
+      "removePhotoAriaLabel": "Remove",
+      "uploadError": "Failed to upload one or more files.",
+      "photoCounter": "photos"
     },
     "notifications": {
+      "title": "Notifications",
+      "unreadCountSuffix": "unread",
       "noNotifications": "No notifications",
       "noNotificationsHint": "Updates on your bookings will appear here.",
       "unread": "Unread:",
@@ -644,6 +656,11 @@
         "eyebrow": "Reviews",
         "title": "My Reviews",
         "description": "Share your impressions — it helps other travelers."
+      },
+      "newReview": {
+        "eyebrow": "Reviews",
+        "title": "Write a Review",
+        "description": "You can only leave a review for a tour you have already paid for. It will be published after admin moderation."
       }
     },
     "admin": {

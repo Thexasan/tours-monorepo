@@ -119,5 +119,71 @@
       "subtitle": "Invite friends via your personal link and earn bonuses from their bookings. Accumulate enough bonuses and head to the beach on us!",
       "cta": "Join the club"
     }
+  },
+  "wishlist": {
+    "backToTours": "Back to tours",
+    "title": "Wishlist",
+    "subtitle": "Saved tours — we'll notify you when the price drops",
+    "countBadge": "{count, plural, one {# tour} other {# tours}}",
+    "priceDropBanner": "Price dropped on {count, plural, one {# tour} other {# tours}}!",
+    "emptyTitle": "Your list is empty",
+    "emptyDesc": "Click ♡ on any tour to save it here. We'll notify you if the price drops.",
+    "browseTours": "Browse tours",
+    "hotBadge": "Hot deal",
+    "duration": "{days} days",
+    "perPerson": "/ pax",
+    "cheaper": "Cheaper!",
+    "book": "Book now",
+    "removeAriaLabel": "Remove from wishlist",
+    "addLabel": "Add to wishlist",
+    "addedLabel": "In wishlist",
+    "addAriaLabel": "Add to wishlist",
+    "addedAriaLabel": "In wishlist"
+  },
+  "userMenu": {
+    "loginLabel": "Log in",
+    "registerLabel": "Register",
+    "roleClient": "Client",
+    "rolePartner": "Partner",
+    "roleAdmin": "Admin",
+    "clientCabinet": "My Cabinet",
+    "partnerCabinet": "Partner Cabinet",
+    "adminPanel": "Admin Panel",
+    "myProfile": "My Profile",
+    "referral": "Referral Programme",
+    "wishlist": "Wishlist",
+    "logout": "Log out"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Get hot deals first",
+      "subtitle": "Once a week. Only the best, no spam."
+    },
+    "brandDesc": "Book the best tours, travel with friends and earn free trips through our referral programme.",
+    "stats": {
+      "clients": "Clients",
+      "countries": "Countries",
+      "rating": "Rating"
+    },
+    "tours": {
+      "title": "Tours",
+      "catalog": "Catalog",
+      "bali": "Bali",
+      "turkey": "Turkey",
+      "maldives": "Maldives",
+      "hotTours": "Hot Tours"
+    },
+    "company": {
+      "title": "Company",
+      "referral": "Referral Programme",
+      "support": "Support"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "city": "Tashkent · Almaty · Bishkek"
+    },
+    "copyright": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
   }
 }
