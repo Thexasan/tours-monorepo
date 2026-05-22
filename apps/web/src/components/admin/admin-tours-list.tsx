@@ -13,11 +13,12 @@ import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export function AdminToursList() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filterTab, setFilterTab] = useState<"all" | "active" | "hot" | "archived">("all");
@@ -31,18 +32,18 @@ export function AdminToursList() {
     mutationFn: (id: string) => adminToursApi.archive(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "tours"] });
-      toast.success("Тур перемещён в архив");
+      toast.success(t('admin.tours.archive'));
     },
-    onError: (e) => toast.error("Не удалось архивировать тур", { description: extractErrorMessage(e) }),
+    onError: (e) => toast.error(t('admin.tours.archive'), { description: extractErrorMessage(e) }),
   });
 
   const restoreMutation = useMutation({
     mutationFn: (id: string) => adminToursApi.update(id, { isActive: true }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "tours"] });
-      toast.success("Тур восстановлен");
+      toast.success(t('admin.tours.restore'));
     },
-    onError: (e) => toast.error("Не удалось восстановить тур", { description: extractErrorMessage(e) }),
+    onError: (e) => toast.error(t('admin.tours.restore'), { description: extractErrorMessage(e) }),
   });
 
   const stats = useMemo(() => {
@@ -72,10 +73,10 @@ export function AdminToursList() {
   }, [tours, search, filterTab]);
 
   const TABS = [
-    { id: "all",      label: "Все" },
-    { id: "active",   label: "Активные" },
-    { id: "hot",      label: "Горящие 🔥" },
-    { id: "archived", label: "В архиве" },
+    { id: "all",      label: t('admin.bookings.all') },
+    { id: "active",   label: t('admin.tours.filterActive') },
+    { id: "hot",      label: t('admin.tours.filterHot') },
+    { id: "archived", label: t('admin.tours.filterArchived') },
   ] as const;
 
   return (
@@ -88,16 +89,16 @@ export function AdminToursList() {
           className="h-9 px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-none border-0 cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5" />
-          Новый тур
+          {t('admin.tours.newTour')}
         </Button>
       </div>
 
       {/* ── KPI Cards ───────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Всего туров"  value={isLoading ? "—" : String(stats.total)}    icon={Layers}       accent="border-indigo-500" iconCls="text-indigo-600 bg-indigo-50" />
-        <StatCard label="Активные"     value={isLoading ? "—" : String(stats.active)}   icon={CheckCircle2} accent="border-emerald-500" iconCls="text-emerald-700 bg-emerald-50" />
-        <StatCard label="Горящие 🔥"   value={isLoading ? "—" : String(stats.hot)}      icon={Flame}        accent="border-amber-500"   iconCls="text-amber-600 bg-amber-50" />
-        <StatCard label="В архиве"     value={isLoading ? "—" : String(stats.archived)} icon={Inbox}        accent="border-slate-400"   iconCls="text-slate-500 bg-slate-100" />
+        <StatCard label={t('admin.tours.total')}          value={isLoading ? "—" : String(stats.total)}    icon={Layers}       accent="border-indigo-500" iconCls="text-indigo-600 bg-indigo-50" />
+        <StatCard label={t('admin.tours.filterActive')}   value={isLoading ? "—" : String(stats.active)}   icon={CheckCircle2} accent="border-emerald-500" iconCls="text-emerald-700 bg-emerald-50" />
+        <StatCard label={t('admin.tours.filterHot')}      value={isLoading ? "—" : String(stats.hot)}      icon={Flame}        accent="border-amber-500"   iconCls="text-amber-600 bg-amber-50" />
+        <StatCard label={t('admin.tours.filterArchived')} value={isLoading ? "—" : String(stats.archived)} icon={Inbox}        accent="border-slate-400"   iconCls="text-slate-500 bg-slate-100" />
       </div>
 
       {/* ── Table Panel ─────────────────────────────────────────── */}
@@ -127,7 +128,7 @@ export function AdminToursList() {
           <div className="relative sm:ml-auto sm:max-w-xs w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <Input
-              placeholder="Поиск по названию или стране…"
+              placeholder={t('admin.tours.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 pr-8 h-9 text-xs bg-slate-50 border-slate-200 focus-visible:ring-emerald-600/20 rounded-lg shadow-none"
@@ -145,7 +146,7 @@ export function AdminToursList() {
 
           {filteredTours.length > 0 && (
             <p className="text-[11px] text-slate-400 shrink-0 select-none hidden sm:block">
-              <span className="font-bold text-slate-700 tabular-nums">{filteredTours.length}</span> туров
+              <span className="font-bold text-slate-700 tabular-nums">{filteredTours.length}</span> {t('admin.tours.countSuffix')}
             </p>
           )}
         </div>
@@ -173,14 +174,14 @@ export function AdminToursList() {
             <div className="mx-auto h-10 w-10 rounded-xl bg-slate-50 border border-slate-200 grid place-items-center mb-4">
               <Inbox className="h-4.5 w-4.5 text-slate-400" />
             </div>
-            <p className="text-sm font-semibold text-slate-700">Туров не найдено</p>
-            <p className="text-xs text-slate-400 mt-1">Измените поисковый запрос или выберите другой фильтр</p>
+            <p className="text-sm font-semibold text-slate-700">{t('admin.tours.notFound')}</p>
+            <p className="text-xs text-slate-400 mt-1">{t('admin.tours.notFoundHint')}</p>
             {(search || filterTab !== "all") && (
               <button
                 onClick={() => { setSearch(""); setFilterTab("all"); }}
                 className="mt-4 text-xs text-emerald-700 hover:underline font-medium"
               >
-                Сбросить фильтры
+                {t('admin.tours.resetFilters')}
               </button>
             )}
           </div>
@@ -192,45 +193,45 @@ export function AdminToursList() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60">
-                  <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Название тура</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[120px]">Страна</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">Стоимость</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[130px]">Отель / Звёзды</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[160px]">Статус</th>
-                  <th className="text-right px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">Действия</th>
+                  <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">{t('admin.tours.colTitle')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[120px]">{t('admin.tours.colCountry')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">{t('admin.tours.colPrice')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[130px]">{t('admin.tours.colHotel')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[160px]">{t('admin.tours.colStatus')}</th>
+                  <th className="text-right px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">{t('admin.tours.colActions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredTours.map((t) => (
-                  <tr key={t.id} className="group hover:bg-slate-50/50 transition-colors duration-100">
+                {filteredTours.map((tour) => (
+                  <tr key={tour.id} className="group hover:bg-slate-50/50 transition-colors duration-100">
                     {/* Tour */}
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
                         <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-slate-100 shrink-0 ring-1 ring-slate-200/60">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={t.coverImage} alt="" className="w-full h-full object-cover" />
+                          <img src={tour.coverImage} alt="" className="w-full h-full object-cover" />
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 truncate max-w-[260px] group-hover:text-emerald-700 transition-colors leading-snug">
-                            {t.title.ru}
+                            {tour.title.ru}
                           </p>
-                          <p className="text-[10px] text-slate-400 font-mono mt-0.5">{t.slug}</p>
+                          <p className="text-[10px] text-slate-400 font-mono mt-0.5">{tour.slug}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Country */}
-                    <td className="px-4 py-3 text-slate-600 font-medium">{t.country}</td>
+                    <td className="px-4 py-3 text-slate-600 font-medium">{tour.country}</td>
 
                     {/* Price */}
                     <td className="px-4 py-3">
-                      <span className="font-bold tabular-nums text-slate-800 font-mono">${t.priceUsd}</span>
+                      <span className="font-bold tabular-nums text-slate-800 font-mono">${tour.priceUsd}</span>
                     </td>
 
                     {/* Stars */}
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center gap-0.5 text-amber-500">
-                        {Array.from({ length: t.hotelStars }).map((_, i) => (
+                        {Array.from({ length: tour.hotelStars }).map((_, i) => (
                           <Star key={i} className="w-3 h-3 fill-current" />
                         ))}
                       </span>
@@ -239,19 +240,19 @@ export function AdminToursList() {
                     {/* Status */}
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        {t.isActive ? (
+                        {tour.isActive ? (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            Активен
+                            {t('admin.tours.statusActive')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-slate-500 bg-slate-100 border border-slate-200/60">
-                            В архиве
+                            {t('admin.tours.statusArchived')}
                           </span>
                         )}
-                        {t.isActive && t.isHot && (
+                        {tour.isActive && tour.isHot && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/60">
-                            🔥 Горячий
+                            🔥 {t('admin.tours.tagHot')}
                           </span>
                         )}
                       </div>
@@ -262,34 +263,34 @@ export function AdminToursList() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
-                          onClick={() => router.push(`/${locale}/admin/tours/${t.id}/edit`)}
+                          onClick={() => router.push(`/${locale}/admin/tours/${tour.id}/edit`)}
                           className="h-8 w-8 grid place-items-center border border-slate-200 rounded-lg text-slate-400 hover:text-sky-600 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer"
-                          title="Редактировать"
+                          title={t('admin.tours.edit')}
                         >
                           <Edit className="w-3.5 h-3.5" />
                         </button>
 
-                        {t.isActive ? (
+                        {tour.isActive ? (
                           <button
                             type="button"
                             onClick={() => {
-                              if (confirm(`Архивировать тур "${t.title.ru}"?`)) {
-                                archiveMutation.mutate(t.id);
+                              if (confirm(t('admin.tours.archiveConfirm', { title: tour.title.ru ?? "" }))) {
+                                archiveMutation.mutate(tour.id);
                               }
                             }}
                             className="h-8 w-8 grid place-items-center border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors cursor-pointer"
-                            title="Архивировать"
+                            title={t('admin.tours.archive')}
                           >
                             <Archive className="w-3.5 h-3.5" />
                           </button>
                         ) : (
                           <button
                             type="button"
-                            onClick={() => restoreMutation.mutate(t.id)}
+                            onClick={() => restoreMutation.mutate(tour.id)}
                             className="h-8 px-2.5 border border-slate-200 rounded-lg text-[10px] font-semibold text-slate-500 hover:text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50 transition-colors cursor-pointer"
-                            title="Восстановить"
+                            title={t('admin.tours.restore')}
                           >
-                            Восстановить
+                            {t('admin.tours.restore')}
                           </button>
                         )}
                       </div>

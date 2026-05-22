@@ -3,20 +3,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Star, Plus, Clock, Check, X, MessageSquare } from "lucide-react";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
 import { Button } from "@/src/components/ui/button";
 
-const STATUS_META: Record<string, { label: string; cls: string; icon: React.ElementType }> = {
-  PENDING:  { label: "На модерации", cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", icon: Clock },
-  APPROVED: { label: "Опубликован",  cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", icon: Check },
-  REJECTED: { label: "Отклонён",     cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", icon: X },
-};
-
 export function MyReviewsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tr";
+  const t = useTranslations('dashboard');
+
+  const STATUS_META: Record<string, { label: string; cls: string; icon: React.ElementType }> = {
+    PENDING:  { label: t('client.reviews.statusPending'), cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100", icon: Clock },
+    APPROVED: { label: t('client.reviews.statusApproved'), cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", icon: Check },
+    REJECTED: { label: t('client.reviews.statusRejected'), cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100", icon: X },
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["reviews", "my"],
@@ -29,12 +30,12 @@ export function MyReviewsList({ basePath = "dashboard" }: { basePath?: string })
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
             <MessageSquare className="h-3.5 w-3.5 text-teal-600" />
-            {data ? `Всего: ${data.length}` : "Загрузка…"}
+            {data ? `${t('client.reviews.total')} ${data.length}` : t('client.reviews.loading')}
           </span>
         </div>
         <Link href={`/${locale}/${basePath}/reviews/new`}>
           <Button>
-            <Plus className="w-4 h-4" /> Написать отзыв
+            <Plus className="w-4 h-4" /> {t('client.reviews.writeReview')}
           </Button>
         </Link>
       </div>
@@ -56,9 +57,9 @@ export function MyReviewsList({ basePath = "dashboard" }: { basePath?: string })
           <div className="mx-auto h-16 w-16 rounded-2xl bg-linear-to-br from-teal-400 to-emerald-500 grid place-items-center text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.5)]">
             <MessageSquare className="h-7 w-7" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-slate-900">Отзывов пока нет</h3>
+          <h3 className="mt-4 text-lg font-semibold text-slate-900">{t('client.reviews.noReviews')}</h3>
           <p className="mt-1 text-slate-500 max-w-md mx-auto">
-            Отзыв можно оставить после оплаченной заявки — расскажите, как прошло путешествие.
+            {t('client.reviews.noReviewsHint')}
           </p>
         </div>
       )}

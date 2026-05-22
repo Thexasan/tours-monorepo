@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { ChevronDown, User, Briefcase, ShieldCheck, LogOut, LogIn } from "lucide-react";
+import { ChevronDown, User, Briefcase, ShieldCheck, LogOut, LogIn, Heart } from "lucide-react";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
@@ -32,19 +32,19 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <Link
           href={`/${locale}/login`}
-          className={`inline-flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+          className={`inline-flex items-center gap-1.5 text-sm font-medium px-2 py-2 rounded-md transition-colors ${
             transparent
               ? "text-white/85 hover:text-white hover:bg-white/10"
               : "text-zinc-700 hover:text-zinc-900"
           }`}
         >
-          <LogIn className="w-4 h-4" />
-          Войти
+          <LogIn className="w-4 h-4 shrink-0" />
+          <span className="hidden sm:inline">Войти</span>
         </Link>
-        <Link href={`/${locale}/register`}>
+        <Link href={`/${locale}/register`} className="hidden sm:block">
           <Button size="sm">Регистрация</Button>
         </Link>
       </div>
@@ -92,22 +92,30 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-zinc-50 transition-colors"
+        className={`flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+          transparent ? "hover:bg-white/10" : "hover:bg-zinc-50"
+        }`}
       >
-        <span className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-sm font-semibold text-zinc-700">
+        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+          transparent ? "bg-white/20 text-white" : "bg-zinc-200 text-zinc-700"
+        }`}>
           {initials}
         </span>
         <span className="hidden md:flex flex-col items-start leading-tight">
-          <span className="text-sm font-medium text-zinc-900 truncate max-w-[120px]">{user.fullName}</span>
-          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${roleConfig.cls}`}>
+          <span className={`text-sm font-medium truncate max-w-[120px] transition-colors ${
+            transparent ? "text-white" : "text-zinc-900"
+          }`}>{user.fullName}</span>
+          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded transition-colors ${
+            transparent ? "bg-white/20 text-white/90" : roleConfig.cls
+          }`}>
             {roleConfig.label}
           </span>
         </span>
-        <ChevronDown className="w-4 h-4 text-zinc-500" />
+        <ChevronDown className={`w-4 h-4 transition-colors ${transparent ? "text-white/70" : "text-zinc-500"}`} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-zinc-200 rounded-lg shadow-lg py-1 z-50">
+        <div className="absolute right-0 top-full mt-2 w-64 max-w-[min(256px,calc(100vw-8px))] bg-white border border-zinc-200 rounded-lg shadow-xl py-1 z-[9999]" style={{ isolation: "isolate" }}>
           <div className="px-4 py-3 border-b border-zinc-100">
             <p className="text-sm font-medium text-zinc-900 truncate">{user.fullName}</p>
             <p className="text-xs text-zinc-500 truncate">{user.email}</p>
@@ -155,6 +163,15 @@ export function UserMenu({ transparent = false }: { transparent?: boolean }) {
               <span>Реферальная программа</span>
             </Link>
           )}
+
+          <Link
+            href={`/${locale}/wishlist`}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+          >
+            <Heart className="w-4 h-4 text-rose-500" />
+            <span>Избранное</span>
+          </Link>
 
           <div className="border-t border-zinc-100 mt-1">
             <button

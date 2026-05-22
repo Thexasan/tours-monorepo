@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { MapPin, Users, Calendar, ArrowRight, Compass, Plane, Download } from "lucide-react";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import type { BookingStatus } from "@tours/types";
@@ -23,19 +23,10 @@ async function triggerPdfDownload(bookingId: string) {
   URL.revokeObjectURL(url);
 }
 
-const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
-  NEW:                  { label: "Новая",               cls: "bg-sky-50/90 text-sky-700 border-sky-100",              dot: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]" },
-  DOCUMENTS_REQUESTED:  { label: "Нужны документы",     cls: "bg-violet-50/90 text-violet-700 border-violet-100 animate-pulse",    dot: "bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)]" },
-  DOCUMENTS_SUBMITTED:  { label: "На проверке",          cls: "bg-teal-50/90 text-teal-700 border-teal-100",   dot: "bg-teal-500 shadow-[0_0_8px_rgba(13,148,136,0.4)]" },
-  IN_PROGRESS:          { label: "В работе",             cls: "bg-amber-50/90 text-amber-700 border-amber-100",       dot: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" },
-  AWAITING_PAYMENT:     { label: "Ожидает оплаты",      cls: "bg-rose-50/95 text-rose-700 border-rose-200 animate-pulse",             dot: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" },
-  PAID:                 { label: "Оплачена",             cls: "bg-emerald-50/90 text-emerald-700 border-emerald-100", dot: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" },
-  COMPLETED:            { label: "Завершена",            cls: "bg-slate-100/90 text-slate-700 border-slate-200",      dot: "bg-slate-500" },
-  CANCELLED:            { label: "Отменена",             cls: "bg-rose-50/90 text-rose-700 border-rose-100",          dot: "bg-rose-500" },
-};
 
 function DownloadTicketButton({ bookingId }: { bookingId: string }) {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('dashboard');
 
   async function handleClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -44,7 +35,7 @@ function DownloadTicketButton({ bookingId }: { bookingId: string }) {
     try {
       await triggerPdfDownload(bookingId);
     } catch {
-      toast.error("Не удалось скачать тикет");
+      toast.error(t('client.trips.ticketError'));
     } finally {
       setLoading(false);
     }
@@ -57,14 +48,26 @@ function DownloadTicketButton({ bookingId }: { bookingId: string }) {
       className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all duration-300 disabled:opacity-60 shadow-sm hover:shadow active:scale-95 shrink-0"
     >
       <Download className="h-3.5 w-3.5" />
-      <span>{loading ? "Загрузка…" : "Скачать билет"}</span>
+      <span>{loading ? t('client.trips.downloading') : t('client.trips.downloadTicket')}</span>
     </button>
   );
 }
 
 export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const lang = locale as "ru" | "en" | "tr";
+
+  const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
+    NEW:                  { label: t('client.trips.statusNew'),         cls: "bg-sky-50/90 text-sky-700 border-sky-100",              dot: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]" },
+    DOCUMENTS_REQUESTED:  { label: t('client.trips.statusDocsNeeded'), cls: "bg-violet-50/90 text-violet-700 border-violet-100 animate-pulse",    dot: "bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)]" },
+    DOCUMENTS_SUBMITTED:  { label: t('client.trips.statusDocsReview'), cls: "bg-teal-50/90 text-teal-700 border-teal-100",   dot: "bg-teal-500 shadow-[0_0_8px_rgba(13,148,136,0.4)]" },
+    IN_PROGRESS:          { label: t('client.trips.statusInProgress'),  cls: "bg-amber-50/90 text-amber-700 border-amber-100",       dot: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" },
+    AWAITING_PAYMENT:     { label: t('client.trips.statusPayment'),     cls: "bg-rose-50/95 text-rose-700 border-rose-200 animate-pulse",             dot: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" },
+    PAID:                 { label: t('client.trips.statusPaid'),        cls: "bg-emerald-50/90 text-emerald-700 border-emerald-100", dot: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" },
+    COMPLETED:            { label: t('client.trips.statusCompleted'),   cls: "bg-slate-100/90 text-slate-700 border-slate-200",      dot: "bg-slate-500" },
+    CANCELLED:            { label: t('client.trips.statusCancelled'),   cls: "bg-rose-50/90 text-rose-700 border-rose-100",          dot: "bg-rose-500" },
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["bookings", "my"],
@@ -90,7 +93,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
   if (isError || !data) {
     return (
       <div className="tv-surface p-8 text-center text-rose-600 rounded-2xl">
-        Не удалось загрузить заявки. Попробуйте обновить страницу.
+        {t('client.trips.loadError')}
       </div>
     );
   }
@@ -100,14 +103,14 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
         <div className="mx-auto h-20 w-20 rounded-3xl bg-gradient-to-tr from-teal-500 to-emerald-500 grid place-items-center text-white shadow-[0_12px_28px_-6px_rgba(13,148,136,0.45)] mb-6 animate-pulse">
           <Compass className="h-9 w-9 text-white animate-spin-slow" />
         </div>
-        <h3 className="text-xl font-bold text-slate-800">Пока ни одной поездки</h3>
+        <h3 className="text-xl font-bold text-slate-800">{t('client.trips.noTrips')}</h3>
         <p className="mt-2 text-sm text-slate-400 font-medium max-w-sm mx-auto leading-relaxed">
-          Начните ваше путешествие с нашего каталога — там собраны лучшие направления и сезонные предложения со всего мира.
+          {t('client.trips.noTripsHint')}
         </p>
         <Link href={`/${locale}/tours`} className="inline-block mt-6">
           <Button size="lg" className="rounded-2xl font-bold text-sm bg-teal-600 hover:bg-teal-700 shadow-md hover:shadow-lg transition-all duration-300">
             <Plane className="h-4.5 w-4.5 mr-1" />
-            Перейти в каталог туров
+            {t('client.trips.toCatalog')}
           </Button>
         </Link>
       </div>
@@ -177,7 +180,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs border-t border-slate-50 pt-3">
                 <div className="flex items-center gap-1.5 text-slate-500 font-medium">
                   <Users className="h-4 w-4 text-slate-400 shrink-0" />
-                  <span>Гостей: <strong className="text-slate-800 font-bold">{b.guestsCount}</strong></span>
+                  <span>{t('client.trips.guests')} <strong className="text-slate-800 font-bold">{b.guestsCount}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 text-slate-500 font-medium">
                   <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
@@ -185,7 +188,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                 </div>
                 <div className="text-slate-500 font-medium flex items-center gap-1.5 col-span-2 sm:col-span-1">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500 shrink-0 shadow-[0_0_6px_rgba(13,148,136,0.6)]" />
-                  <span>Сумма: <strong className="text-slate-800 font-extrabold tabular-nums">${b.totalPriceUsd}</strong></span>
+                  <span>{t('client.trips.total')} <strong className="text-slate-800 font-extrabold tabular-nums">${b.totalPriceUsd}</strong></span>
                 </div>
               </div>
 
@@ -194,7 +197,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                   href={`/${locale}/${basePath}/trips/${b.id}`}
                   className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 hover:text-teal-700 px-3.5 py-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow active:scale-95"
                 >
-                  <span>Открыть детали</span>
+                  <span>{t('client.trips.openDetails')}</span>
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 {(b.status === "PAID" || b.status === "COMPLETED") && (
@@ -205,7 +208,7 @@ export function TripsList({ basePath = "dashboard" }: { basePath?: string }) {
                     href={`/${locale}/tours/${tour.slug}`}
                     className="inline-flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all duration-300"
                   >
-                    О туре
+                    {t('client.trips.aboutTour')}
                   </Link>
                 )}
               </div>

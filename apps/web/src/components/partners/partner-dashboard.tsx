@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Legend,
 } from "recharts";
@@ -14,6 +14,7 @@ import { referralsApi } from "@/src/shared/api/referrals-api";
 
 export function PartnerDashboard() {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const [copied, setCopied] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
@@ -50,7 +51,7 @@ export function PartnerDashboard() {
       </div>
     );
   }
-  if (isError || !data) return <div className="text-rose-600">Не удалось загрузить статистику.</div>;
+  if (isError || !data) return <div className="text-rose-600">{t('partner.dashboard.loadError')}</div>;
 
   // Объединяем все три серии по дате для одного графика
   const allDays = new Set([
@@ -85,13 +86,13 @@ export function PartnerDashboard() {
         <div className="flex-1 min-w-0 relative z-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-extrabold uppercase tracking-widest">
             <Award className="h-3.5 w-3.5 animate-pulse" />
-            Партнёрский раздел
+            {t('partner.dashboard.sectionTitle')}
           </div>
           <h1 className="mt-3 text-3xl md:text-4xl font-black tracking-tight text-slate-800">
-            Ваша статистика за 30 дней
+            {t('partner.dashboard.statsTitle')}
           </h1>
           <p className="mt-2 text-slate-500 text-sm font-semibold max-w-xl leading-relaxed">
-            Отслеживайте активность, переходы по ссылкам и оплаченные бронирования. Получайте <span className="text-emerald-600 font-bold">5% комиссионных</span> от каждой сделки!
+            {t('partner.dashboard.statsSubtitle')}
           </p>
         </div>
 
@@ -99,12 +100,12 @@ export function PartnerDashboard() {
           {/* subtle interior flare */}
           <div className="absolute -right-8 -bottom-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <div className="absolute left-2 top-2 h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200/90 leading-none">ДОХОД ВСЕГО</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200/90 leading-none">{t('partner.dashboard.totalIncome')}</p>
           <p className="text-3xl font-black tracking-tight mt-2 tabular-nums">
             ${data.totals.totalCommission.toFixed(2)}
           </p>
           <p className="text-xs text-emerald-100/90 mt-1 font-semibold">
-            с {data.totals.totalPaidBookings} продаж
+            {t('partner.dashboard.fromSales', { count: data.totals.totalPaidBookings })}
           </p>
         </div>
       </header>
@@ -117,10 +118,10 @@ export function PartnerDashboard() {
         </div>
         <div className="relative z-10 flex-1 min-w-0">
           <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1 leading-none">
-            Ваша персональная реферальная ссылка
+            {t('partner.dashboard.refLinkTitle')}
           </p>
           <p className="font-mono text-xs font-bold text-slate-700 truncate select-all py-1 bg-slate-50/50 rounded px-2 mt-1 border border-slate-100 max-w-full inline-block" title={refLink}>
-            {refLink || "Загрузка реферального кода…"}
+            {refLink || t('partner.dashboard.refLinkLoading')}
           </p>
         </div>
         <button
@@ -137,12 +138,12 @@ export function PartnerDashboard() {
           {copied ? (
             <>
               <Check className="h-4 w-4 text-emerald-100" />
-              Скопировано!
+              {t('partner.dashboard.copied')}
             </>
           ) : (
             <>
               <Copy className="h-4 w-4 text-teal-100" />
-              Копировать
+              {t('partner.dashboard.copy')}
             </>
           )}
         </button>
@@ -150,15 +151,15 @@ export function PartnerDashboard() {
 
       {/* Beautiful KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPI label="Клики" value={data.totals.totalClicks} icon={MousePointerClick} tone="sky" />
-        <KPI label="Регистрации" value={data.totals.totalRegistrations} icon={UserPlus} tone="teal" />
-        <KPI label="Продажи" value={data.totals.totalPaidBookings} icon={ShoppingBag} tone="emerald" />
+        <KPI label={t('partner.dashboard.clicks')} value={data.totals.totalClicks} icon={MousePointerClick} tone="sky" />
+        <KPI label={t('partner.dashboard.registrations')} value={data.totals.totalRegistrations} icon={UserPlus} tone="teal" />
+        <KPI label={t('partner.dashboard.sales')} value={data.totals.totalPaidBookings} icon={ShoppingBag} tone="emerald" />
         <KPI
-          label="Доход"
+          label={t('partner.dashboard.income')}
           value={`$${data.totals.totalCommission.toFixed(2)}`}
           icon={TrendingUp}
           tone="amber"
-          hint={`оборот $${data.totals.totalRevenue.toFixed(0)} · 5%`}
+          hint={t('partner.dashboard.turnover', { value: data.totals.totalRevenue.toFixed(0) })}
         />
       </div>
 
@@ -171,14 +172,14 @@ export function PartnerDashboard() {
               <span className="p-1.5 rounded-lg bg-sky-50 text-sky-600">
                 <Activity className="h-4.5 w-4.5 animate-pulse" />
               </span>
-              Активность за 30 дней
+              {t('partner.dashboard.activityTitle')}
             </h3>
-            <p className="text-xs text-slate-400 font-semibold mt-1">Динамика кликов, регистраций и продаж по дням</p>
+            <p className="text-xs text-slate-400 font-semibold mt-1">{t('partner.dashboard.activitySubtitle')}</p>
           </div>
         </div>
         {chartData.length === 0 ? (
           <div className="py-12 text-center text-slate-400 text-sm font-semibold relative z-10">
-            Пока нет данных за последние 30 дней.
+            {t('partner.dashboard.noActivity')}
           </div>
         ) : (
           <div className="relative z-10 w-full h-[300px]">
@@ -223,9 +224,9 @@ export function PartnerDashboard() {
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, fontWeight: 700, paddingTop: 15 }} iconType="circle" iconSize={8} />
-                <Line type="monotone" dataKey="clicks" name="Клики" stroke="#0284c7" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
-                <Line type="monotone" dataKey="registrations" name="Регистрации" stroke="#f97316" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
-                <Line type="monotone" dataKey="sales" name="Продажи" stroke="#10b981" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey="clicks" name={t('partner.dashboard.clicks')} stroke="#0284c7" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey="registrations" name={t('partner.dashboard.registrations')} stroke="#f97316" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey="sales" name={t('partner.dashboard.sales')} stroke="#10b981" strokeWidth={3} dot={{ r: 1 }} activeDot={{ r: 5, strokeWidth: 0 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -241,14 +242,14 @@ export function PartnerDashboard() {
               <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
                 <BarChart3 className="h-4.5 w-4.5" />
               </span>
-              Доходы партнёра
+              {t('partner.dashboard.earningsTitle')}
             </h3>
-            <p className="text-xs text-slate-400 font-semibold mt-1">Оборот по привлечённым турам и начисленная комиссия</p>
+            <p className="text-xs text-slate-400 font-semibold mt-1">{t('partner.dashboard.earningsSubtitle')}</p>
           </div>
         </div>
         {revenueChart.length === 0 ? (
           <div className="py-12 text-center text-slate-400 text-sm font-semibold relative z-10">
-            Оплаченных продаж пока нет.
+            {t('partner.dashboard.noSales')}
           </div>
         ) : (
           <div className="relative z-10 w-full h-[260px]">
@@ -290,8 +291,8 @@ export function PartnerDashboard() {
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, fontWeight: 700, paddingTop: 15 }} iconType="circle" iconSize={8} />
-                <Bar dataKey="revenue" name="Привлечённый оборот" fill="url(#grad-rev-revenue)" radius={[6, 6, 0, 0]} barSize={16} />
-                <Bar dataKey="commission" name="Ваша комиссия (5%)" fill="url(#grad-rev-commission)" radius={[6, 6, 0, 0]} barSize={16} />
+                <Bar dataKey="revenue" name={t('partner.dashboard.totalTurnover')} fill="url(#grad-rev-revenue)" radius={[6, 6, 0, 0]} barSize={16} />
+                <Bar dataKey="commission" name={t('partner.dashboard.yourCommission')} fill="url(#grad-rev-commission)" radius={[6, 6, 0, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           </div>

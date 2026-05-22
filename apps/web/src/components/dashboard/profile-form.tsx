@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Check, AlertCircle, Copy, Loader2, Sparkles, UserCircle2, Camera } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/src/shared/store/auth-store";
 import { apiClient, extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const t = useTranslations('dashboard');
 
   async function handleFile(file: File) {
     setUploadError(null);
@@ -34,7 +36,7 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
       const url = await uploadImage(file);
       onChange(url);
     } catch {
-      setUploadError("Ошибка загрузки. Попробуйте ещё раз.");
+      setUploadError(t('client.profile.avatarError'));
     } finally {
       setUploading(false);
     }
@@ -47,7 +49,7 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
         className="relative h-20 w-20 rounded-full overflow-hidden border-4 border-white shadow-md bg-slate-100 hover:border-teal-500/80 transition-all duration-300 shrink-0 group"
-        aria-label="Загрузить аватар"
+        aria-label={t('client.profile.uploadAvatar')}
       >
         {value ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -73,7 +75,7 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
           className="rounded-xl font-bold text-xs hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-all duration-300"
           onClick={() => inputRef.current?.click()}
         >
-          {uploading ? "Загружаем…" : "Выбрать фото"}
+          {uploading ? t('client.profile.uploading') : t('client.profile.choosePhoto')}
         </Button>
 
         {value && (
@@ -82,11 +84,11 @@ function AvatarUploader({ value, onChange }: { value: string; onChange: (url: st
             onClick={() => onChange("")}
             className="text-[11px] font-bold text-slate-400 hover:text-rose-600 text-left transition-colors pl-1"
           >
-            Удалить фото
+            {t('client.profile.removePhoto')}
           </button>
         )}
 
-        <p className="text-[10px] pl-1 text-slate-400 font-medium">JPG, PNG, WebP · до 5 МБ</p>
+        <p className="text-[10px] pl-1 text-slate-400 font-medium">{t('client.profile.photoHint')}</p>
         {uploadError && <p className="text-xs text-red-500 pl-1">{uploadError}</p>}
       </div>
 
@@ -109,6 +111,7 @@ export function ProfileForm() {
   const { user, setUser } = useAuthStore();
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const t = useTranslations('dashboard');
 
   const {
     register, handleSubmit, reset, control, formState: { errors },
@@ -165,19 +168,19 @@ export function ProfileForm() {
       >
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Личные данные</h2>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Email привязан к аккаунту и не редактируется.</p>
+            <h2 className="text-xl font-bold text-slate-900">{t('client.profile.personalData')}</h2>
+            <p className="text-xs text-slate-400 mt-1 font-medium">{t('client.profile.emailHint')}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email</Label>
+            <Label htmlFor="email" className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.emailLabel')}</Label>
             <Input id="email" value={user.email} disabled className="rounded-xl border-slate-200 bg-slate-50 font-medium text-slate-500 cursor-not-allowed" />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="fullName" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Имя и фамилия</Label>
+            <Label htmlFor="fullName" className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.nameLabel')}</Label>
             <Input id="fullName" {...register("fullName")} className="rounded-xl border-slate-200 focus-visible:ring-teal-500 focus-visible:border-teal-500 transition-all font-medium text-slate-800" />
             {errors.fullName && (
               <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-semibold">
@@ -187,9 +190,9 @@ export function ProfileForm() {
             )}
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="phone" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Телефон</Label>
-            <Input id="phone" type="tel" placeholder="+998..." {...register("phone")} className="rounded-xl border-slate-200 focus-visible:ring-teal-500 focus-visible:border-teal-500 transition-all font-medium text-slate-800" />
+          <div className="md:col-span-2 space-y-1.5">
+            <Label htmlFor="phone" className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.phoneLabel')}</Label>
+            <Input id="phone" type="tel" placeholder={t('client.profile.phonePlaceholder')} {...register("phone")} className="rounded-xl border-slate-200 focus-visible:ring-teal-500 focus-visible:border-teal-500 transition-all font-medium text-slate-800" />
             {errors.phone && (
               <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-semibold">
                 <AlertCircle className="h-3.5 w-3.5" />
@@ -199,7 +202,7 @@ export function ProfileForm() {
           </div>
 
           <div className="md:col-span-2 space-y-1.5">
-            <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Фото профиля</Label>
+            <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.avatarLabel')}</Label>
             <div className="mt-1">
               <Controller
                 name="avatarUrl"
@@ -215,7 +218,7 @@ export function ProfileForm() {
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <Button type="submit" disabled={saving} size="lg" className="rounded-2xl font-bold text-sm bg-teal-600 hover:bg-teal-700 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95">
             {saving && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
-            {saving ? "Сохраняем данные…" : "Сохранить изменения"}
+            {saving ? t('client.profile.saving') : t('client.profile.save')}
           </Button>
         </div>
       </form>
@@ -232,10 +235,10 @@ export function ProfileForm() {
           
           <div className="relative z-10">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
-              <Sparkles className="h-3 w-3 animate-pulse text-teal-200" /> Реферальный бонус
+              <Sparkles className="h-3 w-3 animate-pulse text-teal-200" /> {t('client.profile.referralTitle')}
             </div>
-            <p className="mt-4 text-white text-sm font-semibold leading-relaxed">
-              Делитесь кодом с друзьями: они получат скидку на первый тур, а вы накопите бонусы на бесплатное путешествие!
+            <p className="mt-4 text-white text-sm font-semibold leading-snug">
+              {t('client.profile.referralHint')}
             </p>
 
             <div className="mt-6 rounded-2xl bg-white border border-teal-200/60 p-4 flex items-center justify-between gap-3 shadow-md">
@@ -250,12 +253,12 @@ export function ProfileForm() {
                 {copied ? (
                   <>
                     <Check className="h-3.5 w-3.5 text-emerald-500" />
-                    <span className="text-emerald-600">Скопировано</span>
+                    <span className="text-emerald-600">{t('client.profile.copied')}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="h-3.5 w-3.5" />
-                    <span>Копировать</span>
+                    <span>{t('client.profile.copy')}</span>
                   </>
                 )}
               </button>

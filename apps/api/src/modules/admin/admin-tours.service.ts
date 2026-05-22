@@ -5,10 +5,14 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { Prisma } from "@tours/db";
 import { CreateTourDto } from "./dto/create-tour.dto";
 import { UpdateTourDto } from "./dto/update-tour.dto";
+import { WishlistsService } from "../wishlists/wishlists.service";
 
 @Injectable()
 export class AdminToursService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly wishlists: WishlistsService,
+  ) {}
 
   async create(dto: CreateTourDto) {
     const exists = await this.prisma.tour.findUnique({ where: { slug: dto.slug }, select: { id: true } });
@@ -39,7 +43,10 @@ export class AdminToursService {
   }
 
   async update(id: string, dto: UpdateTourDto) {
-    const existing = await this.prisma.tour.findUnique({ where: { id }, select: { id: true } });
+    const existing = await this.prisma.tour.findUnique({
+      where: { id },
+      select: { id: true, priceUsd: true },
+    });
     if (!existing) throw new NotFoundException("Tour not found");
 
     const data: Prisma.TourUpdateInput = {};
@@ -63,6 +70,12 @@ export class AdminToursService {
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
 
     const tour = await this.prisma.tour.update({ where: { id }, data });
+
+    if (dto.priceUsd !== undefined) {
+      const newPrice = new Prisma.Decimal(dto.priceUsd);
+      void this.wishlists.notifyPriceDrop(id, existing.priceUsd, newPrice);
+    }
+
     return this.serialize(tour);
   }
 

@@ -130,7 +130,7 @@ export function SearchForm() {
 
   return (
     <div className="relative w-full">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:gap-3">
 
         {/* ── Destination ── */}
         <PopoverPrimitive.Root
@@ -141,13 +141,14 @@ export function SearchForm() {
           }}
         >
           <PopoverPrimitive.Anchor asChild>
-            <div className={`relative flex flex-col justify-center px-5 py-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-sm border transition-colors cursor-text hover:bg-white overflow-hidden ${activeSeg === "dest" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
-              <span className={`flex items-center gap-1.5 text-[11px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 ${activeSeg === "dest" ? "text-teal-600" : "text-slate-400"}`}>
+            <div className={`relative flex flex-col justify-center px-3.5 py-2.5 sm:px-5 sm:py-4 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-sm border transition-colors cursor-text hover:bg-white overflow-hidden ${activeSeg === "dest" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
+              <span className={`hidden sm:flex items-center gap-1.5 text-[11px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 ${activeSeg === "dest" ? "text-teal-600" : "text-slate-400"}`}>
                 <MapPin className="h-3.5 w-3.5" />
                 {t("destinationLabel")}
               </span>
 
               <div className="flex items-center gap-2">
+                <MapPin className={`h-4 w-4 shrink-0 sm:hidden transition-colors ${activeSeg === "dest" ? "text-teal-500" : "text-slate-300"}`} />
                 <input
                   ref={inputRef}
                   type="text"
@@ -184,8 +185,7 @@ export function SearchForm() {
               side="bottom"
               align="start"
               sideOffset={8}
-              avoidCollisions
-              collisionPadding={12}
+              avoidCollisions={false}
               onInteractOutside={(e) => {
                 if (inputRef.current?.contains(e.target as Node)) {
                   e.preventDefault();
@@ -237,26 +237,31 @@ export function SearchForm() {
           </PopoverPrimitive.Portal>
         </PopoverPrimitive.Root>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {/* ── Date ── */}
-          <div className={`relative flex-1 min-w-0 flex flex-col justify-center px-4 py-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-sm border transition-colors hover:bg-white overflow-hidden ${activeSeg === "date" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
-            <p className={`flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 pointer-events-none ${activeSeg === "date" ? "text-teal-600" : "text-slate-400"}`}>
+          <div className={`relative flex-1 min-w-0 flex flex-col justify-center px-3 py-2.5 sm:px-4 sm:py-4 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-sm border transition-colors hover:bg-white overflow-hidden ${activeSeg === "date" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
+            <p className={`hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 pointer-events-none ${activeSeg === "date" ? "text-teal-600" : "text-slate-400"}`}>
               <Calendar className="h-3.5 w-3.5" />
               {t("dateLabel")}
             </p>
-            <DatePickerInput
-              value={date}
-              onChange={setDate}
-              min={new Date().toISOString().split("T")[0]}
-              placeholder={t("datePlaceholder")}
-              isActive={activeSeg === "date"}
-              onOpenChange={(open: boolean) => setActiveSeg(open ? "date" : null)}
-            />
+            <div className="flex items-center gap-1.5">
+              <Calendar className={`h-4 w-4 shrink-0 sm:hidden transition-colors ${activeSeg === "date" ? "text-teal-500" : "text-slate-300"}`} />
+              <div className="flex-1 min-w-0">
+                <DatePickerInput
+                  value={date}
+                  onChange={setDate}
+                  min={new Date().toISOString().split("T")[0]}
+                  placeholder={t("datePlaceholder")}
+                  isActive={activeSeg === "date"}
+                  onOpenChange={(open: boolean) => setActiveSeg(open ? "date" : null)}
+                />
+              </div>
+            </div>
           </div>
 
           {/* ── Guests ── */}
-          <div className={`relative flex-1 min-w-0 flex flex-col justify-center px-4 py-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-sm border transition-colors hover:bg-white overflow-hidden ${activeSeg === "guests" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
-            <p className={`flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 ${activeSeg === "guests" ? "text-teal-600" : "text-slate-400"}`}>
+          <div className={`relative flex-1 min-w-0 flex flex-col justify-center px-3 py-2.5 sm:px-4 sm:py-4 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-sm border transition-colors hover:bg-white overflow-hidden ${activeSeg === "guests" ? "border-teal-500 shadow-teal-500/10" : "border-slate-100"}`}>
+            <p className={`hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 transition-colors duration-150 ${activeSeg === "guests" ? "text-teal-600" : "text-slate-400"}`}>
               <Users className="h-3.5 w-3.5" />
               {t("guestsLabel")}
             </p>
@@ -267,11 +272,11 @@ export function SearchForm() {
                 onFocus={() => setActiveSeg("guests")}
                 onBlur={() => setActiveSeg(null)}
                 aria-label={t("decreaseAriaLabel")}
-                className="grid place-items-center h-8 w-8 rounded-full bg-slate-100 text-slate-500 hover:bg-teal-50 hover:text-teal-600 transition-all active:scale-95"
+                className="grid place-items-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-slate-100 text-slate-500 hover:bg-teal-50 hover:text-teal-600 transition-all active:scale-95"
               >
-                <Minus className="h-3.5 w-3.5" />
+                <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </button>
-              <span className="text-[17px] font-bold text-slate-900 tabular-nums w-6 text-center select-none">
+              <span className="text-[15px] font-bold text-slate-900 tabular-nums w-6 text-center select-none">
                 {guests}
               </span>
               <button
@@ -280,9 +285,9 @@ export function SearchForm() {
                 onFocus={() => setActiveSeg("guests")}
                 onBlur={() => setActiveSeg(null)}
                 aria-label={t("increaseAriaLabel")}
-                className="grid place-items-center h-8 w-8 rounded-full bg-slate-100 text-slate-500 hover:bg-teal-50 hover:text-teal-600 transition-all active:scale-95"
+                className="grid place-items-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-slate-100 text-slate-500 hover:bg-teal-50 hover:text-teal-600 transition-all active:scale-95"
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </button>
             </div>
           </div>
@@ -291,7 +296,7 @@ export function SearchForm() {
         {/* ── Search Button ── */}
         <button
           type="submit"
-          className="mt-1 w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold text-white text-[16px] transition-all hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-teal-500/30"
+          className="w-full flex items-center justify-center gap-2 px-8 py-2.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-white text-[15px] sm:text-[16px] transition-all hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-teal-500/30"
           style={{ background: "linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%)" }}
         >
           {t("buttonSearch")}

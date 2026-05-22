@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import {
   Wallet, ArrowDownCircle, ArrowUpCircle, Clock, Check, X as XIcon,
   TrendingUp, ShoppingBag, Banknote, ArrowRight, History, BadgeCheck,
@@ -10,24 +11,40 @@ import { referralsApi } from "@/src/shared/api/referrals-api";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
 import { PayoutRequestModal } from "./payout-request-modal";
 
-const TYPE_LABEL: Record<string, { label: string; cls: string; icon: React.ElementType }> = {
-  COMMISSION_EARNED: { label: "Начисление комиссии 5%", cls: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: ArrowDownCircle },
-  REFERRAL_COUNT:    { label: "Регистрация реферала", cls: "bg-sky-50 text-sky-700 border border-sky-100",         icon: ArrowDownCircle },
-  PAYOUT_REQUEST:    { label: "Запрос вывода средств", cls: "bg-amber-50 text-amber-700 border border-amber-100",     icon: ArrowUpCircle   },
-  PAYOUT_REJECTED:   { label: "Возврат средств (Отклонено)", cls: "bg-rose-50 text-rose-700 border border-rose-100",    icon: ArrowDownCircle },
-  ADMIN_ADJUSTMENT:  { label: "Корректировка баланса",  cls: "bg-slate-100 text-slate-700 border border-slate-200",    icon: ArrowDownCircle },
+const TYPE_LABEL_CLS: Record<string, { cls: string; icon: React.ElementType }> = {
+  COMMISSION_EARNED: { cls: "bg-emerald-50 text-emerald-700 border border-emerald-100", icon: ArrowDownCircle },
+  REFERRAL_COUNT:    { cls: "bg-sky-50 text-sky-700 border border-sky-100",             icon: ArrowDownCircle },
+  PAYOUT_REQUEST:    { cls: "bg-amber-50 text-amber-700 border border-amber-100",       icon: ArrowUpCircle   },
+  PAYOUT_REJECTED:   { cls: "bg-rose-50 text-rose-700 border border-rose-100",          icon: ArrowDownCircle },
+  ADMIN_ADJUSTMENT:  { cls: "bg-slate-100 text-slate-700 border border-slate-200",      icon: ArrowDownCircle },
 };
 
-const PAYOUT_STATUS: Record<string, { label: string; badgeCls: string; rowCls: string; icon: React.ElementType }> = {
-  REQUESTED:  { label: "В обработке",   badgeCls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     rowCls: "bg-amber-50/10",   icon: Clock    },
-  PROCESSING: { label: "Обрабатывается", badgeCls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",    rowCls: "bg-amber-50/10",   icon: Clock    },
-  PAID:       { label: "Выплачено",     badgeCls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", rowCls: "bg-emerald-50/5", icon: Check    },
-  REJECTED:   { label: "Отклонено",     badgeCls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",         rowCls: "bg-rose-50/5",    icon: XIcon    },
+const PAYOUT_STATUS_CLS: Record<string, { badgeCls: string; rowCls: string; icon: React.ElementType }> = {
+  REQUESTED:  { badgeCls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",      rowCls: "bg-amber-50/10",   icon: Clock  },
+  PROCESSING: { badgeCls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",      rowCls: "bg-amber-50/10",   icon: Clock  },
+  PAID:       { badgeCls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", rowCls: "bg-emerald-50/5", icon: Check  },
+  REJECTED:   { badgeCls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",          rowCls: "bg-rose-50/5",    icon: XIcon  },
 };
 
 export function PartnerFinance() {
   const qc = useQueryClient();
+  const t = useTranslations('dashboard');
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+
+  const TYPE_LABEL: Record<string, { label: string; cls: string; icon: React.ElementType }> = {
+    COMMISSION_EARNED: { label: t('partner.finance.txCommission'),     ...TYPE_LABEL_CLS.COMMISSION_EARNED! },
+    REFERRAL_COUNT:    { label: t('partner.finance.txReferral'),       ...TYPE_LABEL_CLS.REFERRAL_COUNT! },
+    PAYOUT_REQUEST:    { label: t('partner.finance.txPayoutRequest'),  ...TYPE_LABEL_CLS.PAYOUT_REQUEST! },
+    PAYOUT_REJECTED:   { label: t('partner.finance.txPayoutRejected'), ...TYPE_LABEL_CLS.PAYOUT_REJECTED! },
+    ADMIN_ADJUSTMENT:  { label: t('partner.finance.txAdjustment'),     ...TYPE_LABEL_CLS.ADMIN_ADJUSTMENT! },
+  };
+
+  const PAYOUT_STATUS: Record<string, { label: string; badgeCls: string; rowCls: string; icon: React.ElementType }> = {
+    REQUESTED:  { label: t('partner.finance.statusProcessing'),  ...PAYOUT_STATUS_CLS.REQUESTED! },
+    PROCESSING: { label: t('partner.finance.statusHandling'),    ...PAYOUT_STATUS_CLS.PROCESSING! },
+    PAID:       { label: t('partner.finance.statusPaid'),        ...PAYOUT_STATUS_CLS.PAID! },
+    REJECTED:   { label: t('partner.finance.statusRejected'),    ...PAYOUT_STATUS_CLS.REJECTED! },
+  };
 
   const { data: stats, isLoading: loadingStats, isError } = useQuery({
     queryKey: ["partner", "stats"],
@@ -51,7 +68,7 @@ export function PartnerFinance() {
       </div>
     );
   }
-  if (isError) return <div className="text-rose-600">Не удалось загрузить данные.</div>;
+  if (isError) return <div className="text-rose-600">{t('partner.finance.loadError')}</div>;
 
   const canRequest = stats.balance >= 50;
   const earnedPct = stats.totals.totalCommission > 0
@@ -78,20 +95,20 @@ export function PartnerFinance() {
         <div className="relative z-10">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3.5 py-1 text-[11px] font-black uppercase tracking-widest text-white backdrop-blur-md">
             <Wallet className="h-3.5 w-3.5 text-teal-200" />
-            Доступный баланс
+            {t('partner.finance.availableBalance')}
           </div>
 
           <p className="mt-4 text-5xl md:text-6xl font-black tabular-nums tracking-tight drop-shadow-sm">
             ${stats.balance.toFixed(2)}
           </p>
           <p className="mt-2 text-teal-100/90 text-sm font-semibold">
-            Всего заработано: <span className="font-black text-white">${stats.totals.totalCommission.toFixed(2)}</span> с {stats.totals.totalPaidBookings} продаж
+            {t('partner.finance.totalEarned')} <span className="font-black text-white">${stats.totals.totalCommission.toFixed(2)}</span> {t('partner.finance.fromSales', { count: stats.totals.totalPaidBookings })}
           </p>
 
           {/* progress bar */}
           <div className="mt-6 max-w-md">
             <div className="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-widest text-teal-200 mb-2">
-              <span>Баланс / Заработано</span>
+              <span>{t('partner.finance.cardBalance')}</span>
               <span className="tabular-nums text-white">{earnedPct.toFixed(0)}%</span>
             </div>
             <div className="h-2 rounded-full bg-black/20 overflow-hidden border border-white/5">
@@ -113,19 +130,19 @@ export function PartnerFinance() {
         <KpiTile
           icon={TrendingUp}
           iconCls="bg-emerald-50 text-emerald-600 border border-emerald-100"
-          label="Всего заработано"
+          label={t('partner.finance.cardTotalEarned')}
           value={`$${stats.totals.totalCommission.toFixed(2)}`}
         />
         <KpiTile
           icon={ShoppingBag}
           iconCls="bg-sky-50 text-sky-600 border border-sky-100"
-          label="Оплаченные продажи"
+          label={t('partner.finance.cardSales')}
           value={String(stats.totals.totalPaidBookings)}
         />
         <KpiTile
           icon={Clock}
           iconCls="bg-amber-50 text-amber-600 border border-amber-100"
-          label="Выплаты в обработке"
+          label={t('partner.finance.cardProcessing')}
           value={String(pendingCount)}
         />
       </div>
@@ -138,12 +155,12 @@ export function PartnerFinance() {
             <span className="p-1 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
               <Banknote className="h-4 w-4" />
             </span>
-            <p className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">Запросить вывод средств</p>
+            <p className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">{t('partner.finance.requestPayout')}</p>
           </div>
           <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-1">
             {canRequest
-              ? `На вашем балансе $${stats.balance.toFixed(2)}. Вы можете подать заявку прямо сейчас.`
-              : `Минимальная сумма для выплаты — $50. Пока вам недоступен вывод средств.`}
+              ? t('partner.finance.canRequest', { amount: stats.balance.toFixed(2) })
+              : t('partner.finance.minAmount')}
           </p>
         </div>
         <button
@@ -160,9 +177,9 @@ export function PartnerFinance() {
           } : undefined}
         >
           {canRequest ? (
-            <>Вывести средства <ArrowRight className="h-4 w-4 text-teal-100" /></>
+            <>{t('partner.finance.withdraw')} <ArrowRight className="h-4 w-4 text-teal-100" /></>
           ) : (
-            <>Нужно ещё ${(50 - stats.balance).toFixed(2)}</>
+            <>{t('partner.finance.needMore', { amount: (50 - stats.balance).toFixed(2) })}</>
           )}
         </button>
       </section>
@@ -174,7 +191,7 @@ export function PartnerFinance() {
             <span className="p-1 rounded-lg bg-amber-50 text-amber-500">
               <ArrowUpCircle className="h-4 w-4" />
             </span>
-            Мои запросы на вывод
+            {t('partner.finance.myPayoutsTitle')}
           </h3>
           {payouts && payouts.length > 0 && (
             <span className="text-[10px] font-extrabold text-slate-500 tabular-nums bg-slate-100 border border-slate-200/50 px-2.5 py-0.5 rounded-full">
@@ -192,7 +209,7 @@ export function PartnerFinance() {
             <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-slate-50 text-slate-400 mb-3 border border-slate-100">
               <BadgeCheck className="h-6 w-6" />
             </div>
-            <p className="text-sm text-slate-400 font-semibold">Запросов на вывод ещё не было.</p>
+            <p className="text-sm text-slate-400 font-semibold">{t('partner.finance.noPayouts')}</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -210,11 +227,11 @@ export function PartnerFinance() {
                       <p className="text-[11px] text-slate-400 font-semibold mt-1 leading-none">
                         {new Date(p.createdAt).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
                         {p.processedAt && (
-                          <span className="text-emerald-600 font-bold"> · Выплачено: {new Date(p.processedAt).toLocaleDateString("ru-RU")}</span>
+                          <span className="text-emerald-600 font-bold"> · {t('partner.finance.paidAt')} {new Date(p.processedAt).toLocaleDateString("ru-RU")}</span>
                         )}
                       </p>
                       {p.rejectReason && (
-                        <p className="text-xs text-rose-600 mt-1 font-semibold">Причина: {p.rejectReason}</p>
+                        <p className="text-xs text-rose-600 mt-1 font-semibold">{t('partner.finance.reason')} {p.rejectReason}</p>
                       )}
                     </div>
                   </div>
@@ -235,7 +252,7 @@ export function PartnerFinance() {
           <span className="p-1 rounded-lg bg-slate-100 text-slate-500">
             <History className="h-4.5 w-4.5" />
           </span>
-          <h3 className="font-extrabold text-slate-800">История транзакций</h3>
+          <h3 className="font-extrabold text-slate-800">{t('partner.finance.historyTitle')}</h3>
         </div>
 
         {stats.transactions.length === 0 ? (
@@ -244,7 +261,7 @@ export function PartnerFinance() {
               <History className="h-6 w-6" />
             </div>
             <p className="text-sm text-slate-400 font-semibold">
-              История транзакций пуста.
+              {t('partner.finance.noHistory')}
             </p>
           </div>
         ) : (

@@ -21,18 +21,18 @@ export function NewsletterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full sm:w-auto gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
       <input
         type="email"
         value={email}
         onChange={e => setEmail(e.target.value)}
         placeholder="your@email.com"
         required
-        className="flex-1 sm:w-56 px-4 py-2.5 rounded-xl bg-white/[0.07] ring-1 ring-white/11 text-white placeholder-white/25 text-sm outline-none focus:ring-2 focus:ring-teal-500/50 transition-all"
+        className="w-full sm:w-56 px-4 py-2.5 rounded-xl bg-white/[0.07] ring-1 ring-white/11 text-white placeholder-white/25 text-sm outline-none focus:ring-2 focus:ring-teal-500/50 transition-all"
       />
       <button
         type="submit"
-        className="shrink-0 px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold text-sm transition-colors"
+        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold text-sm transition-colors"
       >
         Подписаться
       </button>

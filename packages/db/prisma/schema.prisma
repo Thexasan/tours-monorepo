@@ -92,6 +92,7 @@ enum NotificationType {
   COMMISSION_EARNED            // Партнёру начислена комиссия
   PAYOUT_PROCESSED             // Выплата партнёру подтверждена
   PAYOUT_REJECTED              // Заявка на вывод отклонена
+  WISHLIST_PRICE_DROP          // Цена на тур из избранного снизилась
 }
 
 // =====================================================
@@ -139,6 +140,7 @@ model User {
   refreshTokens       RefreshToken[]
   uploadedDocuments   BookingDocument[]       @relation("UploadedDocuments")
   notifications       Notification[]
+  wishlists           Wishlist[]
 
   @@index([role])
   @@index([referrerId])
@@ -216,11 +218,30 @@ model Tour {
   bookings           Booking[]
   reviews            Review[]
   referralClicks     ReferralClick[]
+  wishlists          Wishlist[]
 
   @@index([country])
   @@index([isActive, isHot])
   @@index([priceUsd])
   @@map("tours")
+}
+
+// =====================================================
+// WISHLIST
+// =====================================================
+
+model Wishlist {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tourId      String   @map("tour_id")
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  priceAtSave Decimal  @db.Decimal(12, 2) @map("price_at_save")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, tourId])
+  @@index([userId])
+  @@map("wishlists")
 }
 
 // =====================================================

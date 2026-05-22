@@ -47,7 +47,7 @@ export function TourItinerary({
           <button
             type="button"
             onClick={() => setOpenDays(new Set(days.map(d => d.day)))}
-            className="text-xs font-semibold text-orange-700 px-3 py-1.5 rounded-full ring-1 ring-orange-100 hover:bg-orange-50 transition"
+            className="text-xs font-semibold text-teal-700 px-3 py-1.5 rounded-full ring-1 ring-teal-100 hover:bg-teal-50 transition"
           >
             {t("detail.itinerary.expandAll")}
           </button>
@@ -62,7 +62,7 @@ export function TourItinerary({
       </div>
 
       <ol className="relative">
-        <span aria-hidden className="absolute left-[19px] top-3 bottom-3 w-px bg-linear-to-b from-orange-300 via-sky-300 to-rose-200" />
+        <span aria-hidden className="absolute left-[19px] top-3 bottom-3 w-px bg-linear-to-b from-emerald-400 via-teal-400 to-emerald-200" />
         {days.map((d) => {
           const open = openDays.has(d.day);
           return (
@@ -72,7 +72,7 @@ export function TourItinerary({
                   className={cn(
                     "relative grid place-items-center h-10 w-10 rounded-full transition-all",
                     open
-                      ? "bg-linear-to-br from-orange-500 to-sky-600 text-white shadow-[0_10px_24px_-8px_rgba(249,115,22,0.5)]"
+                      ? "bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.45)]"
                       : "bg-white ring-1 ring-slate-200 text-slate-500",
                   )}
                 >
@@ -84,20 +84,20 @@ export function TourItinerary({
                 onClick={() => toggle(d.day)}
                 className={cn(
                   "w-full text-left rounded-2xl bg-white ring-1 transition-all overflow-hidden",
-                  open ? "ring-orange-200 shadow-[0_10px_28px_-12px_rgba(249,115,22,0.25)]" : "ring-slate-100 hover:ring-slate-200",
+                  open ? "ring-teal-200 shadow-[0_10px_28px_-12px_rgba(16,185,129,0.20)]" : "ring-slate-100 hover:ring-slate-200",
                 )}
               >
                 <div className="flex items-center gap-4 px-5 py-4">
                   <span
                     className={cn(
                       "text-[10px] font-bold uppercase tracking-[0.14em] tabular-nums px-2.5 py-1 rounded-full shrink-0",
-                      open ? "bg-orange-50 text-orange-700" : "bg-slate-100 text-slate-600",
+                      open ? "bg-teal-50 text-teal-700" : "bg-slate-100 text-slate-600",
                     )}
                   >
                     {t("detail.itinerary.dayLabel")} {String(d.day).padStart(2, "0")}
                   </span>
                   <p className="font-bold text-slate-900 text-[15px] truncate flex-1">{d.title}</p>
-                  <ChevronDown className={cn("h-[18px] w-[18px] text-slate-400 transition-transform shrink-0", open && "rotate-180 text-orange-700")} />
+                  <ChevronDown className={cn("h-[18px] w-[18px] text-slate-400 transition-transform shrink-0", open && "rotate-180 text-teal-700")} />
                 </div>
                 <div className={cn("grid transition-[grid-template-rows] duration-300", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
                   <div className="overflow-hidden">

@@ -10,6 +10,7 @@ import { CurrencySelector } from "@/src/components/shared/currency-selector";
 import { UserMenu } from "@/src/widgets/layout/user-menu";
 import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 import { NotificationsBell } from "@/src/components/notifications/notifications-bell";
+import { WishlistBell } from "@/src/components/wishlist/wishlist-bell";
 import { cn } from "@/src/lib/utils";
 
 export function Navbar() {
@@ -80,15 +81,8 @@ export function Navbar() {
           <NavLink href={`/${locale}`} label={t("nav.home")} transparent={transparent} active={isHomePage} />
           <NavLink href={`/${locale}/tours`} label={t("nav.tours")} transparent={transparent} active={pathname?.includes("/tours")} />
 
-          {/* Mobile: language buttons only (< md) */}
-          <div
-            className={cn(
-              "flex md:hidden items-center rounded-full h-8 transition-all duration-300",
-              transparent
-                ? "bg-white/10 ring-1 ring-white/20 backdrop-blur-sm"
-                : "bg-slate-50 ring-1 ring-slate-200",
-            )}
-          >
+          {/* Mobile: Globe dropdown (< md) */}
+          <div className="flex md:hidden">
             <LanguageSwitcher transparent={transparent} compact />
           </div>
 
@@ -106,6 +100,7 @@ export function Navbar() {
             <CurrencySelector transparent={transparent} />
           </div>
 
+          <WishlistBell transparent={transparent} />
           <NotificationsBell transparent={transparent} />
           <UserMenu transparent={transparent} />
         </nav>

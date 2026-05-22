@@ -6,12 +6,13 @@ import {
   Copy, Check, Send, MessageCircle, Share2, Gift,
   MousePointerClick, UserPlus, ShoppingBag, TrendingUp, Sparkles,
 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { referralsApi } from "@/src/shared/api/referrals-api";
 import { Button } from "@/src/components/ui/button";
 
 export function ReferralsPanel() {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const [copied, setCopied] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
@@ -30,7 +31,7 @@ export function ReferralsPanel() {
     });
   };
 
-  const shareText = "Привет! Зацени туры на этом сайте, очень крутые предложения 🌍";
+  const shareText = t('client.referrals.shareText');
 
   if (isLoading) {
     return (
@@ -46,7 +47,7 @@ export function ReferralsPanel() {
     );
   }
   if (isError || !data) {
-    return <div className="text-rose-600">Не удалось загрузить статистику.</div>;
+    return <div className="text-rose-600">{t('client.referrals.pendingDesc')}</div>;
   }
 
   return (
@@ -61,22 +62,22 @@ export function ReferralsPanel() {
         <div className="flex flex-col md:flex-row md:items-end gap-6 relative z-10">
           <div className="flex-1 min-w-0">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-teal-400">
-              <Sparkles className="h-3.5 w-3.5 animate-pulse" /> Реферальная программа
+              <Sparkles className="h-3.5 w-3.5 animate-pulse" /> {t('client.referrals.title')}
             </div>
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              Приглашайте друзей — получайте туры в подарок
+              {t('client.referrals.subtitle')}
             </h1>
             <p className="mt-2 text-slate-300 font-medium max-w-xl text-sm leading-relaxed">
               {data.remaining > 0
-                ? `Осталось пригласить ${data.remaining} ${pluralize(data.remaining, "друга", "друзей", "друзей")} до вашего следующего бесплатного тура!`
-                : "🎉 Поздравляем! Все условия выполнены, вы можете забрать бесплатный тур."}
+                ? t('client.referrals.leftToInvite', { count: data.remaining })
+                : t('client.referrals.congrats')}
             </p>
           </div>
 
           {/* Progress metric card */}
           <div className="md:w-80 shrink-0 bg-white/5 border border-white/10 backdrop-blur-md p-5 rounded-2xl shadow-inner relative">
             <div className="flex items-baseline justify-between text-white">
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Накоплено друзей</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{t('client.referrals.friendsCount')}</p>
               <p className="text-3xl font-extrabold tabular-nums text-white">
                 {data.referralCount}
                 <span className="text-slate-400 text-sm font-semibold"> / {data.threshold}</span>
@@ -91,7 +92,7 @@ export function ReferralsPanel() {
             {data.freeToursAvailable > 0 && (
               <div className="mt-4 flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-400 to-emerald-500 px-4 py-2.5 text-teal-950 text-xs font-extrabold shadow-lg shadow-teal-500/10">
                 <Gift className="h-4.5 w-4.5 text-teal-950 shrink-0 animate-bounce" />
-                Доступно: {data.freeToursAvailable} бесплатный тур!
+                {t('client.referrals.available')}: {data.freeToursAvailable} {t('client.referrals.freeTour')}
               </div>
             )}
           </div>
@@ -100,21 +101,21 @@ export function ReferralsPanel() {
 
       {/* Stats tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatTile label="Переходы" value={data.clicks} hint="клики по ссылке"
+        <StatTile label={t('client.referrals.clicks')} value={data.clicks} hint={t('client.referrals.clicksSub')}
           icon={MousePointerClick} tone="sky" />
-        <StatTile label="Регистрации" value={data.registrations} hint="зарегистрировались"
+        <StatTile label={t('client.referrals.registrations')} value={data.registrations} hint={t('client.referrals.registrationsSub')}
           icon={UserPlus} tone="teal" />
-        <StatTile label="Оплачено" value={data.paidBookings} hint="купили тур"
+        <StatTile label={t('client.referrals.paid')} value={data.paidBookings} hint={t('client.referrals.paidSub')}
           icon={ShoppingBag} tone="emerald" />
-        <StatTile label="Конверсия" value={`${data.conversionRate}%`} hint="клик → продажа"
+        <StatTile label={t('client.referrals.conversion')} value={`${data.conversionRate}%`} hint={t('client.referrals.conversionSub')}
           icon={TrendingUp} tone="amber" />
       </div>
 
       {/* Referral link generation */}
       <section className="tv-surface-elevated p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm bg-gradient-to-b from-white to-slate-50/20">
-        <h3 className="font-bold text-slate-900 text-lg">Ваша уникальная реферальная ссылка</h3>
+        <h3 className="font-bold text-slate-900 text-lg">{t('client.referrals.linkTitle')}</h3>
         <p className="text-xs font-semibold text-slate-400 mt-1">
-          Поделитесь ссылкой — мы автоматически посчитаем переходы, регистрации и продажи в вашей панели.
+          {t('client.referrals.linkHint')}
         </p>
 
         <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -126,12 +127,12 @@ export function ReferralsPanel() {
             onClick={(e) => e.currentTarget.select()}
           />
           <Button onClick={onCopy} variant={copied ? "default" : "outline"} className={`shrink-0 h-12 px-6 rounded-2xl font-bold transition-all duration-300 active:scale-95 ${copied ? "bg-emerald-600 hover:bg-emerald-700 border-transparent text-white" : "hover:bg-slate-100 text-slate-700"}`}>
-            {copied ? (<><Check className="w-4.5 h-4.5 mr-1" />Скопировано</>) : (<><Copy className="w-4.5 h-4.5 mr-1" />Скопировать link</>)}
+            {copied ? (<><Check className="w-4.5 h-4.5 mr-1" />{t('client.referrals.copied')}</>) : (<><Copy className="w-4.5 h-4.5 mr-1" />{t('client.referrals.copyLink')}</>)}
           </Button>
         </div>
 
         <div className="mt-6">
-          <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">Поделиться в сетях</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">{t('client.referrals.shareTitle')}</p>
           <div className="flex flex-wrap gap-2.5">
             <ShareLink
               href={`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`}
@@ -162,8 +163,8 @@ export function ReferralsPanel() {
             <ShoppingBag className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-bold text-amber-950">{data.pendingBookings} {pluralize(data.pendingBookings, "заявка", "заявки", "заявок")} в обработке у менеджера</p>
-            <p className="text-xs font-semibold text-amber-800/80 mt-1">Как только они будут полностью оплачены клиентами, ваш счётчик увеличится автоматически.</p>
+            <p className="font-bold text-amber-950">{t('client.referrals.pendingBooking', { count: data.pendingBookings })}</p>
+            <p className="text-xs font-semibold text-amber-800/80 mt-1">{t('client.referrals.pendingHint')}</p>
           </div>
         </div>
       )}
@@ -174,10 +175,9 @@ export function ReferralsPanel() {
             <Sparkles className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-bold">Вы являетесь зарегистрированным Партнёром</p>
+            <p className="font-bold">{t('client.referrals.isPartner')}</p>
             <p className="text-xs font-semibold text-emerald-800/80 mt-1">
-              Детальная финансовая статистика, выплаты и баланс доступны в вашем специальном{" "}
-              <a href={`/${locale}/partner/dashboard`} className="font-extrabold text-emerald-600 underline underline-offset-4 hover:text-emerald-700 transition-colors">кабинете партнёра</a>.
+              <a href={`/${locale}/partner/dashboard`} className="font-extrabold text-emerald-600 underline underline-offset-4 hover:text-emerald-700 transition-colors">{t('client.referrals.partnerCabinet')}</a>
             </p>
           </div>
         </div>
@@ -189,13 +189,11 @@ export function ReferralsPanel() {
             <TrendingUp className="h-5 w-5" />
           </span>
           <div>
-            <p className="font-bold text-slate-900">Хотите зарабатывать 5% комиссии с каждой продажи?</p>
+            <p className="font-bold text-slate-900">{t('client.referrals.becomePartnerHint')}</p>
             <p className="text-xs font-medium text-slate-500 mt-1 leading-relaxed">
-              Партнёрская программа разработана для тревел-агентов, блогеров и инфлюенсеров с большой аудиторией. Партнёров мы приглашаем в индивидуальном порядке. Напишите нам на{" "}
-              <a href="mailto:support@traveling-tours.local" className="font-extrabold text-teal-600 underline underline-offset-4 hover:text-teal-700 transition-colors">
-                support@traveling-tours.local
+              <a href={`mailto:${t('client.referrals.contactEmail')}`} className="font-extrabold text-teal-600 underline underline-offset-4 hover:text-teal-700 transition-colors">
+                {t('client.referrals.contactEmail')}
               </a>
-              , если заинтересованы в постоянном сотрудничестве.
             </p>
           </div>
         </div>
@@ -271,13 +269,4 @@ function StatTile({
       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
     </div>
   );
-}
-
-
-function pluralize(n: number, one: string, few: string, many: string): string {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return one;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
-  return many;
 }

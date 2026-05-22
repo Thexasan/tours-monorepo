@@ -22,8 +22,10 @@ const schema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, "Только a-z, 0-9 и дефис").min(3, "Минимум 3 символа").max(120),
   titleRu: z.string().min(2, "Обязательно"),
   titleEn: z.string().optional(),
+  titleTr: z.string().optional(),
   descRu: z.string().min(10, "Минимум 10 символов"),
   descEn: z.string().optional(),
+  descTr: z.string().optional(),
   country: z.string().min(2, "Обязательно"),
   city: z.string().optional(),
   hotelName: z.string().optional(),
@@ -34,8 +36,10 @@ const schema = z.object({
   coverImage: z.string().min(5, "Загрузите обложку"),
   includedRu: z.string().optional(),
   includedEn: z.string().optional(),
+  includedTr: z.string().optional(),
   excludedRu: z.string().optional(),
   excludedEn: z.string().optional(),
+  excludedTr: z.string().optional(),
   isHot: z.coerce.boolean().optional(),
   isActive: z.coerce.boolean().optional(),
   referralThreshold: z.coerce.number().int().min(1).max(1000),
@@ -67,8 +71,10 @@ const FIELD_SECTIONS: Record<string, SectionId> = {
   slug: "Основное",
   titleRu: "Основное",
   titleEn: "Основное",
+  titleTr: "Основное",
   descRu: "Основное",
   descEn: "Основное",
+  descTr: "Основное",
   country: "Основное",
   city: "Основное",
   hotelName: "Отель и тур",
@@ -105,8 +111,10 @@ export function TourFormWorkspace({
       slug: tour.slug,
       titleRu: tour.title.ru,
       titleEn: tour.title.en ?? "",
+      titleTr: tour.title.tr ?? "",
       descRu: tour.description.ru,
       descEn: tour.description.en ?? "",
+      descTr: tour.description.tr ?? "",
       country: tour.country,
       city: tour.city ?? "",
       hotelName: tour.hotelName ?? "",
@@ -117,15 +125,17 @@ export function TourFormWorkspace({
       coverImage: tour.coverImage,
       includedRu: toLines(tour.programIncluded?.ru),
       includedEn: toLines(tour.programIncluded?.en),
+      includedTr: toLines(tour.programIncluded?.tr),
       excludedRu: toLines(tour.programExcluded?.ru),
       excludedEn: toLines(tour.programExcluded?.en),
+      excludedTr: toLines(tour.programExcluded?.tr),
       isHot: tour.isHot,
       isActive: tour.isActive,
       referralThreshold: tour.referralThreshold,
     } : {
       slug: "",
-      titleRu: "", titleEn: "",
-      descRu: "", descEn: "",
+      titleRu: "", titleEn: "", titleTr: "",
+      descRu: "", descEn: "", descTr: "",
       country: "", city: "",
       hotelName: "",
       hotelStars: 4,
@@ -133,8 +143,8 @@ export function TourFormWorkspace({
       durationDays: 7,
       priceUsd: 500,
       coverImage: "",
-      includedRu: "", includedEn: "",
-      excludedRu: "", excludedEn: "",
+      includedRu: "", includedEn: "", includedTr: "",
+      excludedRu: "", excludedEn: "", excludedTr: "",
       isHot: false,
       isActive: true,
       referralThreshold: 50,
@@ -176,20 +186,32 @@ export function TourFormWorkspace({
     try {
       const includedRu = fromLines(v.includedRu);
       const includedEn = fromLines(v.includedEn);
+      const includedTr = fromLines(v.includedTr);
       const excludedRu = fromLines(v.excludedRu);
       const excludedEn = fromLines(v.excludedEn);
+      const excludedTr = fromLines(v.excludedTr);
 
       const payload = {
         slug: v.slug,
-        title: { ru: v.titleRu, ...(v.titleEn ? { en: v.titleEn } : {}) },
-        description: { ru: v.descRu, ...(v.descEn ? { en: v.descEn } : {}) },
+        title: {
+          ru: v.titleRu,
+          ...(v.titleEn ? { en: v.titleEn } : {}),
+          ...(v.titleTr ? { tr: v.titleTr } : {}),
+        },
+        description: {
+          ru: v.descRu,
+          ...(v.descEn ? { en: v.descEn } : {}),
+          ...(v.descTr ? { tr: v.descTr } : {}),
+        },
         programIncluded: {
           ru: includedRu,
           ...(includedEn.length ? { en: includedEn } : {}),
+          ...(includedTr.length ? { tr: includedTr } : {}),
         },
         programExcluded: {
           ru: excludedRu,
           ...(excludedEn.length ? { en: excludedEn } : {}),
+          ...(excludedTr.length ? { tr: excludedTr } : {}),
         },
         country: v.country,
         city: v.city || undefined,
@@ -376,12 +398,15 @@ export function TourFormWorkspace({
                   />
                 </Field>
 
+                <Field label="Название RU *" error={errors.titleRu?.message}>
+                  <input {...register("titleRu")} placeholder="Турция — Анталья, 7 ночей" className={fieldCls(!!errors.titleRu)} />
+                </Field>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Название RU *" error={errors.titleRu?.message}>
-                    <input {...register("titleRu")} placeholder="Турция — Анталья, 7 ночей" className={fieldCls(!!errors.titleRu)} />
-                  </Field>
                   <Field label="Название EN (опц.)">
                     <input {...register("titleEn")} placeholder="Turkey — Antalya, 7 nights" className={fieldCls(false)} />
+                  </Field>
+                  <Field label="Название TR (опц.)">
+                    <input {...register("titleTr")} placeholder="Türkiye — Antalya, 7 gece" className={fieldCls(false)} />
                   </Field>
                 </div>
 
@@ -403,14 +428,24 @@ export function TourFormWorkspace({
                   />
                 </Field>
 
-                <Field label="Описание EN (опц.)">
-                  <textarea
-                    {...register("descEn")}
-                    rows={4}
-                    placeholder="Detailed tour description in English..."
-                    className={textareaCls(false)}
-                  />
-                </Field>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Описание EN (опц.)">
+                    <textarea
+                      {...register("descEn")}
+                      rows={4}
+                      placeholder="Detailed tour description in English..."
+                      className={textareaCls(false)}
+                    />
+                  </Field>
+                  <Field label="Описание TR (опц.)">
+                    <textarea
+                      {...register("descTr")}
+                      rows={4}
+                      placeholder="Türkiye turu hakkında detaylı açıklama..."
+                      className={textareaCls(false)}
+                    />
+                  </Field>
+                </div>
               </div>
             )}
 
@@ -603,20 +638,28 @@ export function TourFormWorkspace({
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                     <h5 className="font-semibold text-slate-700 text-xs uppercase tracking-wider">В стоимость включено</h5>
                   </div>
-                  <div className="grid grid-cols-1 gap-3">
-                    <Field label="На русском — по одному на строку" hint="Пример: Прямой авиаперелет">
-                      <textarea
-                        {...register("includedRu")}
-                        rows={5}
-                        placeholder={"Авиаперелёт туда и обратно\nПроживание в отеле (7 ночей)\nТрансфер аэропорт-отель-аэропорт\nМедицинская страховка"}
-                        className={textareaCls(false)}
-                      />
-                    </Field>
-                    <Field label="На английском — optional, в том же порядке">
+                  <Field label="На русском — по одному на строку" hint="Пример: Прямой авиаперелет">
+                    <textarea
+                      {...register("includedRu")}
+                      rows={5}
+                      placeholder={"Авиаперелёт туда и обратно\nПроживание в отеле (7 ночей)\nТрансфер аэропорт-отель-аэропорт\nМедицинская страховка"}
+                      className={textareaCls(false)}
+                    />
+                  </Field>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field label="На английском (опц.)">
                       <textarea
                         {...register("includedEn")}
                         rows={4}
                         placeholder={"Round-trip airfare\nHotel accommodation (7 nights)\nAirport transfer\nMedical insurance"}
+                        className={textareaCls(false)}
+                      />
+                    </Field>
+                    <Field label="На турецком (опц.)">
+                      <textarea
+                        {...register("includedTr")}
+                        rows={4}
+                        placeholder={"Gidiş-dönüş uçuş\nOtel konaklaması (7 gece)\nHavalimanı transferi\nSağlık sigortası"}
                         className={textareaCls(false)}
                       />
                     </Field>
@@ -628,20 +671,28 @@ export function TourFormWorkspace({
                     <XCircle className="h-4 w-4 text-rose-500" />
                     <h5 className="font-semibold text-slate-700 text-xs uppercase tracking-wider">Оплачивается отдельно</h5>
                   </div>
-                  <div className="grid grid-cols-1 gap-3">
-                    <Field label="На русском — по одному на строку" hint="Пример: Оформление визы">
-                      <textarea
-                        {...register("excludedRu")}
-                        rows={5}
-                        placeholder={"Виза\nЭкскурсии на месте\nЛичные расходы\nАлкоголь"}
-                        className={textareaCls(false)}
-                      />
-                    </Field>
-                    <Field label="На английском — optional, в том же порядке">
+                  <Field label="На русском — по одному на строку" hint="Пример: Оформление визы">
+                    <textarea
+                      {...register("excludedRu")}
+                      rows={5}
+                      placeholder={"Виза\nЭкскурсии на месте\nЛичные расходы\nАлкоголь"}
+                      className={textareaCls(false)}
+                    />
+                  </Field>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field label="На английском (опц.)">
                       <textarea
                         {...register("excludedEn")}
                         rows={4}
                         placeholder={"Visa processing fee\nLocal excursions\nPersonal spendings\nAlcohol"}
+                        className={textareaCls(false)}
+                      />
+                    </Field>
+                    <Field label="На турецком (опц.)">
+                      <textarea
+                        {...register("excludedTr")}
+                        rows={4}
+                        placeholder={"Vize ücreti\nYerel turlar\nKişisel harcamalar\nAlkol"}
                         className={textareaCls(false)}
                       />
                     </Field>

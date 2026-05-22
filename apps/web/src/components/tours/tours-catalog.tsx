@@ -8,8 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import {
   Search, Filter, Star, ChevronLeft, ChevronRight,
-  MapPin, X, SlidersHorizontal, ArrowUpRight, Sparkles, Compass,
-  Shield, Award, Headphones,
+  MapPin, X, SlidersHorizontal, ArrowUpRight, Sparkles, Compass, ChevronDown,
 } from "lucide-react";
 import type { Tour } from "@tours/types";
 import { apiClient } from "@/src/shared/api/apiClient";
@@ -121,7 +120,7 @@ export function ToursCatalog() {
         />
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 pt-10 pb-20">
+      <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 pt-4 sm:pt-10 pb-16 sm:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[290px_1fr] gap-8">
           <FiltersPanel
             filters={filters}
@@ -138,14 +137,14 @@ export function ToursCatalog() {
             {urlLabel && filters.country && (
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-sm text-slate-500">{t("catalog.search")}</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-sm font-semibold ring-1 ring-orange-200">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-sm font-semibold ring-1 ring-teal-200">
                   <MapPin className="h-3.5 w-3.5" />
                   {urlLabel}
                   <button
                     type="button"
                     aria-label={t("catalog.searchReset")}
                     onClick={() => update("country", "")}
-                    className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-orange-200 transition-colors"
+                    className="ml-0.5 grid place-items-center h-4 w-4 rounded-full hover:bg-teal-100 transition-colors"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -172,14 +171,14 @@ export function ToursCatalog() {
             )}
 
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-5">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <TourCardSkeleton key={i} />
                 ))}
               </div>
             ) : data && data.items.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-5">
                   {data.items.map((tour) => <TourCard key={tour.id} tour={tour} extraQuery={bookingQuery} />)}
                 </div>
 
@@ -208,8 +207,8 @@ type TFunc = ReturnType<typeof useTranslations<"tours">>;
 
 function CatalogHero({ t }: { t: TFunc }) {
   return (
-    <section className="pt-20 pb-4 px-4 md:px-6 lg:px-8 max-w-[1600px] mx-auto relative z-0">
-      <div className="relative w-full h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl">
+    <section className="pt-16 sm:pt-20 pb-4 px-3 sm:px-4 md:px-6 lg:px-8 max-w-[1600px] mx-auto relative z-0">
+      <div className="relative w-full h-[280px] sm:h-[360px] md:h-[500px] rounded-2xl sm:rounded-[3rem] overflow-hidden shadow-2xl">
         <Image
           src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=2000&q=85&auto=format&fit=crop"
           alt="Tours Hero"
@@ -220,17 +219,20 @@ function CatalogHero({ t }: { t: TFunc }) {
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-[#0B0F19]/30 to-transparent"
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to top, rgba(11,15,25,0.72) 0%, rgba(11,15,25,0.18) 45%, rgba(0,0,0,0.04) 75%, transparent 100%)",
+          }}
         />
-        <div className="absolute inset-0 p-8 md:p-16 flex flex-col justify-end">
+        <div className="absolute inset-0 p-5 sm:p-8 md:p-16 pb-8 sm:pb-8 md:pb-16 flex flex-col justify-end">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white mb-6 shadow-sm">
+            <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white mb-4 sm:mb-6 shadow-sm">
               <Sparkles className="h-3.5 w-3.5 text-amber-300" /> {t("catalog.hero.badge")}
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-[80px] font-black text-white tracking-tight leading-[1.05] mb-6 drop-shadow-lg">
+            <h1 className="text-xl sm:text-5xl md:text-6xl lg:text-[80px] font-black text-white tracking-tight leading-tight sm:leading-[1.05] mb-0 sm:mb-6 drop-shadow-lg">
               {t("catalog.hero.title")}
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed drop-shadow">
+            <p className="hidden sm:block text-lg md:text-xl text-white/80 max-w-xl font-medium leading-relaxed drop-shadow">
               {t("catalog.hero.subtitle")}
             </p>
           </div>
@@ -250,8 +252,27 @@ function CountryChips({
   countries: { value: string; label: string }[];
 }) {
   return (
-    <div className="flex justify-center -mt-14 md:-mt-16 relative z-20 pb-12 px-4">
-      <div className="rounded-[2.5rem] bg-white/70 backdrop-blur-2xl p-2 md:p-2.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] ring-1 ring-slate-200/50 flex items-center max-w-full overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+    <div className="flex justify-center mt-3 sm:-mt-14 md:-mt-16 relative z-20 pb-5 sm:pb-12 px-4">
+
+      {/* Mobile: styled select dropdown */}
+      <div className="sm:hidden w-full max-w-xs">
+        <div className="relative shadow-[0_8px_24px_-8px_rgba(0,0,0,0.15)]">
+          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-teal-600 pointer-events-none z-10" />
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full h-11 pl-9 pr-9 rounded-2xl bg-white border border-slate-200/80 text-sm font-bold text-slate-800 appearance-none outline-none cursor-pointer focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 backdrop-blur-xl"
+          >
+            {countries.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Desktop: scrollable chips */}
+      <div className="hidden sm:flex rounded-[2.5rem] bg-white/80 backdrop-blur-2xl p-1.5 md:p-2.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] ring-1 ring-slate-200/50 items-center max-w-full overflow-x-auto gap-0.5" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {countries.map((c) => {
           const active = value === c.value;
           return (
@@ -259,10 +280,10 @@ function CountryChips({
               key={c.value}
               type="button"
               onClick={() => onChange(c.value)}
-              className={`shrink-0 px-5 md:px-6 py-3 rounded-[2rem] text-[13px] md:text-sm font-bold transition-all duration-300 ${
+              className={`shrink-0 px-5 md:px-6 py-3 rounded-[2rem] text-[13px] md:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
                 active
-                  ? "bg-slate-900 text-white shadow-xl scale-100"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 scale-[0.98]"
+                  ? "bg-slate-900 text-white shadow-lg"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
               {c.label}
@@ -290,10 +311,10 @@ function FiltersPanel({
     <>
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-orange-600" />
+          <SlidersHorizontal className="h-4 w-4 text-teal-600" />
           {t("catalog.filters.title")}
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-orange-600 text-white">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white">
               {activeCount}
             </span>
           )}
@@ -317,7 +338,7 @@ function FiltersPanel({
             value={filters.country}
             onChange={(e) => update("country", e.target.value)}
             placeholder={t("catalog.filters.countryPlaceholder")}
-            className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
+            className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
           />
         </div>
       </FilterGroup>
@@ -330,7 +351,7 @@ function FiltersPanel({
             value={filters.minPrice}
             onChange={(e) => update("minPrice", e.target.value)}
             placeholder="от"
-            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
+            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
           />
           <input
             type="number"
@@ -338,7 +359,7 @@ function FiltersPanel({
             value={filters.maxPrice}
             onChange={(e) => update("maxPrice", e.target.value)}
             placeholder="до"
-            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15"
+            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all hover:border-slate-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
           />
         </div>
       </FilterGroup>
@@ -461,7 +482,7 @@ function ResultsBar({
           <Filter className="h-4 w-4" />
           {t("catalog.filters.filters")}
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-orange-600 text-white">
+            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-teal-600 text-white">
               {activeCount}
             </span>
           )}
@@ -469,7 +490,7 @@ function ResultsBar({
         <p className="text-sm text-slate-600">
           {isLoading ? (
             <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
               {t("catalog.results.loading")}
             </span>
           ) : (
@@ -546,8 +567,8 @@ function Pagination({
         type="button"
         disabled={page * pageSize >= total}
         onClick={onNext}
-        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(249,115,22,0.55)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
-        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
+        className="inline-flex items-center gap-1.5 px-4 h-11 rounded-xl text-white text-sm font-semibold shadow-[0_6px_20px_-6px_rgba(16,185,129,0.40)] hover:-translate-y-0.5 disabled:opacity-30 disabled:hover:translate-y-0 disabled:shadow-none transition-all"
+        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
       >
         {t("catalog.pagination.next")}
         <ChevronRight className="h-4 w-4" />
@@ -560,8 +581,8 @@ function EmptyState({ onReset, t }: { onReset: () => void; t: TFunc }) {
   return (
     <div className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-14 text-center">
       <div
-        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(249,115,22,0.50)]"
-        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
+        className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_12px_28px_-8px_rgba(16,185,129,0.40)]"
+        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
       >
         <Compass className="h-7 w-7" />
       </div>
@@ -572,8 +593,8 @@ function EmptyState({ onReset, t }: { onReset: () => void; t: TFunc }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.55)] hover:-translate-y-0.5 transition-all"
-        style={{ background: "linear-gradient(135deg, #f97316, #0284c7)" }}
+        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.40)] hover:-translate-y-0.5 transition-all"
+        style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
       >
         <ArrowUpRight className="h-4 w-4" />
         {t("catalog.empty.reset")}

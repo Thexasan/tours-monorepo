@@ -48,7 +48,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/60 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 max-w-[min(320px,calc(100vw-8px))] bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/60 z-[9999] overflow-hidden" style={{ isolation: "isolate" }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-900">
               Уведомления

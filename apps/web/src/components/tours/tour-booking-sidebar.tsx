@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
-  Calendar, Users, Heart, Plus, Minus, ArrowRight,
+  Calendar, Users, Plus, Minus, ArrowRight,
   Shield, Award, Headphones, Sparkles, Tag, Share2, Copy, Check,
+  Pencil, BookOpen,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { BookingModal } from "@/src/components/bookings/booking-modal";
+import { WishlistButton } from "@/src/components/wishlist/wishlist-button";
+import { useAuthStore } from "@/src/shared/store/auth-store";
 import { cn } from "@/src/lib/utils";
 import type { RoomTypeOption } from "@tours/types";
 
@@ -30,6 +34,9 @@ export function TourBookingSidebar({
   coverImage, country, hotelStars, durationDays, roomTypes, referralReward = 50,
 }: Props) {
   const t = useTranslations("tours");
+  const locale = useLocale();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === "ADMIN";
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -50,7 +57,6 @@ export function TourBookingSidebar({
     return g ? Math.max(1, Math.min(20, parseInt(g, 10) || 1)) : 1;
   });
   const [departDate, setDepartDate] = useState(() => searchParams?.get("date") ?? "");
-  const [wishlisted, setWishlisted] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
   const totalEstimate = pricePerPerson * guests;
@@ -66,12 +72,50 @@ export function TourBookingSidebar({
     setTimeout(() => setShareCopied(false), 1800);
   }
 
+  if (isAdmin) {
+    return (
+      <div className="lg:sticky lg:top-24">
+        <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(124,58,237,0.20)]">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-violet-500 via-indigo-500 to-violet-600" />
+          <div className="p-6">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4">Управление туром</p>
+            <div className="flex items-baseline gap-2 mb-5">
+              <p className="text-3xl font-bold text-slate-900 tabular-nums">${pricePerPerson.toLocaleString()}</p>
+              <p className="text-sm text-slate-400">/ чел · {durationDays} дн.</p>
+            </div>
+            <div className="space-y-2.5">
+              <Link
+                href={`/${locale}/admin/tours/${tourId}/edit`}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 14px 28px -10px rgba(124,58,237,0.40)" }}
+              >
+                <Pencil className="h-4 w-4" />
+                Редактировать тур
+              </Link>
+              <Link
+                href={`/${locale}/admin/bookings`}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-bold text-slate-700 bg-slate-50 ring-1 ring-slate-200 hover:bg-slate-100 transition-all"
+              >
+                <BookOpen className="h-4 w-4 text-slate-400" />
+                Заявки по туру
+              </Link>
+            </div>
+          </div>
+          <div className="border-t border-slate-100 divide-y divide-slate-100">
+            <TrustRow icon={Shield} tone="emerald" label={t("sidebar.secureBooking")} />
+            <TrustRow icon={Award} tone="amber" label={t("sidebar.bestPrice")} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="lg:sticky lg:top-24 space-y-4">
         {/* Booking card */}
-        <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(249,115,22,0.35)]">
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-orange-500 via-sky-500 to-rose-500" />
+        <div className="relative rounded-3xl bg-white ring-1 ring-slate-100 overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04),0_22px_48px_-20px_rgba(16,185,129,0.30)]">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600" />
 
           <div className="p-6">
             <div className="flex items-end justify-between mb-2">
@@ -86,7 +130,7 @@ export function TourBookingSidebar({
                 <p className="text-xs text-slate-500 mt-0.5">{t("sidebar.perPerson")}</p>
               </div>
               {discount > 0 && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold ring-1 ring-rose-100">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold ring-1 ring-emerald-100">
                   <Sparkles className="h-3 w-3" />−{discount}%
                 </span>
               )}
@@ -95,8 +139,8 @@ export function TourBookingSidebar({
             <div className="mt-5 space-y-2.5">
               <label className="block">
                 <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">{t("sidebar.departureDate")}</span>
-                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-100 focus-within:ring-orange-300 transition-all">
-                  <Calendar className="h-4 w-4 text-orange-600 shrink-0" />
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-100 focus-within:ring-teal-300 transition-all">
+                  <Calendar className="h-4 w-4 text-teal-600 shrink-0" />
                   <input
                     type="date"
                     value={departDate}
@@ -108,7 +152,7 @@ export function TourBookingSidebar({
               <PaxStepper label={t("sidebar.persons")} value={guests} setValue={setGuests} min={1} max={20} />
             </div>
 
-            <div className="mt-4 rounded-xl bg-linear-to-br from-orange-50/60 to-sky-50/60 ring-1 ring-orange-100/60 px-3.5 py-3">
+            <div className="mt-4 rounded-xl bg-linear-to-br from-emerald-50/60 to-teal-50/60 ring-1 ring-emerald-100/60 px-3.5 py-3">
               <div className="flex items-baseline justify-between">
                 <p className="text-xs text-slate-600">
                   {guests} {guests === 1 ? t("sidebar.guestOne") : t("sidebar.guestMany")}
@@ -127,19 +171,17 @@ export function TourBookingSidebar({
               type="button"
               onClick={() => setOpen(true)}
               className="mt-4 w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
-              style={{ background: "linear-gradient(135deg, #f97316, #f43f5e)", boxShadow: "0 18px 36px -12px rgba(244,63,94,0.55)" }}
+              style={{ background: "linear-gradient(135deg, #10b981, #0d9488)", boxShadow: "0 18px 36px -12px rgba(16,185,129,0.50)" }}
             >
               {t("sidebar.book")}
               <ArrowRight className="h-[18px] w-[18px]" />
             </button>
-            <button
-              type="button"
-              onClick={() => setWishlisted(w => !w)}
-              className="mt-2 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-semibold bg-slate-50 text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100 transition"
-            >
-              <Heart className={cn("h-4 w-4", wishlisted && "fill-rose-500 text-rose-500")} />
-              {wishlisted ? t("sidebar.removeWishlist") : t("sidebar.addWishlist")}
-            </button>
+            <WishlistButton
+              tourId={tourId}
+              variant="sidebar"
+              label={t("sidebar.addWishlist")}
+              labelActive={t("sidebar.removeWishlist")}
+            />
 
             <p className="mt-3 text-center text-[11px] text-slate-500">
               {t("sidebar.freeCancellation")}
@@ -157,8 +199,8 @@ export function TourBookingSidebar({
         <div
           className="relative overflow-hidden rounded-3xl text-white p-5"
           style={{
-            background: "linear-gradient(135deg, #f97316 0%, #0284c7 60%, #1e3a8a 100%)",
-            boxShadow: "0 22px 48px -20px rgba(249,115,22,0.45)",
+            background: "linear-gradient(135deg, #059669 0%, #0d9488 60%, #134e4a 100%)",
+            boxShadow: "0 22px 48px -20px rgba(16,185,129,0.40)",
           }}
         >
           <div aria-hidden className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white/15 blur-2xl" />
@@ -182,7 +224,7 @@ export function TourBookingSidebar({
               <button
                 type="button"
                 onClick={copyReferral}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-orange-700 text-[11px] font-bold hover:bg-white/90 transition"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-emerald-700 text-[11px] font-bold hover:bg-white/90 transition"
               >
                 {shareCopied
                   ? <><Check className="h-3 w-3" strokeWidth={3} />{t("sidebar.referral.copied")}</>

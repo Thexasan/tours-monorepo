@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,6 +29,7 @@ export function NewReviewForm() {
   const router = useRouter();
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tr";
+  const t = useTranslations('dashboard');
   const [eligibleTours, setEligibleTours] = useState<EligibleTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -78,12 +79,12 @@ export function NewReviewForm() {
     }
   };
 
-  if (loading) return <div className="text-zinc-500">Загрузка ваших туров…</div>;
+  if (loading) return <div className="text-zinc-500">{t('client.newReview.loading')}</div>;
 
   if (eligibleTours.length === 0) {
     return (
       <div className="bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800">
-        У вас пока нет оплаченных туров. Отзыв можно оставить только после оплаты заявки.
+        {t('client.newReview.noTours')}
       </div>
     );
   }
@@ -91,12 +92,12 @@ export function NewReviewForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl border border-zinc-200 p-6 max-w-2xl flex flex-col gap-4">
       <div>
-        <Label htmlFor="tourId">Тур</Label>
+        <Label htmlFor="tourId">{t('client.newReview.tourLabel')}</Label>
         <select
           id="tourId" {...register("tourId")}
           className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 transition-all"
         >
-          <option value="">— Выберите тур —</option>
+          <option value="">{t('client.newReview.tourSelect')}</option>
           {eligibleTours.map((t) => (
             <option key={t.tourId} value={t.tourId}>{t.title}</option>
           ))}
@@ -105,7 +106,7 @@ export function NewReviewForm() {
       </div>
 
       <div>
-        <Label>Оценка</Label>
+        <Label>{t('client.newReview.ratingLabel')}</Label>
         <div className="flex items-center gap-1 mt-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -122,10 +123,10 @@ export function NewReviewForm() {
       </div>
 
       <div>
-        <Label htmlFor="text">Текст отзыва</Label>
+        <Label htmlFor="text">{t('client.newReview.textLabel')}</Label>
         <textarea
           id="text" rows={5} {...register("text")}
-          placeholder="Расскажите, как прошёл тур, что понравилось, что нет..."
+          placeholder={t('client.newReview.textPlaceholder')}
           className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 transition-all"
         />
         {errors.text && <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>}
@@ -133,8 +134,8 @@ export function NewReviewForm() {
 
       <div>
         <MultiImageUploader
-          label="Фото (необязательно)"
-          hint="До 10 фото · JPEG / PNG / WebP до 8 МБ каждое"
+          label={t('client.newReview.photosLabel')}
+          hint={t('client.newReview.photosHint')}
           max={10}
           value={photoUrls}
           onChange={setPhotoUrls}
@@ -146,7 +147,7 @@ export function NewReviewForm() {
       )}
 
       <Button type="submit" disabled={submitting}>
-        {submitting ? "Отправляем…" : "Отправить на модерацию"}
+        {submitting ? t('client.newReview.submitting') : t('client.newReview.submit')}
       </Button>
     </form>
   );

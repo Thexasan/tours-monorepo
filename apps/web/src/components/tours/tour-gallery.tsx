@@ -47,7 +47,52 @@ export function TourGallery({ images, title }: { images: string[]; title: string
         </button>
       </div>
 
-      <div className="grid grid-cols-4 grid-rows-2 gap-3 h-[420px] md:h-[520px]">
+      {/* Mobile layout */}
+      <div className="md:hidden">
+        {images.length === 1 ? (
+          <button
+            type="button"
+            onClick={() => setLightbox(0)}
+            className="relative w-full overflow-hidden rounded-2xl aspect-video bg-slate-100 ring-1 ring-slate-100 group"
+          >
+            <Image
+              src={images[0]!}
+              alt={`${title} — фото 1`}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="100vw"
+            />
+          </button>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            {images.slice(0, 4).map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setLightbox(i)}
+                className="relative overflow-hidden rounded-2xl aspect-square bg-slate-100 ring-1 ring-slate-100 group"
+              >
+                <Image
+                  src={img}
+                  alt={`${title} — фото ${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="50vw"
+                />
+                {i === 3 && images.length > 4 && (
+                  <div className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm text-white flex flex-col items-center justify-center gap-1">
+                    <Camera className="h-5 w-5" />
+                    <span className="text-sm font-semibold">+{images.length - 4} фото</span>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop mosaic */}
+      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-3 h-[520px]">
         {images.slice(0, 6).map((img, i) => (
           <button
             key={i}
@@ -63,7 +108,7 @@ export function TourGallery({ images, title }: { images: string[]; title: string
               alt={`${title} — фото ${i + 1}`}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 50vw, 33vw"
+              sizes="33vw"
             />
             {i === 5 && images.length > 6 && (
               <div className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm text-white flex flex-col items-center justify-center gap-1">

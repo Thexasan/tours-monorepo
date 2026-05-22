@@ -12,6 +12,7 @@ import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { useNotifications } from "@/src/hooks/use-notifications";
 import { Button } from "@/src/components/ui/button";
+import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, isAuthorized } = useRequireAuth(["CLIENT"]);
@@ -159,7 +160,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <div className="border-t border-slate-100/80 p-3 bg-slate-50/40">
+          <div className="border-t border-slate-100/80 p-3 bg-slate-50/40 space-y-2">
+            <div className="flex items-center justify-center py-1">
+              <LanguageSwitcher />
+            </div>
             <Button
               variant="outline"
               className="w-full justify-center rounded-xl font-bold text-xs border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100/50 cursor-pointer shadow-3xs hover:shadow-2xs transition-all py-2"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, X, Building2, Calendar, User, Copy, Receipt, CheckCircle2, AlertTriangle, ArrowUpRight, ShieldX, RefreshCw } from "lucide-react";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
@@ -8,12 +9,6 @@ import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-
-const STATUS_FILTERS = [
-  { value: "REQUESTED", label: "Ждут обработки" },
-  { value: "PAID", label: "Выплачены" },
-  { value: "REJECTED", label: "Отклонены" },
-] as const;
 
 interface BankDetails {
   bank?: string;
@@ -24,6 +19,14 @@ interface BankDetails {
 
 export function AdminPayoutsList() {
   const qc = useQueryClient();
+  const t = useTranslations('dashboard');
+
+  const STATUS_FILTERS = [
+    { value: "REQUESTED", label: t('admin.payouts.tabPending') },
+    { value: "PAID", label: t('admin.payouts.tabPaid') },
+    { value: "REJECTED", label: t('admin.payouts.tabRejected') },
+  ] as const;
+
   const [filter, setFilter] = useState<"REQUESTED" | "PAID" | "REJECTED">("REQUESTED");
   const [approving, setApproving] = useState<{ id: string; ref: string } | null>(null);
   const [rejecting, setRejecting] = useState<{ id: string; reason: string } | null>(null);
@@ -101,7 +104,7 @@ export function AdminPayoutsList() {
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3">
           <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
-          <p className="text-sm font-semibold">Загружаем список выплат...</p>
+          <p className="text-sm font-semibold">{t('admin.payouts.loading')}</p>
         </div>
       )}
 
@@ -109,8 +112,8 @@ export function AdminPayoutsList() {
       {!isLoading && payouts && payouts.length === 0 && (
         <div className="tv-surface-elevated p-16 text-center text-slate-400 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <Receipt className="h-10 w-10 text-slate-300 mx-auto mb-3.5" />
-          <p className="text-sm font-bold text-slate-800">Нет запросов на выплату</p>
-          <p className="text-xs text-slate-400 mt-1">Финансовые запросы в этой категории отсутствуют.</p>
+          <p className="text-sm font-bold text-slate-800">{t('admin.payouts.notFound')}</p>
+          <p className="text-xs text-slate-400 mt-1">{t('admin.payouts.notFoundDesc')}</p>
         </div>
       )}
 
@@ -145,15 +148,15 @@ export function AdminPayoutsList() {
                       {p.status === "REQUESTED" ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/15">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                          Ожидает выплаты
+                          {t('admin.payouts.statusPending')}
                         </span>
                       ) : p.status === "PAID" ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/15">
-                          ✓ Выплачено
+                          {"✓ " + t('admin.payouts.statusPaid')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 border border-rose-500/15">
-                          Отклонено
+                          {t('admin.payouts.statusRejected')}
                         </span>
                       )}
                       <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-slate-400 bg-slate-50 border border-slate-200/40 px-2 py-0.5 rounded-lg select-none">
@@ -166,7 +169,7 @@ export function AdminPayoutsList() {
                   {/* Amount Block */}
                   <div className="bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-4 border border-slate-100/60 max-w-fit transition-all duration-300 select-none">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                      Сумма выплаты
+                      {t('admin.payouts.amount')}
                     </p>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-3xl font-black text-slate-800 font-mono tracking-tight leading-none">
@@ -205,7 +208,7 @@ export function AdminPayoutsList() {
                     {/* Account Number */}
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
-                        Номер счета (IBAN)
+                        {t('admin.payouts.iban')}
                       </span>
                       <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 max-w-full group/field">
                         <span className="font-mono text-xs tracking-wider truncate text-white max-w-[85%] select-all">
@@ -213,10 +216,10 @@ export function AdminPayoutsList() {
                         </span>
                         {bank.accountNumber && (
                           <button
-                            onClick={() => copyToClipboard(bank.accountNumber!, "Номер счёта")}
+                            onClick={() => copyToClipboard(bank.accountNumber!, t('admin.payouts.accountNumber'))}
                             type="button"
                             className="p-1 hover:bg-white/10 rounded-md transition-all text-slate-400 hover:text-white cursor-pointer shrink-0"
-                            title="Копировать"
+                            title={t('admin.payouts.copy')}
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
@@ -229,15 +232,15 @@ export function AdminPayoutsList() {
                       {bank.swift && (
                         <div>
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
-                            SWIFT
+                            {t('admin.payouts.swift')}
                           </span>
                           <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 group/field">
                             <span className="font-mono text-xs text-white select-all">{bank.swift}</span>
                             <button
-                              onClick={() => copyToClipboard(bank.swift!, "SWIFT код")}
+                              onClick={() => copyToClipboard(bank.swift!, t('admin.payouts.swiftCode'))}
                               type="button"
                               className="p-1 hover:bg-white/10 rounded-md transition-all text-slate-400 hover:text-white cursor-pointer shrink-0"
-                              title="Копировать"
+                              title={t('admin.payouts.copy')}
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
@@ -247,7 +250,7 @@ export function AdminPayoutsList() {
 
                       <div className={bank.swift ? "" : "col-span-2"}>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
-                          Получатель
+                          {t('admin.payouts.recipient')}
                         </span>
                         <div className="bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 truncate text-xs text-white">
                           {bank.beneficiary || "—"}
@@ -265,7 +268,7 @@ export function AdminPayoutsList() {
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-extrabold uppercase tracking-wide mr-1.5 text-emerald-800">
-                          Выплачено
+                          {t('admin.payouts.statusPaid')}
                         </span>
                         <div className="mt-1 flex items-center gap-1.5 font-mono text-[10px] text-slate-500 bg-white border border-slate-200/40 px-2 py-0.5 rounded-lg select-all max-w-fit">
                           <span>Ref: {p.externalRef}</span>
@@ -287,7 +290,7 @@ export function AdminPayoutsList() {
                       <ShieldX className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-extrabold uppercase tracking-wide mr-1.5 text-rose-800">
-                          Отклонено
+                          {t('admin.payouts.statusRejected')}
                         </span>
                         <p className="mt-1 font-medium text-rose-600/90 italic">
                           {p.rejectReason}
@@ -302,7 +305,7 @@ export function AdminPayoutsList() {
                       {approving?.id === p.id ? (
                         <div className="space-y-3 animate-fade-in">
                           <Input
-                            placeholder="ID банковской транзакции..."
+                            placeholder={t('admin.payouts.txIdPlaceholder')}
                             value={approving.ref}
                             onChange={(e) => setApproving({ ...approving, ref: e.target.value })}
                             className="bg-slate-50/30 hover:bg-white hover:border-slate-300 focus:bg-white rounded-xl text-xs font-medium border-slate-200 shadow-3xs transition-all w-full h-9.5 px-3"
@@ -315,21 +318,21 @@ export function AdminPayoutsList() {
                               }
                               disabled={approveM.isPending}
                             >
-                              Подтвердить
+                              {t('admin.payouts.confirm')}
                             </Button>
                             <Button
                               variant="outline"
                               onClick={() => setApproving(null)}
                               className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 rounded-xl border-slate-200 transition-all cursor-pointer"
                             >
-                              Отмена
+                              {t('admin.payouts.cancel')}
                             </Button>
                           </div>
                         </div>
                       ) : rejecting?.id === p.id ? (
                         <div className="space-y-3 animate-fade-in">
                           <textarea
-                            placeholder="Укажите причину отклонения запроса (например: неверные реквизиты)..."
+                            placeholder={t('admin.payouts.rejectPlaceholder')}
                             value={rejecting.reason}
                             onChange={(e) => setRejecting({ ...rejecting, reason: e.target.value })}
                             rows={2}
@@ -342,14 +345,14 @@ export function AdminPayoutsList() {
                               disabled={rejectM.isPending || !rejecting.reason.trim()}
                               className="bg-gradient-to-br from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-bold px-4 py-2 text-xs rounded-xl shadow-xs border-0 shrink-0 transition-transform duration-100 active:scale-98 cursor-pointer"
                             >
-                              Отклонить запрос
+                              {t('admin.payouts.rejectTitle')}
                             </Button>
                             <Button
                               variant="outline"
                               onClick={() => setRejecting(null)}
                               className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 rounded-xl border-slate-200 transition-all cursor-pointer"
                             >
-                              Отмена
+                              {t('admin.payouts.cancel')}
                             </Button>
                           </div>
                         </div>
@@ -359,14 +362,14 @@ export function AdminPayoutsList() {
                             onClick={() => setApproving({ id: p.id, ref: "" })}
                             className="bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-4 py-2.5 text-xs rounded-xl shadow-xs hover:shadow-md hover:scale-102 duration-150 border-0 transition-transform duration-100 active:scale-98 cursor-pointer"
                           >
-                            <Check className="w-3.5 h-3.5 mr-1.5" /> Я перевёл деньги
+                            <Check className="w-3.5 h-3.5 mr-1.5" /> {t('admin.payouts.markPaid')}
                           </Button>
                           <Button
                             variant="outline"
                             onClick={() => setRejecting({ id: p.id, reason: "" })}
                             className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200 hover:border-slate-300 rounded-xl transition-all hover:scale-102 duration-150 cursor-pointer"
                           >
-                            <X className="w-3.5 h-3.5 mr-1.5 text-slate-400 group-hover:text-rose-500" /> Отклонить
+                            <X className="w-3.5 h-3.5 mr-1.5 text-slate-400 group-hover:text-rose-500" /> {t('admin.payouts.reject')}
                           </Button>
                         </div>
                       )}

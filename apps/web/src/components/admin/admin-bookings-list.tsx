@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Search, Mail, Phone, User, Briefcase, Calendar,
   Layers, X, RotateCcw, ArrowRight, BedDouble, ChevronRight,
@@ -19,19 +19,20 @@ const STATUS_OPTIONS: BookingStatus[] = [
   "IN_PROGRESS", "AWAITING_PAYMENT", "PAID", "COMPLETED", "CANCELLED",
 ];
 
-const STATUS_META: Record<BookingStatus, { label: string; dot: string; row: string; badge: string }> = {
-  NEW:                  { label: "Новая",               dot: "bg-sky-500",     row: "",                             badge: "text-sky-700 bg-sky-50 border-sky-200/60" },
-  DOCUMENTS_REQUESTED:  { label: "Ждём документы",      dot: "bg-violet-500",  row: "",                             badge: "text-violet-700 bg-violet-50 border-violet-200/60" },
-  DOCUMENTS_SUBMITTED:  { label: "Документы загружены", dot: "bg-emerald-500", row: "",                             badge: "text-emerald-700 bg-emerald-50 border-emerald-200/60" },
-  IN_PROGRESS:          { label: "В работе",            dot: "bg-amber-500",   row: "",                             badge: "text-amber-700 bg-amber-50 border-amber-200/60" },
-  AWAITING_PAYMENT:     { label: "Ожидает оплаты",      dot: "bg-blue-500",    row: "",                             badge: "text-blue-700 bg-blue-50 border-blue-200/60" },
-  PAID:                 { label: "Оплачена",            dot: "bg-emerald-600", row: "bg-emerald-50/30",             badge: "text-emerald-800 bg-emerald-100 border-emerald-300/60" },
-  COMPLETED:            { label: "Завершена",           dot: "bg-slate-400",   row: "bg-slate-50/40",               badge: "text-slate-600 bg-slate-100 border-slate-200/60" },
-  CANCELLED:            { label: "Отменена",            dot: "bg-rose-500",    row: "bg-rose-50/20",                badge: "text-rose-700 bg-rose-50 border-rose-200/60" },
-};
-
 export function AdminBookingsList() {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
+
+  const STATUS_META: Record<BookingStatus, { label: string; dot: string; row: string; badge: string }> = {
+    NEW:                  { label: t('admin.bookings.statusNew'),            dot: "bg-sky-500",     row: "",                             badge: "text-sky-700 bg-sky-50 border-sky-200/60" },
+    DOCUMENTS_REQUESTED:  { label: t('admin.bookings.statusDocs'),           dot: "bg-violet-500",  row: "",                             badge: "text-violet-700 bg-violet-50 border-violet-200/60" },
+    DOCUMENTS_SUBMITTED:  { label: t('admin.bookings.statusDocsSubmitted'),  dot: "bg-emerald-500", row: "",                             badge: "text-emerald-700 bg-emerald-50 border-emerald-200/60" },
+    IN_PROGRESS:          { label: t('admin.bookings.statusInProgress'),     dot: "bg-amber-500",   row: "",                             badge: "text-amber-700 bg-amber-50 border-amber-200/60" },
+    AWAITING_PAYMENT:     { label: t('admin.bookings.statusPayment'),        dot: "bg-blue-500",    row: "",                             badge: "text-blue-700 bg-blue-50 border-blue-200/60" },
+    PAID:                 { label: t('admin.bookings.statusPaid'),           dot: "bg-emerald-600", row: "bg-emerald-50/30",             badge: "text-emerald-800 bg-emerald-100 border-emerald-300/60" },
+    COMPLETED:            { label: t('admin.bookings.statusCompleted'),      dot: "bg-slate-400",   row: "bg-slate-50/40",               badge: "text-slate-600 bg-slate-100 border-slate-200/60" },
+    CANCELLED:            { label: t('admin.bookings.statusCancelled'),      dot: "bg-rose-500",    row: "bg-rose-50/20",                badge: "text-rose-700 bg-rose-50 border-rose-200/60" },
+  };
   const lang = locale as "ru" | "en" | "tr";
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "ALL">("ALL");
   const [search, setSearch] = useState("");
@@ -70,7 +71,7 @@ export function AdminBookingsList() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
               <Input
-                placeholder="Имя, email, телефон…"
+                placeholder={t('admin.bookings.searchPlaceholder')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-9 pr-8 h-9 text-xs bg-slate-50 border-slate-200 focus-visible:ring-emerald-600/20 rounded-lg shadow-none"
@@ -90,13 +91,13 @@ export function AdminBookingsList() {
               size="sm"
               className="h-9 px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-none shrink-0"
             >
-              Найти
+              {t('admin.bookings.find')}
             </Button>
             {isFiltered && (
               <button
                 type="button"
                 onClick={handleReset}
-                title="Сбросить"
+                title={t('admin.bookings.reset')}
                 className="h-9 w-9 grid place-items-center border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors shrink-0"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
@@ -106,7 +107,7 @@ export function AdminBookingsList() {
 
           {data && (
             <p className="text-[11px] text-slate-400 font-medium shrink-0 select-none">
-              <span className="font-bold text-slate-700 tabular-nums">{total}</span> заявок
+              <span className="font-bold text-slate-700 tabular-nums">{total}</span> {t('admin.bookings.countSuffix')}
             </p>
           )}
         </div>
@@ -130,7 +131,7 @@ export function AdminBookingsList() {
                 {meta && (
                   <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${active ? "bg-white/70" : meta.dot}`} />
                 )}
-                {meta ? meta.label : "Все"}
+                {meta ? meta.label : t('admin.bookings.all')}
               </button>
             );
           })}
@@ -162,11 +163,11 @@ export function AdminBookingsList() {
           <div className="mx-auto h-10 w-10 rounded-xl bg-slate-50 border border-slate-200 grid place-items-center mb-4">
             <Mail className="h-4.5 w-4.5 text-slate-400" />
           </div>
-          <p className="text-sm font-semibold text-slate-700">Заявок не найдено</p>
-          <p className="text-xs text-slate-400 mt-1">Измените фильтры или поисковый запрос</p>
+          <p className="text-sm font-semibold text-slate-700">{t('admin.bookings.notFound')}</p>
+          <p className="text-xs text-slate-400 mt-1">{t('admin.bookings.notFoundHint')}</p>
           {isFiltered && (
             <button onClick={handleReset} className="mt-4 text-xs text-emerald-700 hover:underline font-medium">
-              Сбросить фильтры
+              {t('admin.bookings.resetFilters')}
             </button>
           )}
         </div>
@@ -180,11 +181,11 @@ export function AdminBookingsList() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60">
-                  <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[200px]">Тур</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Клиент</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[140px]">Дата</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">Сумма</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[160px]">Статус</th>
+                  <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[200px]">{t('admin.bookings.colTour')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">{t('admin.bookings.colClient')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[140px]">{t('admin.bookings.colDate')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[100px]">{t('admin.bookings.colAmount')}</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 w-[160px]">{t('admin.bookings.colStatus')}</th>
                   <th className="px-4 py-3 w-[44px]" />
                 </tr>
               </thead>
@@ -246,7 +247,7 @@ export function AdminBookingsList() {
                         <span className="font-bold tabular-nums text-slate-800 font-mono">
                           ${b.totalPriceUsd}
                         </span>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{b.guestsCount} чел.</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{b.guestsCount} {t('admin.bookings.persons')}</p>
                       </td>
 
                       {/* Status */}
@@ -340,7 +341,7 @@ export function AdminBookingsList() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Layers className="h-3 w-3" />
-                        {b.guestsCount} чел.
+                        {b.guestsCount} {t('admin.bookings.persons')}
                       </span>
                       <span className="font-bold text-slate-700 font-mono">${b.totalPriceUsd}</span>
                     </div>
@@ -348,7 +349,7 @@ export function AdminBookingsList() {
                       href={`/${locale}/admin/bookings/${b.id}`}
                       className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:underline"
                     >
-                      Открыть <ArrowRight className="h-3 w-3" />
+                      {t('admin.bookings.open')} <ArrowRight className="h-3 w-3" />
                     </Link>
                   </div>
                 </article>

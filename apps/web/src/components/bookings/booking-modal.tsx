@@ -82,14 +82,14 @@ function plusDays(d: CalDate, n: number): CalDate {
 /* ─── Stepper ─────────────────────────────────────────────────────── */
 function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: number }) {
   return (
-    <div className="px-6 sm:px-10 pt-6 pb-2">
+    <div className="px-4 sm:px-10 pt-3 sm:pt-5 pb-1">
       <div className="flex items-start gap-2 sm:gap-4">
         {labels.map((label, i) => (
           <div key={label} className="flex flex-1 items-start gap-2 sm:gap-4 last:flex-none">
-            <div className="flex flex-col items-center gap-2 min-w-0 shrink-0">
+            <div className="flex flex-col items-center gap-1.5 min-w-0 shrink-0">
               <div
                 className={cn(
-                  "relative grid place-items-center h-10 w-10 rounded-full ring-4 transition-all duration-300",
+                  "relative grid place-items-center h-8 w-8 sm:h-10 sm:w-10 rounded-full ring-4 transition-all duration-300",
                   activeIndex > i
                     ? "bg-teal-600 text-white ring-teal-100"
                     : activeIndex === i
@@ -112,7 +112,7 @@ function Stepper({ labels, activeIndex }: { labels: string[]; activeIndex: numbe
               </span>
             </div>
             {i < labels.length - 1 && (
-              <div className="flex-1 h-px mt-5 relative overflow-hidden rounded-full bg-slate-200">
+              <div className="flex-1 h-px mt-4 sm:mt-5 relative overflow-hidden rounded-full bg-slate-200">
                 <div
                   className="absolute inset-y-0 left-0 bg-linear-to-r from-emerald-500 to-teal-600 transition-all duration-500"
                   style={{ width: activeIndex > i ? "100%" : "0%" }}
@@ -229,8 +229,8 @@ function MiniCalendar({
   }
 
   return (
-    <div className="rounded-2xl ring-1 ring-slate-200 bg-white p-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="rounded-2xl ring-1 ring-slate-200 bg-white p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-2">
         <button type="button" onClick={() => setView(v => addMonths(v, -1))} className="h-8 w-8 grid place-items-center rounded-full text-slate-600 hover:bg-slate-100 transition" aria-label={navBackLabel}>
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -519,7 +519,8 @@ export function BookingModal({
 
         {showStepper && <Stepper labels={stepperLabels} activeIndex={stepperActiveIndex} />}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto px-6 sm:px-10 pb-6 flex flex-col">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-10 py-3">
 
           {/* ── SUCCESS ──────────────────────────────────────────── */}
           {success ? (
@@ -616,10 +617,10 @@ export function BookingModal({
 
           /* ── STEP 0: OPTIONS ─────────────────────────────────── */
           ) : step === 0 ? (
-            <div className="space-y-5 mt-3">
+            <div className="space-y-3 sm:space-y-5 mt-2">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">{t("booking.step0.title")}</h3>
-                <p className="text-sm text-slate-500 mt-0.5">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">{t("booking.step0.title")}</h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                   {t("booking.step0.durationPrefix")} {tourDurationDays} {t("booking.step0.durationDays")} / {Math.max(1, tourDurationDays - 1)} {t("booking.step0.durationNights")}
                 </p>
               </div>
@@ -743,10 +744,10 @@ export function BookingModal({
 
           /* ── STEP 2: CONFIRMATION ─────────────────────────────── */
           ) : (
-            <div className="space-y-4 mt-3">
+            <div className="space-y-3 mt-2">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">{t("booking.step2.title")}</h3>
-                <p className="text-sm text-slate-500 mt-0.5">{t("booking.step2.subtitle")}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">{t("booking.step2.title")}</h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">{t("booking.step2.subtitle")}</p>
               </div>
 
               {isAuthenticated && (
@@ -867,31 +868,33 @@ export function BookingModal({
                 </div>
                 <span className="text-xs text-slate-600 leading-relaxed">
                   {t("booking.step2.agree")}{" "}
-                  <a href="#" className="text-teal-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.terms")}</a>
+                  <a href={`/${locale}/terms`} target="_blank" rel="noopener noreferrer" className="text-teal-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.terms")}</a>
                   {" "}{t("booking.step2.and")}{" "}
-                  <a href="#" className="text-teal-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.privacy")}</a>.
+                  <a href={`/${locale}/privacy`} target="_blank" rel="noopener noreferrer" className="text-teal-700 font-semibold underline-offset-2 hover:underline">{t("booking.step2.privacy")}</a>.
                   {" "}{t("booking.step2.agreeNote")}
                 </span>
               </label>
             </div>
           )}
 
+          </div>{/* /scroll */}
+
           {/* ── BOTTOM BAR ──────────────────────────────────────── */}
           {!success && !showAuthGate && (
-            <div className="mt-6 -mx-6 sm:-mx-10 px-6 sm:px-10 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3">
+            <div className="shrink-0 border-t border-slate-100 bg-white px-4 sm:px-10 py-3 flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">{t("booking.bottom.amount")}</p>
-                <p className="text-lg font-bold text-slate-900 tabular-nums leading-tight">${total.toLocaleString()}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t("booking.bottom.amount")}</p>
+                <p className="text-base sm:text-lg font-bold text-slate-900 tabular-nums leading-tight">${total.toLocaleString()}</p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {step > 0 && (
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-slate-700 text-sm font-semibold ring-1 ring-slate-200 hover:bg-slate-50 transition"
+                    className="inline-flex items-center gap-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-white text-slate-700 text-sm font-semibold ring-1 ring-slate-200 hover:bg-slate-50 transition"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    {t("booking.bottom.back")}
+                    <span className="hidden sm:inline">{t("booking.bottom.back")}</span>
                   </button>
                 )}
                 {step < 2 ? (
@@ -899,21 +902,28 @@ export function BookingModal({
                     type="button"
                     disabled={step === 0 ? !canStep0 : !canStep1}
                     onClick={nextStep}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
+                    className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
                   >
                     {t("booking.bottom.continue")}
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 shrink-0" />
                   </button>
                 ) : (
                   <button
                     type="submit"
                     disabled={!agreed || submitting || (isAuthenticated && watchedPhone.length < 6)}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
+                    className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
                     style={{ background: "linear-gradient(135deg, #059669, #0d9488)" }}
                   >
-                    {submitting ? t("booking.bottom.submitting") : t("booking.bottom.submit")}
-                    {!submitting && <Check className="h-4 w-4" strokeWidth={2.5} />}
+                    {submitting ? (
+                      t("booking.bottom.submitting")
+                    ) : (
+                      <>
+                        <span className="hidden sm:inline">{t("booking.bottom.submit")}</span>
+                        <span className="sm:hidden">Забронировать</span>
+                      </>
+                    )}
+                    {!submitting && <Check className="h-4 w-4 shrink-0" strokeWidth={2.5} />}
                   </button>
                 )}
               </div>

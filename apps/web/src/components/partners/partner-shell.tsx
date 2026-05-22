@@ -11,6 +11,7 @@ import { useNotifications } from "@/src/hooks/use-notifications";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { Button } from "@/src/components/ui/button";
+import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 
 export function PartnerShell({ children }: { children: React.ReactNode }) {
   const { user, isAuthorized } = useRequireAuth(["PARTNER"]);
@@ -121,7 +122,10 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <div className="border-t border-slate-100 p-3">
+          <div className="border-t border-slate-100 p-3 space-y-2">
+            <div className="flex items-center justify-center py-1">
+              <LanguageSwitcher />
+            </div>
             <Button variant="outline" className="w-full justify-center rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all duration-300 active:scale-95 text-xs py-2.5 h-10" onClick={() => void logout()}>
               <LogOut className="w-4 h-4 mr-1.5" /> {t('partner.logout')}
             </Button>

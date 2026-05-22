@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Bell, Check, ChevronRight, Plane, FileText, DollarSign, Star, XCircle, TrendingUp, Ban } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useNotifications } from "@/src/hooks/use-notifications";
@@ -25,6 +25,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
   const { notifications, unread, isLoading, markRead, markAllRead } = useNotifications();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('dashboard');
 
   if (isLoading) {
     return (
@@ -48,8 +49,8 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
         <div className="mx-auto h-14 w-14 rounded-2xl bg-slate-100 grid place-items-center text-slate-300 mb-4">
           <Bell className="h-7 w-7" />
         </div>
-        <p className="font-semibold text-slate-900">Нет уведомлений</p>
-        <p className="text-sm text-slate-500 mt-1">Здесь будут появляться обновления по вашим заявкам.</p>
+        <p className="font-semibold text-slate-900">{t('client.notifications.noNotifications')}</p>
+        <p className="text-sm text-slate-500 mt-1">{t('client.notifications.noNotificationsHint')}</p>
       </div>
     );
   }
@@ -62,11 +63,11 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
       {unread > 0 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500">
-            Непрочитанных: <strong className="text-slate-900">{unread}</strong>
+            {t('client.notifications.unread')} <strong className="text-slate-900">{unread}</strong>
           </p>
           <Button variant="outline" size="sm" onClick={() => markAllRead()}>
             <Check className="h-3.5 w-3.5" />
-            Прочитать все
+            {t('client.notifications.markAllRead')}
           </Button>
         </div>
       )}
@@ -111,7 +112,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
         <div className="space-y-2">
           {unreadItems.length > 0 && (
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">
-              Прочитанные
+              {t('client.notifications.read')}
             </p>
           )}
           {readItems.map((n) => {
@@ -145,7 +146,7 @@ export function NotificationsList({ basePath = "dashboard" }: { basePath?: strin
       )}
 
       <p className="text-center text-xs text-slate-400 pb-2">
-        Показаны последние {notifications.length} уведомлений
+        {t('client.notifications.showingLast', { count: notifications.length })}
       </p>
     </div>
   );

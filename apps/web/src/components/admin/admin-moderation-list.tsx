@@ -4,21 +4,22 @@ import { useState } from "react";
 import Image from "next/image";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Star, Check, X, Calendar, Compass, MessageSquareOff, RefreshCw, Sparkles } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
 import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 
-const STATUS_FILTERS = [
-  { value: "PENDING", label: "На модерации", color: "indigo" },
-  { value: "APPROVED", label: "Опубликованы", color: "emerald" },
-  { value: "REJECTED", label: "Отклонены", color: "rose" },
-] as const;
-
 export function AdminModerationList() {
   const qc = useQueryClient();
   const locale = useLocale();
+  const t = useTranslations('dashboard');
+
+  const STATUS_FILTERS = [
+    { value: "PENDING", label: t('admin.moderation.tabPending'), color: "indigo" },
+    { value: "APPROVED", label: t('admin.moderation.tabApproved'), color: "emerald" },
+    { value: "REJECTED", label: t('admin.moderation.tabRejected'), color: "rose" },
+  ] as const;
   const lang = locale as "ru" | "en" | "tr";
   const [filter, setFilter] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
   const [rejecting, setRejecting] = useState<{ id: string; reason: string } | null>(null);
@@ -101,7 +102,7 @@ export function AdminModerationList() {
 
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
-            <span>Автоматическая фильтрация спама активна</span>
+            <span>{t('admin.moderation.spamActive')}</span>
           </div>
         </div>
       </div>
@@ -110,15 +111,15 @@ export function AdminModerationList() {
       {isLoading && (
         <div className="tv-surface-elevated p-12 text-center text-slate-500 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-3">
           <RefreshCw className="h-6 w-6 text-teal-600 animate-spin" />
-          <p className="text-sm font-semibold">Загружаем список отзывов...</p>
+          <p className="text-sm font-semibold">{t('admin.moderation.loading')}</p>
         </div>
       )}
 
       {!isLoading && reviews && reviews.length === 0 && (
         <div className="tv-surface-elevated p-16 text-center text-slate-400 bg-white border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <MessageSquareOff className="h-10 w-10 text-slate-300 mx-auto mb-3.5" />
-          <p className="text-sm font-bold text-slate-800">Нет отзывов</p>
-          <p className="text-xs text-slate-400 mt-1">Отзывы в выбранной категории отсутствуют.</p>
+          <p className="text-sm font-bold text-slate-800">{t('admin.moderation.notFound')}</p>
+          <p className="text-xs text-slate-400 mt-1">{t('admin.moderation.notFoundDesc')}</p>
         </div>
       )}
 
@@ -213,7 +214,7 @@ export function AdminModerationList() {
                         <textarea
                           value={rejecting.reason}
                           onChange={(e) => setRejecting({ ...rejecting, reason: e.target.value })}
-                          placeholder="Укажите подробную причину отклонения отзыва (будет видна автору)..."
+                          placeholder={t('admin.moderation.rejectPlaceholder')}
                           rows={2}
                           className="flex w-full rounded-xl border border-slate-200/80 bg-slate-50/30 hover:bg-white hover:border-slate-300 focus:bg-white px-3.5 py-2.5 text-xs font-medium text-slate-800 outline-hidden transition-all placeholder:text-slate-400"
                         />
@@ -224,14 +225,14 @@ export function AdminModerationList() {
                             className="bg-gradient-to-br from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-bold px-4 py-2 text-xs rounded-xl shadow-xs border-0 shrink-0 transition-transform duration-100 active:scale-98 cursor-pointer"
                           >
                             <X className="w-3.5 h-3.5 mr-1" />
-                            Отклонить отзыв
+                            {t('admin.moderation.rejectTitle')}
                           </Button>
                           <Button
                             variant="outline"
                             onClick={() => setRejecting(null)}
                             className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 rounded-xl border-slate-200 transition-all cursor-pointer"
                           >
-                            Отмена
+                            {t('admin.moderation.cancel')}
                           </Button>
                         </div>
                       </div>
@@ -242,14 +243,14 @@ export function AdminModerationList() {
                           disabled={approveM.isPending}
                           className="bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-4.5 py-2 text-xs rounded-xl shadow-xs hover:shadow-md hover:scale-102 duration-150 border-0 shrink-0 transition-transform duration-100 active:scale-98"
                         >
-                          <Check className="w-4 h-4 mr-1.5" /> Опубликовать
+                          <Check className="w-4 h-4 mr-1.5" /> {t('admin.moderation.approve')}
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => setRejecting({ id: r.id, reason: "" })}
                           className="px-4.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200/80 hover:border-slate-300 rounded-xl transition-all hover:scale-102 duration-150 cursor-pointer"
                         >
-                          <X className="w-4 h-4 mr-1.5 text-slate-400 group-hover:text-rose-500" /> Отклонить
+                          <X className="w-4 h-4 mr-1.5 text-slate-400 group-hover:text-rose-500" /> {t('admin.moderation.reject')}
                         </Button>
                       </div>
                     )}

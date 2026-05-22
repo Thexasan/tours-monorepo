@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import {
   Plane, Share2, Star, Bell, ArrowRight, Compass,
@@ -16,16 +16,6 @@ const ACTIVE_STATUSES: BookingStatus[] = [
   "NEW", "DOCUMENTS_REQUESTED", "DOCUMENTS_SUBMITTED", "IN_PROGRESS", "AWAITING_PAYMENT",
 ];
 
-const STATUS_LABELS: Partial<Record<BookingStatus, string>> = {
-  NEW: "Новая",
-  DOCUMENTS_REQUESTED: "Нужны документы",
-  DOCUMENTS_SUBMITTED: "На проверке",
-  IN_PROGRESS: "В работе",
-  AWAITING_PAYMENT: "Ожидает оплаты",
-  PAID: "Оплачена",
-  COMPLETED: "Завершена",
-  CANCELLED: "Отменена",
-};
 
 const STATUS_COLORS: Partial<Record<BookingStatus, { dot: string; text: string; bg: string }>> = {
   NEW: { dot: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]", text: "text-sky-700", bg: "bg-sky-50/70 border-sky-100" },
@@ -40,7 +30,19 @@ const STATUS_COLORS: Partial<Record<BookingStatus, { dot: string; text: string; 
 
 export function DashboardHome() {
   const locale = useLocale();
+  const t = useTranslations('dashboard');
   const user = useAuthStore((s) => s.user);
+
+  const STATUS_LABELS: Partial<Record<BookingStatus, string>> = {
+    NEW: t('client.trips.statusNew'),
+    DOCUMENTS_REQUESTED: t('client.trips.statusDocsNeeded'),
+    DOCUMENTS_SUBMITTED: t('client.trips.statusDocsReview'),
+    IN_PROGRESS: t('client.trips.statusInProgress'),
+    AWAITING_PAYMENT: t('client.trips.statusPayment'),
+    PAID: t('client.trips.statusPaid'),
+    COMPLETED: t('client.trips.statusCompleted'),
+    CANCELLED: t('client.trips.statusCancelled'),
+  };
 
   const { data: tripsData } = useQuery({
     queryKey: ["bookings", "my"],
@@ -58,9 +60,9 @@ export function DashboardHome() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 3);
 
-  const firstName = user?.fullName?.split(" ")[0] ?? "Путешественник";
+  const firstName = user?.fullName?.split(" ")[0] ?? t('client.home.defaultName');
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Доброе утро" : hour < 18 ? "Добрый день" : "Добрый вечер";
+  const greeting = hour < 12 ? t('client.home.greetingMorning') : hour < 18 ? t('client.home.greetingDay') : t('client.home.greetingEvening');
 
   const needsAction = allTrips.filter(
     (b) => b.status === "DOCUMENTS_REQUESTED" || b.status === "AWAITING_PAYMENT"
@@ -79,8 +81,8 @@ export function DashboardHome() {
           <h1 className="text-3xl font-extrabold text-slate-900 mt-1">{firstName} 👋</h1>
           <p className="text-slate-500 text-sm mt-2 font-medium max-w-xl">
             {activeTrips.length > 0
-              ? `У вас ${activeTrips.length} активн${activeTrips.length === 1 ? "ая заявка" : (activeTrips.length < 5 ? "ые заявки" : "ых заявок")} — следите за статусом и собирайте вещи в дорогу!`
-              : "Готовы открыть для себя новые уголки планеты? Выберите идеальное путешествие прямо сейчас."}
+              ? t('client.home.activeBooking', { count: activeTrips.length })
+              : t('client.home.noBookingHint')}
           </p>
         </div>
         <Link
@@ -89,7 +91,7 @@ export function DashboardHome() {
           style={{ background: "var(--gradient-hero)" }}
         >
           <Compass className="h-4.5 w-4.5 animate-spin-slow" />
-          Исследовать туры
+          {t('client.home.exploreTours')}
         </Link>
       </div>
 
@@ -101,20 +103,18 @@ export function DashboardHome() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-rose-900 text-sm">
-              {needsAction.length === 1
-                ? "Требуется ваше действие по заявке"
-                : `${needsAction.length} заявки требуют вашего действия`}
+              {needsAction.length === 1 ? t('client.home.actionRequired') : t('client.home.actionsRequired', { count: needsAction.length })}
             </p>
             <p className="text-xs text-rose-700/80 mt-1 font-medium">
-              {needsAction.some((b) => b.status === "DOCUMENTS_REQUESTED") && "Необходимо загрузить документы. "}
-              {needsAction.some((b) => b.status === "AWAITING_PAYMENT") && "Ожидается оплата поездки."}
+              {needsAction.some((b) => b.status === "DOCUMENTS_REQUESTED") && t('client.home.needDocs')}
+              {needsAction.some((b) => b.status === "AWAITING_PAYMENT") && t('client.home.needPayment')}
             </p>
           </div>
           <Link
             href={`/${locale}/dashboard/trips`}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 transition-colors shrink-0 self-center"
           >
-            Открыть <ArrowRight className="h-3.5 w-3.5" />
+            {t('client.home.open')} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
@@ -123,28 +123,28 @@ export function DashboardHome() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <MiniStat
           icon={Plane}
-          label="Всего поездок"
+          label={t('client.home.statTrips')}
           value={String(allTrips.length)}
           color="teal"
           href={`/${locale}/dashboard/trips`}
         />
         <MiniStat
           icon={Clock}
-          label="Активные туры"
+          label={t('client.home.statActive')}
           value={String(activeTrips.length)}
           color={activeTrips.length > 0 ? "teal" : "slate"}
           href={`/${locale}/dashboard/trips`}
         />
         <MiniStat
           icon={Share2}
-          label="Приглашено друзей"
+          label={t('client.home.statFriends')}
           value={stats ? String(stats.referralCount) : "0"}
           color="teal"
           href={`/${locale}/dashboard/referrals`}
         />
         <MiniStat
           icon={Gift}
-          label="Бесплатные туры"
+          label={t('client.home.statFreeTours')}
           value={stats ? String(stats.freeToursAvailable) : "0"}
           color="emerald"
           href={`/${locale}/dashboard/referrals`}
@@ -160,13 +160,13 @@ export function DashboardHome() {
                 <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-700">
                   <Plane className="h-4 w-4" />
                 </span>
-                Последние заявки
+                {t('client.home.recentTitle')}
               </h2>
               <Link
                 href={`/${locale}/dashboard/trips`}
                 className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline decoration-2"
               >
-                Все поездки <ArrowRight className="h-3.5 w-3.5" />
+                {t('client.home.allTrips')} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
@@ -175,16 +175,16 @@ export function DashboardHome() {
                 <div className="h-16 w-16 rounded-3xl bg-gradient-to-tr from-emerald-500/10 to-emerald-500/5 grid place-items-center mb-4 border border-emerald-500/10">
                   <Compass className="h-7 w-7 text-emerald-600 animate-pulse" />
                 </div>
-                <p className="text-sm font-semibold text-slate-800">Пока нет ни одной заявки</p>
+                <p className="text-sm font-semibold text-slate-800">{t('client.home.noBookings')}</p>
                 <p className="text-xs text-slate-400 mt-1 max-w-[240px] mx-auto">
-                  Выберите тур вашей мечты в каталоге и отправляйтесь в путь
+                  {t('client.home.noBookingsHint')}
                 </p>
                 <Link
                   href={`/${locale}/tours`}
                   className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
                   style={{ background: "var(--gradient-hero)" }}
                 >
-                  Выбрать тур <ArrowRight className="h-3.5 w-3.5" />
+                  {t('client.home.chooseTour')} <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             ) : (
@@ -235,12 +235,12 @@ export function DashboardHome() {
                 <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-700">
                   <TrendingUp className="h-4 w-4" />
                 </span>
-                Реферальный прогресс
+                {t('client.home.referralProgress')}
               </h2>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-xs text-slate-500 mb-2">
-                    <span className="font-bold text-slate-600">{stats.referralCount} из {stats.threshold} друзей</span>
+                    <span className="font-bold text-slate-600">{stats.referralCount} {t('client.home.of')} {stats.threshold} {t('client.home.friends')}</span>
                     <span className="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[10px]">{Math.round(stats.progressPercent)}%</span>
                   </div>
                   <div className="h-3 rounded-full bg-slate-100 overflow-hidden shadow-inner p-0.5 border border-slate-200/20">
@@ -254,13 +254,13 @@ export function DashboardHome() {
                   </div>
                   {stats.remaining > 0 && (
                     <p className="text-[11px] font-semibold text-slate-400 mt-2">
-                      Ещё <strong className="text-slate-800">{stats.remaining}</strong> до бесплатного тура
+                      {t('client.home.toFreeTour', { count: stats.remaining })}
                     </p>
                   )}
                   {stats.freeToursAvailable > 0 && (
                     <p className="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1.5 animate-pulse bg-emerald-50/70 border border-emerald-100 p-2 rounded-xl">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                      Доступен {stats.freeToursAvailable} бесплатный тур!
+                      {t('client.home.freeAvailable', { count: stats.freeToursAvailable })}
                     </p>
                   )}
                 </div>
@@ -268,15 +268,15 @@ export function DashboardHome() {
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100/80">
                   <div className="text-center group/item cursor-default">
                     <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-emerald-600">{stats.clicks}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">кликов</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">{t('client.home.clicks')}</p>
                   </div>
                   <div className="text-center group/item cursor-default">
                     <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-emerald-600">{stats.registrations}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">регистраций</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">{t('client.home.registrations')}</p>
                   </div>
                   <div className="text-center group/item cursor-default">
                     <p className="text-2xl font-extrabold text-slate-800 tabular-nums leading-none transition-colors group-hover/item:text-sky-600">{stats.paidBookings}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">продаж</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">{t('client.home.sales')}</p>
                   </div>
                 </div>
               </div>
@@ -285,7 +285,7 @@ export function DashboardHome() {
                 className="mt-5 flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/50 hover:bg-emerald-100/60 hover:text-emerald-800 transition-all duration-300 shadow-sm hover:shadow-md active:scale-98"
               >
                 <Share2 className="h-4 w-4" />
-                Пригласить друзей
+                {t('client.home.inviteFriends')}
               </Link>
             </div>
           )}
@@ -296,14 +296,14 @@ export function DashboardHome() {
               <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600">
                 <Star className="h-4 w-4" />
               </span>
-              Быстрые действия
+              {t('client.home.quickTitle')}
             </h2>
             <div className="grid grid-cols-2 gap-3.5">
               {[
-                { href: `/${locale}/tours`, icon: Compass, label: "Каталог туров", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
-                { href: `/${locale}/dashboard/trips`, icon: Plane, label: "Мои поездки", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
-                { href: `/${locale}/dashboard/referrals`, icon: Share2, label: "Рефералы", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
-                { href: `/${locale}/dashboard/notifications`, icon: Bell, label: "Уведомления", color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/tours`, icon: Compass, label: t('client.home.quickCatalog'), color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/trips`, icon: Plane, label: t('client.home.quickTrips'), color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/referrals`, icon: Share2, label: t('client.home.quickReferrals'), color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
+                { href: `/${locale}/dashboard/notifications`, icon: Bell, label: t('client.home.quickNotifications'), color: "hover:bg-emerald-500/5 hover:text-emerald-700 hover:border-emerald-200/40" },
               ].map(({ href, icon: Icon, label, color }) => (
                 <Link
                   key={href}

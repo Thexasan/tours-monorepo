@@ -9,13 +9,14 @@ import * as React from "react";
 import {
   Briefcase, Mail, Users, ShieldCheck, LogOut, Wallet,
   MessageSquare, UserCog, ChevronRight, User, LayoutDashboard, Menu, X,
-  Clock, Globe
+  Clock,
 } from "lucide-react";
 import { useRequireAuth } from "@/src/shared/hooks/use-require-auth";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { bookingsApi } from "@/src/shared/api/bookings-api";
 import { payoutsApi } from "@/src/shared/api/payouts-api";
 import { reviewsApi } from "@/src/shared/api/reviews-api";
+import { LanguageSwitcher } from "@/src/widgets/layout/language-switcher";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { user, isAuthorized } = useRequireAuth(["ADMIN"]);
@@ -288,17 +289,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <span className="tabular-nums">{currentTime}</span>
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-slate-500 font-medium select-none">{t('admin.apiConnected')}</span>
-            </div>
-
             <div className="h-4 w-px bg-slate-200" />
 
-            <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
-              <Globe className="h-4 w-4 text-slate-400" />
-              <span>{t('admin.currentLanguage')}</span>
-            </div>
+            <LanguageSwitcher />
           </div>
         </header>
 

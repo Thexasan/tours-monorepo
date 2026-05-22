@@ -8,7 +8,7 @@ export function Footer() {
 
       {/* ── Newsletter strip ── */}
       <div className="border-b border-white/[0.07]">
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 py-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-5">
           <div>
             <p className="font-semibold text-white text-[15px]">Горящие туры — первыми</p>
             <p className="text-white/35 text-sm mt-0.5">Раз в неделю. Только лучшее, без спама.</p>
