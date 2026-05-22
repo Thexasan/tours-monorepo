@@ -174,7 +174,7 @@ export function ProfileForm() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-1.5">
+          <div className="md:col-span-2 space-y-1.5">
             <Label htmlFor="email" className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.emailLabel')}</Label>
             <Input id="email" value={user.email} disabled className="rounded-xl border-slate-200 bg-slate-50 font-medium text-slate-500 cursor-not-allowed" />
           </div>
@@ -190,7 +190,7 @@ export function ProfileForm() {
             )}
           </div>
 
-          <div className="md:col-span-2 space-y-1.5">
+          <div className="space-y-1.5">
             <Label htmlFor="phone" className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('client.profile.phoneLabel')}</Label>
             <Input id="phone" type="tel" placeholder={t('client.profile.phonePlaceholder')} {...register("phone")} className="rounded-xl border-slate-200 focus-visible:ring-teal-500 focus-visible:border-teal-500 transition-all font-medium text-slate-800" />
             {errors.phone && (

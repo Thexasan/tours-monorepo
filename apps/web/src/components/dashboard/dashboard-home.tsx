@@ -198,22 +198,24 @@ export function DashboardHome() {
                     <Link
                       key={b.id}
                       href={`/${locale}/dashboard/trips/${b.id}`}
-                      className="flex items-center gap-4 p-3.5 rounded-2xl border border-transparent hover:border-slate-100 hover:bg-slate-50/70 transition-all duration-300 group"
+                      className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:border-slate-100 hover:bg-slate-50/70 transition-all duration-300 group"
                     >
-                      <div className="grid place-items-center h-11 w-11 rounded-xl bg-gradient-to-tr from-emerald-500/10 to-emerald-500/5 border border-emerald-500/10 shrink-0 transition-transform duration-300 group-hover:scale-110">
-                        <Plane className="h-4.5 w-4.5 text-emerald-700 transition-transform duration-500 group-hover:rotate-12" />
+                      <div className="grid place-items-center h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-tr from-emerald-500/10 to-emerald-500/5 border border-emerald-500/10 shrink-0 transition-transform duration-300 group-hover:scale-110">
+                        <Plane className="h-4 w-4 text-emerald-700 transition-transform duration-500 group-hover:rotate-12" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-slate-800 truncate group-hover:text-emerald-700 transition-colors">
                           {title}
                         </p>
-                        <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
-                          {new Date(b.createdAt).toLocaleDateString("ru-RU")} · {b.guestsCount} чел.
-                        </p>
-                      </div>
-                      <div className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full border ${sc?.bg ?? "bg-slate-50 border-slate-100"}`}>
-                        {sc && <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />}
-                        <span className={`text-[10px] font-extrabold uppercase tracking-wider ${sc?.text ?? "text-slate-600"}`}>{sl}</span>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <p className="text-[11px] font-semibold text-slate-400">
+                            {new Date(b.createdAt).toLocaleDateString("ru-RU")} · {b.guestsCount} чел.
+                          </p>
+                          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full border ${sc?.bg ?? "bg-slate-50 border-slate-100"}`}>
+                            {sc && <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />}
+                            <span className={`text-[9px] font-extrabold uppercase tracking-wide ${sc?.text ?? "text-slate-600"}`}>{sl}</span>
+                          </div>
+                        </div>
                       </div>
                     </Link>
                   );
