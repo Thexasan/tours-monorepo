@@ -510,14 +510,16 @@ export function BookingModal({
         className="relative bg-white rounded-t-3xl sm:rounded-3xl shadow-[0_40px_80px_-20px_rgba(15,23,42,0.5)] w-full max-w-3xl max-h-[94vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          type="button"
-          onClick={handleClose}
-          className="absolute top-4 right-4 z-10 grid place-items-center h-9 w-9 rounded-full bg-white/90 backdrop-blur ring-1 ring-slate-200 text-slate-500 hover:text-slate-900 hover:bg-white transition"
-          aria-label={t("booking.close")}
-        >
-          <X className="h-[18px] w-[18px]" />
-        </button>
+        <div className="flex justify-end px-4 pt-3 sm:px-6 sm:pt-4">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="grid place-items-center h-9 w-9 rounded-full bg-white/90 backdrop-blur ring-1 ring-slate-200 text-slate-500 hover:text-slate-900 hover:bg-white transition"
+            aria-label={t("booking.close")}
+          >
+            <X className="h-[18px] w-[18px]" />
+          </button>
+        </div>
 
         {showStepper && <Stepper labels={stepperLabels} activeIndex={stepperActiveIndex} />}
 

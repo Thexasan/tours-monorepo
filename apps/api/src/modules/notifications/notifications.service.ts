@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { NotificationType } from "@tours/db";
+import { NotificationType, Prisma } from "@tours/db";
 
 export interface CreateNotificationInput {
   userId: string;
@@ -8,6 +8,7 @@ export interface CreateNotificationInput {
   title: string;
   body: string;
   bookingId?: string;
+  metadata?: Record<string, unknown>;
 }
 
 @Injectable()
@@ -24,6 +25,7 @@ export class NotificationsService {
           type: input.type,
           title: input.title,
           body: input.body,
+          metadata: input.metadata != null ? (input.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
           bookingId: input.bookingId ?? null,
         },
       });

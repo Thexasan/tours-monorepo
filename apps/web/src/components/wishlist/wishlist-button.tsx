@@ -40,17 +40,17 @@ export function WishlistButton({ tourId, variant = "sidebar", className, label, 
         type="button"
         onClick={handleClick}
         disabled={toggle.isPending}
+        aria-label={wishlisted ? (labelActive ?? "В избранном") : (label ?? "В избранное")}
         className={cn(
-          "inline-flex items-center gap-2 px-5 py-4 rounded-full text-sm font-semibold",
+          "grid place-items-center h-11 w-11 md:h-14 md:w-14 rounded-full",
           "bg-white/10 text-white backdrop-blur ring-1 ring-white/25 hover:bg-white/20 transition",
           toggle.isPending && "opacity-70",
           className,
         )}
       >
         <Heart
-          className={cn("h-4 w-4 transition-colors", wishlisted && "fill-rose-400 text-rose-400")}
+          className={cn("h-4 w-4 md:h-5 md:w-5 transition-colors", wishlisted && "fill-rose-400 text-rose-400")}
         />
-        {wishlisted ? (labelActive ?? "В избранном") : (label ?? "В избранное")}
       </button>
     );
   }

@@ -84,8 +84,8 @@ export default function WishlistPage() {
 
         {!isLoading && items.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="grid place-items-center h-20 w-20 rounded-full bg-slate-100 mb-5">
-              <Heart className="h-9 w-9 text-slate-300" />
+            <div className="grid place-items-center h-20 w-20 rounded-full bg-teal-50 mb-5">
+              <Heart className="h-9 w-9 text-teal-300" />
             </div>
             <h2 className="text-xl font-semibold text-slate-700 mb-2">Список пуст</h2>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
@@ -93,8 +93,7 @@ export default function WishlistPage() {
             </p>
             <Link
               href={`/${locale}/tours`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white"
-              style={{ background: "linear-gradient(135deg, #f97316, #f43f5e)" }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition-colors shadow-[0_6px_20px_-6px_rgba(2,116,85,0.40)]"
             >
               Смотреть туры
             </Link>
@@ -209,8 +208,7 @@ function WishlistCard({ item, locale }: { item: WishlistItem; locale: string }) 
 
         <Link
           href={`/${locale}/tours/${tour.slug}?book=1`}
-          className="block w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white transition hover:-translate-y-0.5"
-          style={{ background: "linear-gradient(135deg,#f97316,#f43f5e)" }}
+          className="block w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition-colors shadow-[0_6px_20px_-6px_rgba(2,116,85,0.40)] hover:-translate-y-0.5 transition-all"
         >
           Забронировать
         </Link>

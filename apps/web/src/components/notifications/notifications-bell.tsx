@@ -48,7 +48,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-w-[min(320px,calc(100vw-8px))] bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/60 z-[9999] overflow-hidden" style={{ isolation: "isolate" }}>
+        <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200/60 z-[9999] overflow-hidden" style={{ isolation: "isolate" }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <span className="text-sm font-semibold text-slate-900">
               Уведомления
@@ -66,7 +66,7 @@ export function NotificationsBell({ transparent }: { transparent?: boolean }) {
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-[min(16rem,45vh)] sm:max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="py-10 text-center">
                 <Bell className="h-8 w-8 mx-auto mb-2 text-slate-200" />

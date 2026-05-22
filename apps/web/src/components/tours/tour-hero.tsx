@@ -156,7 +156,6 @@ export function TourHero({
                     variant="hero"
                     label={t("hero.wishlist")}
                     labelActive={t("hero.wishlisted")}
-                    className="px-4 py-3 text-xs md:px-5 md:py-4 md:text-sm"
                   />
                   <button
                     type="button"

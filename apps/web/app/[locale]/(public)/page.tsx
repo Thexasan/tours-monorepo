@@ -80,7 +80,7 @@ export default async function HomePage() {
     <div className="flex flex-col w-full bg-[#f8fafc] font-sans selection:bg-teal-500/30">
 
       {/* ───── HERO ───── */}
-      <section className="relative -mt-16 min-h-[580px] sm:min-h-[680px] md:h-[100vh] md:min-h-[700px] overflow-hidden">
+      <section className="relative -mt-16 min-h-[680px] sm:min-h-[720px] md:h-[100vh] md:min-h-[700px] overflow-hidden">
         {[
           "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2000&q=85&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=2000&q=85&auto=format&fit=crop",
@@ -100,7 +100,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80 z-1" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.4)_100%)] z-1" />
 
-        <div className="relative z-10 flex flex-col justify-center md:h-full pt-24 pb-12 md:pt-24 md:pb-16">
+        <div className="relative z-10 flex flex-col justify-center md:h-full pt-24 pb-20 md:pt-24 md:pb-16">
           <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-8 lg:gap-12">
 
             <div className="flex-1 text-center lg:text-left">

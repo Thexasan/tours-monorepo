@@ -437,7 +437,7 @@ function FiltersPanel({
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <div className="relative bg-white rounded-t-3xl max-h-[65vh] flex flex-col shadow-[0_-8px_40px_-8px_rgba(0,0,0,0.18)] animate-in slide-in-from-bottom duration-300">
+          <div className="relative bg-white rounded-3xl mx-3 mb-3 max-h-[65vh] flex flex-col shadow-[0_-8px_40px_-8px_rgba(0,0,0,0.18)] animate-in slide-in-from-bottom duration-300">
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1 shrink-0">
               <div className="h-1 w-10 rounded-full bg-slate-200" />
