@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -157,9 +158,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="p-6 border-b border-slate-800/50 shrink-0">
         <div className="flex items-center gap-3.5">
           <div className="relative shrink-0">
-            <div className="grid place-items-center h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white shadow-lg shadow-emerald-700/20 font-bold text-lg">
-              {user?.fullName?.[0]?.toUpperCase() ?? "A"}
-            </div>
+            {user?.avatarUrl ? (
+              <Image
+                src={user.avatarUrl}
+                alt={user.fullName ?? ""}
+                width={44}
+                height={44}
+                className="h-11 w-11 rounded-2xl object-cover shadow-lg shadow-emerald-700/20"
+              />
+            ) : (
+              <div className="grid place-items-center h-11 w-11 rounded-2xl bg-linear-to-br from-emerald-600 to-emerald-800 text-white shadow-lg shadow-emerald-700/20 font-bold text-lg">
+                {user?.fullName?.[0]?.toUpperCase() ?? "A"}
+              </div>
+            )}
             <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-[#090d16] animate-pulse" />
           </div>
           <div className="min-w-0">
