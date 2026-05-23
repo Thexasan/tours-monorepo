@@ -25,10 +25,23 @@ export function ReferralsPanel() {
 
   const onCopy = () => {
     if (!refLink) return;
-    void navigator.clipboard.writeText(refLink).then(() => {
+    if (navigator.clipboard) {
+      void navigator.clipboard.writeText(refLink).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = refLink;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }
   };
 
   const shareText = t('client.referrals.shareText');
