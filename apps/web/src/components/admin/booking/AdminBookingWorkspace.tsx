@@ -17,17 +17,7 @@ import { extractErrorMessage } from "@/src/shared/api/apiClient";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import type { BookingStatus, BookingDocument } from "@tours/types";
-
-const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
-  NEW:                 { label: "Новая",               cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
-  DOCUMENTS_REQUESTED: { label: "Ждём документы",      cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",  dot: "bg-violet-500" },
-  DOCUMENTS_SUBMITTED: { label: "Документы загружены", cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100",  dot: "bg-teal-500" },
-  IN_PROGRESS:         { label: "В работе",            cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",     dot: "bg-amber-500" },
-  AWAITING_PAYMENT:    { label: "Ждём оплату",         cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",           dot: "bg-sky-500" },
-  PAID:                { label: "Оплачена",            cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
-  COMPLETED:           { label: "Завершена",           cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",    dot: "bg-slate-500" },
-  CANCELLED:           { label: "Отменена",            cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",        dot: "bg-rose-500" },
-};
+import { useTranslations } from "next-intl";
 
 const KIND_LABEL: Record<string, string> = {
   PASSPORT_INTERNAL: "Внутренний паспорт",
@@ -75,6 +65,18 @@ function DocRow({ doc, bookingId }: { doc: BookingDocument; bookingId: string })
 export function AdminBookingWorkspace({ bookingId }: { bookingId: string }) {
   const locale = useLocale();
   const lang = locale as "ru" | "en" | "tr";
+  const t = useTranslations('dashboard');
+
+  const STATUS_META: Record<BookingStatus, { label: string; cls: string; dot: string }> = {
+    NEW:                 { label: t('admin.bookings.statusNew'),           cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",            dot: "bg-sky-500" },
+    DOCUMENTS_REQUESTED: { label: t('admin.bookings.statusDocs'),          cls: "bg-violet-50 text-violet-700 ring-1 ring-violet-100",   dot: "bg-violet-500" },
+    DOCUMENTS_SUBMITTED: { label: t('admin.bookings.statusDocsSubmitted'), cls: "bg-teal-50 text-teal-700 ring-1 ring-teal-100",         dot: "bg-teal-500" },
+    IN_PROGRESS:         { label: t('admin.bookings.statusInProgress'),    cls: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",      dot: "bg-amber-500" },
+    AWAITING_PAYMENT:    { label: t('admin.bookings.statusPayment'),       cls: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",            dot: "bg-sky-500" },
+    PAID:                { label: t('admin.bookings.statusPaid'),          cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100", dot: "bg-emerald-500" },
+    COMPLETED:           { label: t('admin.bookings.statusCompleted'),     cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",     dot: "bg-slate-500" },
+    CANCELLED:           { label: t('admin.bookings.statusCancelled'),     cls: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",         dot: "bg-rose-500" },
+  };
   const qc = useQueryClient();
 
   const { data: booking, isLoading, isError } = useBooking(bookingId);
