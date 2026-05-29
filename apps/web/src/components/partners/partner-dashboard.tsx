@@ -115,7 +115,7 @@ export function PartnerDashboard() {
           <div className="absolute left-2 top-2 h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
           <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200/90 leading-none">{t('partner.dashboard.totalIncome')}</p>
           <p className="text-3xl font-black tracking-tight mt-2 tabular-nums">
-            ${data.totals.totalCommission.toFixed(2)}
+            ${data.balance.toFixed(2)}
           </p>
           <p className="text-xs text-emerald-100/90 mt-1 font-semibold">
             {t('partner.dashboard.fromSales', { count: data.totals.totalPaidBookings })}
