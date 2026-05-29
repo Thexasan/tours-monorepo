@@ -58,7 +58,10 @@ export class ReferralsService {
       this.prisma.referralClick.count({ where: { referrerId: user.id } }),
       this.prisma.user.count({ where: { referrerId: user.id } }),
       this.prisma.booking.count({
-        where: { referrerId: user.id, status: BookingStatus.PAID },
+        where: {
+          referrerId: user.id,
+          status: { in: [BookingStatus.PAID, BookingStatus.COMPLETED] },
+        },
       }),
       this.prisma.booking.count({
         where: { referrerId: user.id, status: { in: [BookingStatus.NEW, BookingStatus.IN_PROGRESS] } },
@@ -121,12 +124,18 @@ export class ReferralsService {
       GROUP BY day ORDER BY day
     `;
 
+    // Считаем оплаченными как PAID, так и COMPLETED заявки: завершённая поездка
+    // тоже была оплачена (комиссия уже начислена при переходе в PAID). Иначе после
+    // перевода менеджером PAID → COMPLETED продажа выпадает из статистики.
     const salesByDay = await this.prisma.$queryRaw<{ day: Date; count: bigint; total_amount: number }[]>`
       SELECT date_trunc('day', "paid_at") AS day,
              COUNT(*)::bigint AS count,
              COALESCE(SUM("total_price_usd"), 0)::float AS total_amount
       FROM bookings
-      WHERE "referrer_id" = ${user.id} AND "status" = 'PAID' AND "paid_at" >= ${since}
+      WHERE "referrer_id" = ${user.id}
+        AND "status" IN ('PAID', 'COMPLETED')
+        AND "paid_at" IS NOT NULL
+        AND "paid_at" >= ${since}
       GROUP BY day ORDER BY day
     `;
 
