@@ -35,7 +35,9 @@ export class BookingsController {
     @Req() req: Request,
   ) {
     const userId = (req.user as { id?: string } | undefined)?.id;
-    const referralCode = (req.cookies?.[REF_COOKIE] as string | undefined) ?? undefined;
+    const referralCode = (req.cookies?.[REF_COOKIE] as string | undefined)
+      ?? dto.referralCode?.trim().toUpperCase()
+      ?? undefined;
     const ip = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim()
       ?? req.ip
       ?? undefined;

@@ -89,6 +89,7 @@ export interface BookingCreateInput {
   preferredDate?: string;
   roomType?: string;
   notes?: string;
+  referralCode?: string;
 }
 
 export interface BookingUpdateStatusInput {

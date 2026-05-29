@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsDateString, IsEmail, IsInt, IsOptional, IsString, Matches,
-  MaxLength, Min, MinLength,
+  MaxLength, Min, MinLength, Length,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -38,4 +38,8 @@ export class CreateBookingDto {
   @ApiPropertyOptional({ example: "Предпочитаем номер с видом на море" })
   @IsOptional() @IsString() @MaxLength(2000)
   notes?: string;
+
+  @ApiPropertyOptional({ example: "6E96RV36", description: "Реферальный код партнёра (fallback, если cookie недоступен)" })
+  @IsOptional() @IsString() @Length(4, 16)
+  referralCode?: string;
 }

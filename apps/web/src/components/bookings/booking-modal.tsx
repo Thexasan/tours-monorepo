@@ -398,6 +398,9 @@ export function BookingModal({
     setSubmitting(true);
     setError(null);
     try {
+      const refCookie = typeof document !== "undefined"
+        ? document.cookie.match(/(?:^|; )tours_ref=([^;]*)/)?.[1]
+        : undefined;
       const booking = await bookingsApi.create({
         tourId,
         contactName: values.contactName,
@@ -407,6 +410,7 @@ export function BookingModal({
         preferredDate: values.preferredDate || undefined,
         roomType: selectedRoom?.title || undefined,
         notes: values.notes || undefined,
+        referralCode: refCookie ? decodeURIComponent(refCookie) : undefined,
       });
       setSuccessBookingId(booking.id);
       setSuccessEmail(values.contactEmail);
